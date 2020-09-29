@@ -1,7 +1,9 @@
 plugins {
     kotlin("multiplatform") version "1.4.10"
+    kotlin("native.cocoapods") version "1.4.10"
     id("com.android.library")
     id("kotlin-android-extensions")
+    id("maven-publish")
 }
 group = "com.audioburst"
 version = "0.0.1"
@@ -13,13 +15,18 @@ repositories {
     mavenCentral()
 }
 kotlin {
-    android()
-    iosX64("ios") {
-        binaries {
-            framework {
-                baseName = "library"
-            }
-        }
+    cocoapods {
+        summary = "AudioburstMobileLibrary"
+        homepage = "Link to GitHub"
+    }
+    android {
+        publishLibraryVariants("release", "debug")
+    }
+    val onPhone = System.getenv("SDK_NAME")?.startsWith("iphoneos") ?: false
+    if (onPhone) {
+        iosArm64("ios")
+    } else {
+        iosX64("ios")
     }
     js("browser") {
         browser {
