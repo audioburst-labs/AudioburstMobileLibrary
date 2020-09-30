@@ -119,6 +119,7 @@ hs_err_pid*
 # Xcode
 #
 # gitignore contributors: remember to update Global/Xcode.gitignore, Objective-C.gitignore & Swift.gitignore
+*.podspec
 
 ## User settings
 xcuserdata/

@@ -1,12 +1,12 @@
 plugins {
-    kotlin("multiplatform") version "1.4.10"
-    kotlin("native.cocoapods") version "1.4.10"
-    id("com.android.library")
-    id("kotlin-android-extensions")
-    id("maven-publish")
+    kotlin(Dependencies.Plugins.multiplatform) version Dependencies.kotlinVersion
+    kotlin(Dependencies.Plugins.cocoapods) version Dependencies.kotlinVersion
+    id(Dependencies.Plugins.androidLibrary)
+    id(Dependencies.Plugins.kotlinAndroidExtensions)
+    id(Dependencies.Plugins.mavenPublish)
 }
-group = "com.audioburst"
-version = "0.0.1"
+group = Constants.Library.packageName
+version = Constants.Library.version
 
 repositories {
     gradlePluginPortal()
@@ -16,8 +16,8 @@ repositories {
 }
 kotlin {
     cocoapods {
-        summary = "AudioburstMobileLibrary"
-        homepage = "Link to GitHub"
+        summary = Constants.Cocoapods.summary
+        homepage = Constants.Cocoapods.homepage
     }
     android {
         publishLibraryVariants("release", "debug")
@@ -30,52 +30,61 @@ kotlin {
     }
     js("browser") {
         browser {
-            binaries.executable()
-            webpackTask {
-                cssSupport.enabled = true
-            }
-            runTask {
-                cssSupport.enabled = true
-            }
-            testTask {
-                useKarma {
-                    useChromeHeadless()
-                    webpackConfig.cssSupport.enabled = true
-                }
-            }
         }
     }
     sourceSets {
-        val commonMain by getting
+        val commonMain by getting {
+            dependencies {
+                implementation(Dependencies.Coroutines.commonMain)
+
+                implementation(Dependencies.Serialization.commonMain)
+
+                implementation(Dependencies.Ktor.core)
+                implementation(Dependencies.Ktor.json)
+                implementation(Dependencies.Ktor.logging)
+                implementation(Dependencies.Ktor.serialization)
+
+                implementation(Dependencies.SqlDelight.runtime)
+                implementation(Dependencies.SqlDelight.coroutinesExtensions)
+            }
+        }
         val commonTest by getting {
             dependencies {
-                implementation(kotlin("test-common"))
-                implementation(kotlin("test-annotations-common"))
+                implementation(kotlin(Dependencies.Common.Test.testCommon))
+                implementation(kotlin(Dependencies.Common.Test.testAnnotationsCommon))
+
+                implementation(Dependencies.Coroutines.test)
             }
         }
         val androidMain by getting {
             dependencies {
-                implementation("androidx.core:core-ktx:1.2.0")
+                implementation(Dependencies.Ktor.androidMain)
+                implementation(Dependencies.SqlDelight.androidMain)
             }
         }
         val androidTest by getting
-        val iosMain by getting
-        val iosTest by getting
-        val browserMain by getting
-        val browserTest by getting {
+        val iosMain by getting {
             dependencies {
-                implementation(kotlin("test-js"))
+                implementation(Dependencies.Ktor.iOSMain)
+                implementation(Dependencies.SqlDelight.iOSMain)
             }
         }
+        val iosTest by getting
+        val browserMain by getting {
+            dependencies {
+                implementation(Dependencies.Ktor.jsMain)
+            }
+        }
+        val browserTest by getting
     }
 }
 android {
-    compileSdkVersion(29)
+    compileSdkVersion(Constants.Android.compileSdkVersion)
     defaultConfig {
-        minSdkVersion(24)
-        targetSdkVersion(29)
-        versionCode = 1
-        versionName = "1.0"
+        minSdkVersion(Constants.Android.minSdkVersion)
+        targetSdkVersion(Constants.Android.targetSdkVersion)
+        versionCode = Constants.Android.versionCode
+        versionName = Constants.Android.versionName
     }
     buildTypes {
         getByName("release") {
