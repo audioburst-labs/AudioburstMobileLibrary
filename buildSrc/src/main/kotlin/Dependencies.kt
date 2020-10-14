@@ -9,7 +9,7 @@ object Constants {
 
     object Cocoapods {
         const val summary = projectName
-        const val homepage = "Link to GitHub"
+        const val homepage = "Link to GitHub" // TODO: Provide url to GitHub when it's set up
     }
 
     object Android {
@@ -24,22 +24,24 @@ object Constants {
 object Dependencies {
     const val kotlinVersion = "1.4.10"
 
+    private fun kotlin(dependency: String): String = "org.jetbrains.kotlin:$dependency:$kotlinVersion"
+
     object Plugins {
         const val multiplatform = "multiplatform"
         const val cocoapods = "native.cocoapods"
         const val androidLibrary = "com.android.library"
         const val kotlinAndroidExtensions = "kotlin-android-extensions"
         const val mavenPublish = "maven-publish"
+        const val serialization = "plugin.serialization"
     }
 
     object Coroutines {
-        private const val version = "1.3.9"
+        private const val version = "1.3.9-native-mt!!"
         const val commonMain = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
-        const val test = "org.jetbrains.kotlinx:kotlinx-coroutines-test:$version"
     }
 
     object Serialization {
-        private const val version = "1.0.0-RC2"
+        private const val version = "1.0.0"
         const val commonMain = "org.jetbrains.kotlinx:kotlinx-serialization-core:$version"
     }
 
@@ -49,7 +51,9 @@ object Dependencies {
         const val json = "io.ktor:ktor-client-json:$version"
         const val logging = "io.ktor:ktor-client-logging:$version"
         const val serialization = "io.ktor:ktor-client-serialization:$version"
+        const val test = "io.ktor:ktor-client-tests:$version"
 
+        const val jvmMain = "io.ktor:ktor-client-apache:$version"
         const val androidMain = "io.ktor:ktor-client-android:$version"
         const val iOSMain = "io.ktor:ktor-client-ios:$version"
         const val jsMain = "io.ktor:ktor-client-js:$version"
@@ -60,15 +64,24 @@ object Dependencies {
         const val runtime = "com.squareup.sqldelight:runtime:$version"
         const val coroutinesExtensions = "com.squareup.sqldelight:coroutines-extensions:$version"
 
+        const val jvmMain = "com.squareup.sqldelight:sqlite-driver:$version"
         const val androidMain = "com.squareup.sqldelight:android-driver:$version"
         const val iOSMain = "com.squareup.sqldelight:native-driver:$version"
     }
 
-    object Common {
+    object Test {
 
-        object Test {
-            const val testCommon = "test-common"
-            const val testAnnotationsCommon = "test-annotations-common"
+        object Common {
+            val testCommon = kotlin("kotlin-test-common")
+            val testAnnotationsCommon = kotlin("kotlin-test-annotations-common")
+        }
+
+        object Jvm {
+            val junit = kotlin("kotlin-test-junit")
+        }
+
+        object Js {
+            val js = kotlin("kotlin-test-js")
         }
     }
 }

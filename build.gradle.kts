@@ -1,6 +1,7 @@
 plugins {
     kotlin(Dependencies.Plugins.multiplatform) version Dependencies.kotlinVersion
     kotlin(Dependencies.Plugins.cocoapods) version Dependencies.kotlinVersion
+    kotlin(Dependencies.Plugins.serialization) version Dependencies.kotlinVersion
     id(Dependencies.Plugins.androidLibrary)
     id(Dependencies.Plugins.kotlinAndroidExtensions)
     id(Dependencies.Plugins.mavenPublish)
@@ -19,11 +20,16 @@ kotlin {
         summary = Constants.Cocoapods.summary
         homepage = Constants.Cocoapods.homepage
     }
+    jvm {
+        compilations.all {
+            kotlinOptions.jvmTarget = "1.8"
+        }
+    }
     android {
         publishLibraryVariants("release", "debug")
     }
-    val onPhone = System.getenv("SDK_NAME")?.startsWith("iphoneos") ?: false
-    if (onPhone) {
+    val isBuildForPhysicalDevice = System.getenv("SDK_NAME")?.startsWith("iphoneos") ?: false
+    if (isBuildForPhysicalDevice) {
         iosArm64("ios")
     } else {
         iosX64("ios")
@@ -50,10 +56,20 @@ kotlin {
         }
         val commonTest by getting {
             dependencies {
-                implementation(kotlin(Dependencies.Common.Test.testCommon))
-                implementation(kotlin(Dependencies.Common.Test.testAnnotationsCommon))
-
-                implementation(Dependencies.Coroutines.test)
+                implementation(Dependencies.Test.Common.testCommon)
+                implementation(Dependencies.Test.Common.testAnnotationsCommon)
+                implementation(Dependencies.Ktor.test)
+            }
+        }
+        val jvmMain by getting {
+            dependencies {
+                implementation(Dependencies.Ktor.jvmMain)
+                implementation(Dependencies.SqlDelight.jvmMain)
+            }
+        }
+        val jvmTest by getting {
+            dependencies {
+                implementation(Dependencies.Test.Jvm.junit)
             }
         }
         val androidMain by getting {
@@ -62,7 +78,11 @@ kotlin {
                 implementation(Dependencies.SqlDelight.androidMain)
             }
         }
-        val androidTest by getting
+        val androidTest by getting {
+            dependencies {
+                implementation(Dependencies.Test.Jvm.junit)
+            }
+        }
         val iosMain by getting {
             dependencies {
                 implementation(Dependencies.Ktor.iOSMain)
@@ -75,7 +95,14 @@ kotlin {
                 implementation(Dependencies.Ktor.jsMain)
             }
         }
-        val browserTest by getting
+        val browserTest by getting {
+            dependencies {
+                implementation(Dependencies.Test.Js.js)
+            }
+        }
+        all {
+            languageSettings.enableLanguageFeature("InlineClasses")
+        }
     }
 }
 android {
@@ -91,4 +118,7 @@ android {
             isMinifyEnabled = false
         }
     }
+}
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
+    kotlinOptions.freeCompilerArgs += "-Xinline-classes"
 }

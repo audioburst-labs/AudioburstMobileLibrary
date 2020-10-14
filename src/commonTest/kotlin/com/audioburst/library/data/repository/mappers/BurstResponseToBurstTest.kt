@@ -1,0 +1,124 @@
+package com.audioburst.library.data.repository.mappers
+
+import com.audioburst.library.models.SubscriptionKey
+import com.audioburst.library.utils.SubscriptionKeyGetter
+import kotlin.test.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+
+class BurstResponseToBurstTest {
+
+    private val subscriptionKey = "subscriptionKey"
+    private val userId = "userId"
+
+    private val mapper = BurstResponseToBurstMapper(
+        subscriptionKeyGetter = subscriptionKeyGetterOf(subscriptionKey),
+        sourceResponseToBurstSourceMapper = SourceResponseToBurstSourceMapper(),
+    )
+
+    @Test
+    fun testMapper() {
+        // GIVEN
+        val source = sourceResponseOf()
+        val response = burstsResponseOf(
+            source = source
+        )
+        val queryId = 0L
+
+        // WHEN
+        val mapped = mapper.map(response, userId, queryId)
+
+        // THEN
+        assertEquals(mapped.id, response.burstId)
+        assertEquals(mapped.title, response.title)
+        assertEquals(mapped.creationDate, response.creationDate)
+        assertEquals(mapped.sourceName, response.source.sourceName)
+        assertEquals(mapped.category, response.category)
+        assertEquals(mapped.duration.seconds, response.duration)
+        assertEquals(mapped.playlistId, queryId)
+        assertEquals(mapped.showName, response.source.showName)
+        assertEquals(mapped.streamUrl, response.contentURLs.streamURL)
+        assertEquals(mapped.audioUrl, response.contentURLs.audioURL)
+    }
+
+    @Test
+    fun testIfKeywordsAreProperlyParsed() {
+        // GIVEN
+        val nullKeywordsResponse = burstsResponseOf(entities = null)
+        val keywords = listOf("")
+        val notNullKeywordsResponse = burstsResponseOf(entities = keywords)
+
+        // WHEN
+        val mappedNullKeywordsResponse = mapper.map(nullKeywordsResponse, userId, queryId = 0L)
+        val mappedNotNullKeywordsResponse = mapper.map(notNullKeywordsResponse, userId, queryId = 0L)
+
+        // THEN
+        assertTrue(mappedNullKeywordsResponse.keywords.isEmpty())
+        assertEquals(mappedNotNullKeywordsResponse.keywords.size, keywords.size)
+    }
+
+    @Test
+    fun testIfShareUrlIsBeingBuildCorrectly() {
+        // GIVEN
+        val response = burstsResponseOf(
+            contentURLs = contentURLsResponseOf(
+                searchSiteURL = "https://search.audioburst.com/burst/oN9Nv4y940X6/Lawmakers-lay-out-arguments-for-against-Trump%27s-Supreme-Court-nominee?ref=AndroidApp&pid=1&v=1"
+            )
+        )
+
+        // WHEN
+        val mapped = mapper.map(response, userId, queryId = 0L)
+
+        // THEN
+        assertTrue(mapped.shareUrl.contains("utm_source"))
+        assertTrue(mapped.shareUrl.contains(subscriptionKey))
+    }
+
+    @Test
+    fun testIfImageUrlsAreProperlyParsed() {
+        // GIVEN
+        val emptyImageUrlListResponse = burstsResponseOf(
+            contentURLs = contentURLsResponseOf(
+                imageURL = emptyList()
+            )
+        )
+        val firstImageUrl = "image.com"
+        val notEmptyImageUrlListResponse = burstsResponseOf(
+            contentURLs = contentURLsResponseOf(
+                imageURL = listOf(firstImageUrl)
+            )
+        )
+
+        // WHEN
+        val mappedEmptyImageUrlListResponse = mapper.map(emptyImageUrlListResponse, userId, queryId = 0L)
+        val mappedNotEmptyImageUrlListResponse = mapper.map(notEmptyImageUrlListResponse, userId, queryId = 0L)
+
+        // THEN
+        assertTrue(mappedEmptyImageUrlListResponse.imageUrls.isEmpty())
+        assertTrue(mappedNotEmptyImageUrlListResponse.imageUrls.isNotEmpty())
+        assertEquals(mappedNotEmptyImageUrlListResponse.imageUrls.first(), firstImageUrl)
+    }
+
+    @Test
+    fun testIfAdUrlIsGettingParsedProperly() {
+        // GIVEN
+        val nullPromoteResponse = burstsResponseOf(promote = null)
+        val burstId = "burstId"
+        val notNullPromoteResponse = burstsResponseOf(burstId = burstId, promote = promoteResponseOf())
+        val expectedUrl = "https://sapi.audioburst.com/audio/get/streamwithad/$burstId?userId=$userId"
+
+        // WHEN
+        val mappedNullPromoteResponse = mapper.map(nullPromoteResponse, userId, queryId = 0L)
+        val mappedNotNullKeywordsResponse = mapper.map(notNullPromoteResponse, userId, queryId = 0L)
+
+        // THEN
+        assertTrue(mappedNullPromoteResponse.adUrl == null)
+        assertTrue(!mappedNullPromoteResponse.isAdAvailable)
+        assertEquals(expectedUrl, mappedNotNullKeywordsResponse.adUrl)
+    }
+}
+
+internal fun subscriptionKeyGetterOf(subscriptionKey: String = ""): SubscriptionKeyGetter =
+    object : SubscriptionKeyGetter {
+        override val subscriptionKey: SubscriptionKey = SubscriptionKey(subscriptionKey)
+    }
