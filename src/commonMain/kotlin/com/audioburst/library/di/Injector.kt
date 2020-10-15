@@ -5,11 +5,12 @@ import com.audioburst.library.data.remote.AudioburstV2Api
 import com.audioburst.library.data.repository.HttpUserRepository
 import com.audioburst.library.data.repository.UserRepository
 import com.audioburst.library.data.repository.mappers.*
-import com.audioburst.library.di.providers.HttpClientProvider
-import com.audioburst.library.di.providers.JsonProvider
-import com.audioburst.library.di.providers.Provider
-import com.audioburst.library.di.providers.provider
+import com.audioburst.library.data.storage.SettingsUserStorage
+import com.audioburst.library.data.storage.UserStorage
+import com.audioburst.library.data.storage.settings
+import com.audioburst.library.di.providers.*
 import com.audioburst.library.utils.*
+import com.russhwolf.settings.Settings
 import io.ktor.client.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
@@ -26,7 +27,12 @@ internal object Injector {
     )
     private val audioburstV2ApiProvider: Provider<AudioburstV2Api> = provider { AudioburstV2Api() }
     private val registerResponseToUserProvider: Provider<RegisterResponseToUserMapper> = provider { RegisterResponseToUserMapper() }
-    private val userStorageProvider: Provider<UserStorage> = provider { SettingsUserStorage() }
+    private val settingsProvider: Provider<Settings> = singleton { settings() }
+    private val userStorageProvider: Provider<UserStorage> = provider {
+        SettingsUserStorage(
+            settings = settingsProvider.get()
+        )
+    }
     private val playlistResponseToPlaylistInfoProvider: Provider<PlaylistResponseToPlaylistInfoMapper> = provider { PlaylistResponseToPlaylistInfoMapper() }
     private val playerSessionIdGetterProvider: Provider<PlayerSessionIdGetter> = provider { UuidBasedPlayerSessionIdGetter() }
     private val promoteResponseToAdvertisementProvider: Provider<PromoteResponseToAdvertisementMapper> = provider { PromoteResponseToAdvertisementMapper() }
@@ -69,4 +75,6 @@ internal object Injector {
     fun provideUserRepository(): UserRepository = userRepositoryProvider.get()
 
     fun provideSubscriptionKeySetter(): SubscriptionKeySetter = subscriptionKeySetterProvider.get()
+
+    fun provideUserStorage(): UserStorage = userStorageProvider.get()
 }

@@ -2,7 +2,7 @@ package com.audioburst.library.data.repository.mappers
 
 import com.audioburst.library.data.repository.models.ImageResponse
 import com.audioburst.library.data.repository.models.PlaylistsResponse
-import com.audioburst.library.utils.UserStorage
+import com.audioburst.library.data.storage.UserStorage
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

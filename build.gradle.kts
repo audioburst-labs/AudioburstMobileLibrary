@@ -52,6 +52,8 @@ kotlin {
 
                 implementation(Dependencies.SqlDelight.runtime)
                 implementation(Dependencies.SqlDelight.coroutinesExtensions)
+
+                implementation(Dependencies.Settings.commonMain)
             }
         }
         val commonTest by getting {
@@ -59,6 +61,7 @@ kotlin {
                 implementation(Dependencies.Test.Common.testCommon)
                 implementation(Dependencies.Test.Common.testAnnotationsCommon)
                 implementation(Dependencies.Ktor.test)
+                implementation(Dependencies.Settings.commonTest)
             }
         }
         val jvmMain by getting {
@@ -76,6 +79,7 @@ kotlin {
             dependencies {
                 implementation(Dependencies.Ktor.androidMain)
                 implementation(Dependencies.SqlDelight.androidMain)
+                implementation(Dependencies.Android.Startup.runtime)
             }
         }
         val androidTest by getting {

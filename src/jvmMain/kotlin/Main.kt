@@ -6,6 +6,9 @@ import kotlinx.coroutines.runBlocking
 
 fun main(args: Array<String>) {
     runBlocking {
+        val userStorage = Injector.provideUserStorage()
+        userStorage.userId = "userId"
+        println("userId: ${userStorage.userId}")
         Injector.provideSubscriptionKeySetter().set(SubscriptionKey("AndroidApp"))
         val userRepository = Injector.provideUserRepository()
         val userId = (userRepository.registerUser("userId") as Resource.Data).result.userId

@@ -69,6 +69,19 @@ object Dependencies {
         const val iOSMain = "com.squareup.sqldelight:native-driver:$version"
     }
 
+    object Settings {
+        private const val version = "0.6.2"
+        const val commonMain = "com.russhwolf:multiplatform-settings:$version"
+        const val commonTest = "com.russhwolf:multiplatform-settings-test:$version"
+    }
+
+    object Android {
+        object Startup {
+            private const val version = "1.0.0-rc01"
+            const val runtime = "androidx.startup:startup-runtime:$version"
+        }
+    }
+
     object Test {
 
         object Common {
