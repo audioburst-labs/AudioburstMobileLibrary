@@ -1,5 +1,6 @@
 package com.audioburst.library.di
 
+import com.audioburst.library.AudioburstLibrary
 import com.audioburst.library.data.remote.AbAiRouterApi
 import com.audioburst.library.data.remote.AudioburstV2Api
 import com.audioburst.library.data.repository.HttpUserRepository
@@ -9,6 +10,7 @@ import com.audioburst.library.data.storage.SettingsUserStorage
 import com.audioburst.library.data.storage.UserStorage
 import com.audioburst.library.data.storage.settings
 import com.audioburst.library.di.providers.*
+import com.audioburst.library.interactors.*
 import com.audioburst.library.utils.*
 import com.russhwolf.settings.Settings
 import io.ktor.client.*
@@ -34,7 +36,12 @@ internal object Injector {
         )
     }
     private val playlistResponseToPlaylistInfoProvider: Provider<PlaylistResponseToPlaylistInfoMapper> = provider { PlaylistResponseToPlaylistInfoMapper() }
-    private val playerSessionIdGetterProvider: Provider<PlayerSessionIdGetter> = provider { UuidBasedPlayerSessionIdGetter() }
+    private val uuidFactoryProvider: Provider<UuidFactory> = provider { UuidFactory }
+    private val playerSessionIdGetterProvider: Provider<PlayerSessionIdGetter> = provider {
+        UuidBasedPlayerSessionIdGetter(
+            uuidFactory = uuidFactoryProvider.get()
+        )
+    }
     private val promoteResponseToAdvertisementProvider: Provider<PromoteResponseToAdvertisementMapper> = provider { PromoteResponseToAdvertisementMapper() }
     private val sourceResponseToBurstSourceProvider: Provider<SourceResponseToBurstSourceMapper> = provider { SourceResponseToBurstSourceMapper() }
     private val burstResponseToBurstProvider: Provider<BurstResponseToBurstMapper> = provider {
@@ -71,10 +78,37 @@ internal object Injector {
         )
     }
     private val subscriptionKeySetterProvider: Provider<SubscriptionKeySetter> = provider { SubscriptionKeyHolder }
+    private val getUserProvider: Provider<GetUser> = provider {
+        GetUserInteractor(
+            uuidFactory = uuidFactoryProvider.get(),
+            userStorage = userStorageProvider.get(),
+            userRepository = userRepositoryProvider.get(),
+        )
+    }
+    private val getPlaylistsInfoProvider: Provider<GetPlaylistsInfo> = provider {
+        GetPlaylistsInfo(
+            getUser = getUserProvider.get(),
+            userRepository = userRepositoryProvider.get(),
+        )
+    }
+    private val getPlaylistProvider: Provider<GetPlaylist> = provider {
+        GetPlaylist(
+            getUser = getUserProvider.get(),
+            userRepository = userRepositoryProvider.get(),
+        )
+    }
+    private val getAdDataProvider: Provider<GetAdData> = provider {
+        GetAdData(
+            userRepository = userRepositoryProvider.get(),
+        )
+    }
 
-    fun provideUserRepository(): UserRepository = userRepositoryProvider.get()
-
-    fun provideSubscriptionKeySetter(): SubscriptionKeySetter = subscriptionKeySetterProvider.get()
-
-    fun provideUserStorage(): UserStorage = userStorageProvider.get()
+    fun inject(audioburstLibrary: AudioburstLibrary) {
+        with(audioburstLibrary) {
+            subscriptionKeySetter = subscriptionKeySetterProvider.get()
+            getPlaylistsInfo = getPlaylistsInfoProvider.get()
+            getPlaylist = getPlaylistProvider.get()
+            getAdData = getAdDataProvider.get()
+        }
+    }
 }

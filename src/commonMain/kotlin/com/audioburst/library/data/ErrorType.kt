@@ -3,7 +3,7 @@ package com.audioburst.library.data
 import io.ktor.client.features.*
 import io.ktor.utils.io.errors.*
 
-internal sealed class ErrorType {
+sealed class ErrorType {
 
     class ConnectionError(val ioException: IOException) : ErrorType()
 

@@ -1,21 +1,21 @@
 
-import com.audioburst.library.data.Resource
-import com.audioburst.library.di.Injector
-import com.audioburst.library.models.SubscriptionKey
+import com.audioburst.library.AudioburstLibrary
+import com.audioburst.library.data.result
 import kotlinx.coroutines.runBlocking
 
 fun main(args: Array<String>) {
     runBlocking {
-        val userStorage = Injector.provideUserStorage()
-        userStorage.userId = "userId"
-        println("userId: ${userStorage.userId}")
-        Injector.provideSubscriptionKeySetter().set(SubscriptionKey("AndroidApp"))
-        val userRepository = Injector.provideUserRepository()
-        val userId = (userRepository.registerUser("userId") as Resource.Data).result.userId
-        println(userId)
-        val playlists = userRepository.getPlaylists(userId)
+        val audioburstLibrary = AudioburstLibrary(applicationKey = "AndroidApp")
+        val playlists = audioburstLibrary.getPlaylists()
         println(playlists)
-        val playlist = userRepository.getPlaylist(userId, (userRepository.getPlaylists(userId) as Resource.Data).result.first())
+        val playlist = audioburstLibrary.getPlaylist(playlists.result()!!.first())
         println(playlist)
+        val burstWithAd = playlist.result()!!.bursts.firstOrNull { it.isAdAvailable }
+        if (burstWithAd != null) {
+            val adData = audioburstLibrary.getAdData(burstWithAd)
+            println(adData)
+        } else {
+            println("None of Bursts has ad")
+        }
     }
 }

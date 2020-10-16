@@ -42,7 +42,7 @@ object Dependencies {
 
     object Serialization {
         private const val version = "1.0.0"
-        const val commonMain = "org.jetbrains.kotlinx:kotlinx-serialization-core:$version"
+        const val commonMain = "org.jetbrains.kotlinx:kotlinx-serialization-json:$version"
     }
 
     object Ktor {

@@ -1,6 +1,6 @@
 package com.audioburst.library.data
 
-internal sealed class Resource<out T> {
+sealed class Resource<out T> {
     data class Data<out T>(val result: T) : Resource<T>()
     data class Error(val errorType: ErrorType) : Resource<Nothing>()
 }

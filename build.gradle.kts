@@ -97,6 +97,7 @@ kotlin {
         val browserMain by getting {
             dependencies {
                 implementation(Dependencies.Ktor.jsMain)
+                implementation(npm("uuid", "8.3.1"))
             }
         }
         val browserTest by getting {

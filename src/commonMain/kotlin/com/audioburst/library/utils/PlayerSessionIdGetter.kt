@@ -7,9 +7,13 @@ internal interface PlayerSessionIdGetter {
     fun get(): PlayerSessionId
 }
 
-internal class UuidBasedPlayerSessionIdGetter : PlayerSessionIdGetter {
+internal class UuidBasedPlayerSessionIdGetter (
+    private val uuidFactory: UuidFactory
+): PlayerSessionIdGetter {
 
-    // TODO: Implement it as a UUID
-    override fun get(): PlayerSessionId =
-        PlayerSessionId("")
+    override fun get(): PlayerSessionId = PlayerSessionId(uuidFactory.getUuid())
+}
+
+expect object UuidFactory {
+    fun getUuid(): String
 }

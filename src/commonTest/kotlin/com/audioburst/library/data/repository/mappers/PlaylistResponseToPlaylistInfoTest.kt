@@ -57,7 +57,7 @@ internal fun playlistsResponseOf(
         url = url,
     )
 
-internal fun userStorageOf(userId: String = "", deviceId: String = ""): UserStorage =
+internal fun userStorageOf(userId: String? = null, deviceId: String? = null): UserStorage =
     object : UserStorage {
 
         override var userId: String? = userId
