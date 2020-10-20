@@ -16,3 +16,8 @@ internal data class ReportingData(
     val text: String,
     val position: Double
 )
+
+internal data class DownloadedAdvertisement(
+    val downloadUrl: Url,
+    val advertisement: Advertisement,
+)

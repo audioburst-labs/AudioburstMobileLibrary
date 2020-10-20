@@ -6,12 +6,11 @@ import com.audioburst.library.data.remote.AudioburstV2Api
 import com.audioburst.library.data.repository.HttpUserRepository
 import com.audioburst.library.data.repository.UserRepository
 import com.audioburst.library.data.repository.mappers.*
-import com.audioburst.library.data.storage.SettingsUserStorage
-import com.audioburst.library.data.storage.UserStorage
-import com.audioburst.library.data.storage.settings
+import com.audioburst.library.data.storage.*
 import com.audioburst.library.di.providers.*
 import com.audioburst.library.interactors.*
 import com.audioburst.library.utils.*
+import com.audioburst.library.utils.strategies.*
 import com.russhwolf.settings.Settings
 import io.ktor.client.*
 import io.ktor.client.features.json.*
@@ -64,6 +63,7 @@ internal object Injector {
             jsonEncoder = jsonEncoderProvider.get()
         )
     }
+    private val playlistStorageProvider: Provider<PlaylistStorage> = provider { InMemoryPlaylistStorage }
     private val userRepositoryProvider: Provider<UserRepository> = provider {
         HttpUserRepository(
             httpClient = httpClientProvider.get(),
@@ -75,6 +75,30 @@ internal object Injector {
             promoteResponseToAdvertisementMapper = promoteResponseToAdvertisementProvider.get(),
             advertisementEventToAdvertisementEventRequestMapper = advertisementEventToAdvertisementEventRequestProvider.get(),
             playerEventToEventRequestMapper = playerEventToEventRequestProvider.get(),
+            playlistStorage = playlistStorageProvider.get(),
+        )
+    }
+    private val currentAdsProvider: Provider<CurrentAdsProvider> = provider {
+        CurrentAdsInteractor(
+            playlistStorage = playlistStorageProvider.get()
+        )
+    }
+    private val currentPlaylistProvider: Provider<CurrentPlaylist> = provider {
+        CurrentPlaylistInteractor(
+            playlistStorage = playlistStorageProvider.get()
+        )
+    }
+    private val playbackEventHandlerProvider: Provider<PlaybackEventHandler> = provider {
+        PlaybackEventHandlerInteractor(
+            userRepository = userRepositoryProvider.get()
+        )
+    }
+    private val timestampProviderProvider: Provider<TimestampProvider> = provider { PlatformTimestampProvider }
+    private val strategiesProvider: Provider<List<PlaybackEventStrategy<*>>> = provider {
+        listOf(
+            AdListenedStrategy(), Back30SecStrategy(), BackStrategy(), BackToBurstStrategy(), EndOfPlayStrategy(),
+            EndOfPlaylistStrategy(), ForwardStrategy(), KeepListeningStrategy(), RepeatStrategy(), RewindStrategy(),
+            Skip30SecStrategy(), SkipStrategy(), StartOfPlayStrategy()
         )
     }
     private val subscriptionKeySetterProvider: Provider<SubscriptionKeySetter> = provider { SubscriptionKeyHolder }
@@ -102,11 +126,21 @@ internal object Injector {
             userRepository = userRepositoryProvider.get(),
         )
     }
+    private val eventDetectorProvider: Provider<EventDetector> = singleton {
+        EventDetector(
+            currentPlaylist = currentPlaylistProvider.get(),
+            currentAds = currentAdsProvider.get(),
+            playbackEventHandler = playbackEventHandlerProvider.get(),
+            strategies = strategiesProvider.get(),
+            timestampProvider = timestampProviderProvider.get(),
+        )
+    }
 
     fun inject(audioburstLibrary: AudioburstLibrary) {
         with(audioburstLibrary) {
             subscriptionKeySetter = subscriptionKeySetterProvider.get()
             getPlaylistsInfo = getPlaylistsInfoProvider.get()
+            eventDetector = eventDetectorProvider.get()
             getPlaylist = getPlaylistProvider.get()
             getAdData = getAdDataProvider.get()
         }

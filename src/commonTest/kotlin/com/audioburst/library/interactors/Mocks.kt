@@ -3,6 +3,7 @@ package com.audioburst.library.interactors
 import com.audioburst.library.data.ErrorType
 import com.audioburst.library.data.Resource
 import com.audioburst.library.data.repository.UserRepository
+import com.audioburst.library.data.storage.PlaylistStorage
 import com.audioburst.library.models.*
 
 internal fun resourceErrorOf(errorType: ErrorType = ErrorType.UnexpectedException(Exception())): Resource.Error =
@@ -18,11 +19,15 @@ internal fun userOf(
     )
 
 internal fun playlistOf(
+    id: Int = 0,
+    name: String = "",
     query: String = "",
     bursts: List<Burst> = emptyList(),
     playerSessionId: PlayerSessionId = PlayerSessionId(""),
 ): Playlist =
     Playlist(
+        id = id,
+        name = name,
         query = query,
         bursts = bursts,
         playerSessionId = playerSessionId,
@@ -36,12 +41,12 @@ internal fun playlistInfoOf(
     url: String = "",
 ): PlaylistInfo =
     PlaylistInfo(
-    id = id,
-    name = name,
-    description = description,
-    image = image,
-    url = url,
-)
+        id = id,
+        name = name,
+        description = description,
+        image = image,
+        url = url,
+    )
 
 internal fun advertisementOf(
     id: String = "",
@@ -62,6 +67,25 @@ internal fun advertisementOf(
         position = position,
         provider = provider,
         reportingData = reportingData,
+    )
+
+internal fun reportingDataOf(
+    url: String = "",
+    text: String = "",
+    position: Double = 0.0,
+): ReportingData = ReportingData(
+    url = url,
+    text = text,
+    position = position,
+)
+
+internal fun downloadedAdvertisementOf(
+    downloadUrl: Url = Url(""),
+    advertisement: Advertisement = advertisementOf(),
+): DownloadedAdvertisement =
+    DownloadedAdvertisement(
+        downloadUrl = downloadUrl,
+        advertisement = advertisement,
     )
 
 internal fun burstOf(
@@ -114,9 +138,31 @@ internal fun burstSourceOf(
         audioUrl = audioUrl,
     )
 
+internal fun eventPayloadOf(
+    playlistId: Int = 0,
+    playlistName: String = "",
+    burst: Burst = burstOf(),
+    currentPlayBackPosition: Long = 0,
+    playerSessionId: PlayerSessionId = PlayerSessionId(value = ""),
+): EventPayload = EventPayload(
+    playlistId = playlistId,
+    playlistName = playlistName,
+    burst = burst,
+    currentPlayBackPosition = currentPlayBackPosition,
+    playerSessionId = playerSessionId,
+)
+
 internal fun getUserOf(resource: Resource<User>): GetUser =
     object : GetUser {
         override suspend fun invoke(): Resource<User> = resource
+    }
+
+internal fun playlistStorageOf(currentPlaylist: Playlist? = null, currentAds: List<DownloadedAdvertisement> = emptyList()): PlaylistStorage =
+    object : PlaylistStorage {
+        override val currentPlaylist: Playlist? = currentPlaylist
+        override val currentAds: List<DownloadedAdvertisement> = currentAds
+        override fun setPlaylist(playlist: Playlist) = Unit
+        override fun setAdvertisement(url: Url, advertisement: Advertisement) = Unit
     }
 
 internal fun userRepositoryOf(
