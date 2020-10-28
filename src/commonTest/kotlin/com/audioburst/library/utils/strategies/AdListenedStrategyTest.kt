@@ -3,7 +3,7 @@ package com.audioburst.library.utils.strategies
 import com.audioburst.library.interactors.*
 import com.audioburst.library.models.PlaybackEvent
 import com.audioburst.library.models.Url
-import com.audioburst.library.models.PlaybackState
+import com.audioburst.library.models.InternalPlaybackState
 import com.audioburst.library.utils.fixedQueueOf
 import com.audioburst.library.utils.playbackStateOf
 import kotlin.test.Test
@@ -37,7 +37,7 @@ class AdListenedStrategyTest {
         )
         val previousStates = fixedQueueOf(
             limit = 10,
-            items = emptyArray<PlaybackState>(),
+            items = emptyArray<InternalPlaybackState>(),
         )
 
         // WHEN
@@ -120,7 +120,7 @@ class AdListenedStrategyTest {
         )
         val previousStates = fixedQueueOf(
             limit = 10,
-            items = emptyArray<PlaybackState>(),
+            items = emptyArray<InternalPlaybackState>(),
         )
 
         // WHEN

@@ -3,7 +3,7 @@ package com.audioburst.library.utils.strategies
 import com.audioburst.library.interactors.burstOf
 import com.audioburst.library.interactors.playlistOf
 import com.audioburst.library.models.DurationUnit
-import com.audioburst.library.models.PlaybackState
+import com.audioburst.library.models.InternalPlaybackState
 import com.audioburst.library.models.toDuration
 import com.audioburst.library.utils.fixedQueueOf
 import com.audioburst.library.utils.playbackStateOf
@@ -36,7 +36,7 @@ internal class EndOfPlaylistStrategyTest {
         )
         val previousStates = fixedQueueOf(
             limit = 10,
-            items = arrayOf<PlaybackState>()
+            items = arrayOf<InternalPlaybackState>()
         )
 
         // WHEN
@@ -101,7 +101,7 @@ internal class EndOfPlaylistStrategyTest {
         )
         val previousStates = fixedQueueOf(
             limit = 10,
-            items = arrayOf<PlaybackState>()
+            items = arrayOf<InternalPlaybackState>()
         )
 
         // WHEN

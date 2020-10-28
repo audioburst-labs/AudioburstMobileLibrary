@@ -1,5 +1,8 @@
 package com.audioburst.library.data.repository.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 internal data class AdvertisementEventRequest(
     val id: String,
     val type: String,

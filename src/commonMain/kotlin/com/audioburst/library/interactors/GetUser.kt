@@ -1,6 +1,7 @@
 package com.audioburst.library.interactors
 
 import com.audioburst.library.data.Resource
+import com.audioburst.library.data.onData
 import com.audioburst.library.data.repository.UserRepository
 import com.audioburst.library.data.storage.UserStorage
 import com.audioburst.library.models.User
@@ -27,7 +28,10 @@ internal class GetUserInteractor(
                 )
             )
         } else {
-            userRepository.registerUser(uuidFactory.getUuid())
+            userRepository.registerUser(uuidFactory.getUuid()).onData {
+                userStorage.userId = it.userId
+                userStorage.deviceId = it.deviceId
+            }
         }
     }
 }

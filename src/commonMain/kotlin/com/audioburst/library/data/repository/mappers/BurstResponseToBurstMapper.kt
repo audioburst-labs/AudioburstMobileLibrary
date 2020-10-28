@@ -4,11 +4,11 @@ import com.audioburst.library.data.repository.models.BurstsResponse
 import com.audioburst.library.models.Burst
 import com.audioburst.library.models.DurationUnit
 import com.audioburst.library.models.toDuration
-import com.audioburst.library.utils.SubscriptionKeyGetter
+import com.audioburst.library.utils.LibraryConfiguration
 import io.ktor.http.*
 
 internal class BurstResponseToBurstMapper constructor(
-    private val subscriptionKeyGetter: SubscriptionKeyGetter,
+    private val libraryConfiguration: LibraryConfiguration,
     private val sourceResponseToBurstSourceMapper: SourceResponseToBurstSourceMapper,
 ) {
 
@@ -33,7 +33,7 @@ internal class BurstResponseToBurstMapper constructor(
 
     private fun BurstsResponse.shareUrl(): String =
         URLBuilder(contentURLs.searchSiteURL).apply {
-            parameters.append(UTM_SOURCE_QUERY_NAME, subscriptionKeyGetter.subscriptionKey.value)
+            parameters.append(UTM_SOURCE_QUERY_NAME, libraryConfiguration.libraryKey.value)
         }.buildString()
 
     private fun BurstsResponse.adUrl(userId: String): String? =

@@ -1,14 +1,14 @@
 package com.audioburst.library.data.repository.mappers
 
 import com.audioburst.library.models.PlayerEvent
-import com.audioburst.library.utils.JsonEncoder
+import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class PlayerEventToEventRequestTest {
 
     private val mapper = PlayerEventToEventRequestMapper(
-        jsonEncoder = jsonEncoderOf()
+        json = Json {  }
     )
 
     @Test
@@ -29,16 +29,10 @@ class PlayerEventToEventRequestTest {
         assertEquals(mapped.playlist_id, playerEvent.playlistId)
         assertEquals(mapped.events_source, playerEvent.header)
         assertEquals(mapped.playlist_name, playerEvent.playlistName)
-        assertEquals(mapped.experience_id, playerEvent.experienceId)
         assertEquals(mapped.pageview_id, playerEvent.pageViewId)
         assertEquals(mapped.app_session_id, playerEvent.appSessionId)
     }
 }
-
-internal fun jsonEncoderOf(): JsonEncoder =
-    object : JsonEncoder {
-        override fun encodeToString(value: Any): String = value.toString()
-    }
 
 internal fun playerEventOf(
     userId: String = "",
@@ -57,7 +51,6 @@ internal fun playerEventOf(
     stream: Boolean? = null,
     totalPlayTime: Double? = null,
     pageViewId: String = "",
-    experienceId: String? = null,
 ) : PlayerEvent =
     PlayerEvent(
         userId = userId,
@@ -76,5 +69,4 @@ internal fun playerEventOf(
         stream = stream,
         totalPlayTime = totalPlayTime,
         pageViewId = pageViewId,
-        experienceId = experienceId,
     )

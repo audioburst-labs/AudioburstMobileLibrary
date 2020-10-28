@@ -2,6 +2,7 @@ package com.audioburst.library.di
 
 import com.audioburst.library.AudioburstLibrary
 import com.audioburst.library.data.remote.AbAiRouterApi
+import com.audioburst.library.data.remote.AudioburstApi
 import com.audioburst.library.data.remote.AudioburstV2Api
 import com.audioburst.library.data.repository.HttpUserRepository
 import com.audioburst.library.data.repository.UserRepository
@@ -9,24 +10,27 @@ import com.audioburst.library.data.repository.mappers.*
 import com.audioburst.library.data.storage.*
 import com.audioburst.library.di.providers.*
 import com.audioburst.library.interactors.*
+import com.audioburst.library.models.AppDispatchers
 import com.audioburst.library.utils.*
 import com.audioburst.library.utils.strategies.*
 import com.russhwolf.settings.Settings
 import io.ktor.client.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
+import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 
 internal object Injector {
 
     private val jsonProvider: Provider<Json> = JsonProvider()
     private val serializerProvider: Provider<JsonSerializer> = provider { KotlinxSerializer(json = jsonProvider.get()) }
-    private val subscriptionKeyGetterProvider: Provider<SubscriptionKeyGetter> = provider { SubscriptionKeyHolder }
+    private val libraryConfigurationProvider: Provider<LibraryConfiguration> = provider { LibraryConfigurationHolder }
     private val httpClientProvider: Provider<HttpClient> = HttpClientProvider(
         serializerProvider = serializerProvider,
-        subscriptionKeyGetterProvider = subscriptionKeyGetterProvider,
+        libraryConfigurationProvider = libraryConfigurationProvider,
     )
     private val audioburstV2ApiProvider: Provider<AudioburstV2Api> = provider { AudioburstV2Api() }
+    private val audioburstApiProvider: Provider<AudioburstApi> = provider { AudioburstApi() }
     private val registerResponseToUserProvider: Provider<RegisterResponseToUserMapper> = provider { RegisterResponseToUserMapper() }
     private val settingsProvider: Provider<Settings> = singleton { settings() }
     private val userStorageProvider: Provider<UserStorage> = provider {
@@ -45,7 +49,7 @@ internal object Injector {
     private val sourceResponseToBurstSourceProvider: Provider<SourceResponseToBurstSourceMapper> = provider { SourceResponseToBurstSourceMapper() }
     private val burstResponseToBurstProvider: Provider<BurstResponseToBurstMapper> = provider {
         BurstResponseToBurstMapper(
-            subscriptionKeyGetter = subscriptionKeyGetterProvider.get(),
+            libraryConfiguration = libraryConfigurationProvider.get(),
             sourceResponseToBurstSourceMapper = sourceResponseToBurstSourceProvider.get(),
         )
     }
@@ -57,10 +61,9 @@ internal object Injector {
     }
     private val abAiRouterApiProvider: Provider<AbAiRouterApi> = provider { AbAiRouterApi() }
     private val advertisementEventToAdvertisementEventRequestProvider: Provider<AdvertisementEventToAdvertisementEventRequestMapper> = provider { AdvertisementEventToAdvertisementEventRequestMapper() }
-    private val jsonEncoderProvider: Provider<JsonEncoder> = provider { SerializationJsonEncoder(json = jsonProvider.get()) }
     private val playerEventToEventRequestProvider: Provider<PlayerEventToEventRequestMapper> = provider {
         PlayerEventToEventRequestMapper(
-            jsonEncoder = jsonEncoderProvider.get()
+            json = jsonProvider.get()
         )
     }
     private val playlistStorageProvider: Provider<PlaylistStorage> = provider { InMemoryPlaylistStorage }
@@ -69,6 +72,8 @@ internal object Injector {
             httpClient = httpClientProvider.get(),
             audioburstV2Api = audioburstV2ApiProvider.get(),
             abAiRouterApi = abAiRouterApiProvider.get(),
+            audioburstApi = audioburstApiProvider.get(),
+            libraryConfiguration = libraryConfigurationProvider.get(),
             registerResponseToUserMapper = registerResponseToUserProvider.get(),
             playlistResponseToPlaylistInfoMapper = playlistResponseToPlaylistInfoProvider.get(),
             topStoryResponseToPlaylist = topStoryResponseToPlaylistProvider.get(),
@@ -88,9 +93,13 @@ internal object Injector {
             playlistStorage = playlistStorageProvider.get()
         )
     }
+    private val unsentEventStorageProvider: Provider<UnsentEventStorage> = provider { NoOpUnsentEventStorage() }
     private val playbackEventHandlerProvider: Provider<PlaybackEventHandler> = provider {
         PlaybackEventHandlerInteractor(
-            userRepository = userRepositoryProvider.get()
+            userStorage = userStorageProvider.get(),
+            userRepository = userRepositoryProvider.get(),
+            unsentEventStorage = unsentEventStorageProvider.get(),
+            libraryConfiguration = libraryConfigurationProvider.get(),
         )
     }
     private val timestampProviderProvider: Provider<TimestampProvider> = provider { PlatformTimestampProvider }
@@ -101,7 +110,7 @@ internal object Injector {
             Skip30SecStrategy(), SkipStrategy(), StartOfPlayStrategy()
         )
     }
-    private val subscriptionKeySetterProvider: Provider<SubscriptionKeySetter> = provider { SubscriptionKeyHolder }
+    private val subscriptionKeySetterProvider: Provider<SubscriptionKeySetter> = provider { LibraryConfigurationHolder }
     private val getUserProvider: Provider<GetUser> = provider {
         GetUserInteractor(
             uuidFactory = uuidFactoryProvider.get(),
@@ -126,6 +135,13 @@ internal object Injector {
             userRepository = userRepositoryProvider.get(),
         )
     }
+    private val appDispatchersProvider: Provider<AppDispatchers> = provider {
+        AppDispatchers(
+            io = Dispatchers.Default,
+            computation = Dispatchers.Default,
+            main = Dispatchers.Main
+        )
+    }
     private val eventDetectorProvider: Provider<EventDetector> = singleton {
         EventDetector(
             currentPlaylist = currentPlaylistProvider.get(),
@@ -133,6 +149,7 @@ internal object Injector {
             playbackEventHandler = playbackEventHandlerProvider.get(),
             strategies = strategiesProvider.get(),
             timestampProvider = timestampProviderProvider.get(),
+            appDispatchers = appDispatchersProvider.get(),
         )
     }
 

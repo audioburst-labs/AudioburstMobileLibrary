@@ -2,7 +2,7 @@ package com.audioburst.library.utils.strategies
 
 import com.audioburst.library.interactors.*
 import com.audioburst.library.models.DownloadedAdvertisement
-import com.audioburst.library.models.PlaybackState
+import com.audioburst.library.models.InternalPlaybackState
 import com.audioburst.library.models.Playlist
 import com.audioburst.library.models.Url
 import com.audioburst.library.utils.Queue
@@ -485,8 +485,8 @@ class PlaybackEventStrategyInputTest {
 
 internal fun inputOf(
     playlist: Playlist = playlistOf(),
-    currentState: PlaybackState = playbackStateOf(),
-    previousStates: Queue<PlaybackState> = fixedQueueOf(10),
+    currentState: InternalPlaybackState = playbackStateOf(),
+    previousStates: Queue<InternalPlaybackState> = fixedQueueOf(10),
     advertisements: List<DownloadedAdvertisement> = listOf(),
 ): PlaybackEventStrategy.Input =
     PlaybackEventStrategy.Input(

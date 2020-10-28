@@ -35,7 +35,8 @@ internal inline fun Endpoint.toHttpRequest(): HttpRequestBuilder =
             Endpoint.Method.POST -> HttpMethod.Post
         }
         queryParams.forEach { parameter(it.key, it.value) }
-        // Temporary workaround to the bug where Content-Length is not added to the request when body is empty
-        // https://youtrack.jetbrains.com/issue/KTOR-556
-        body = this@toHttpRequest.body ?: ""
+        this@toHttpRequest.body?.let {
+            headers.append(HttpHeaders.ContentType, ContentType.Application.Json)
+            body = it
+        }
     }

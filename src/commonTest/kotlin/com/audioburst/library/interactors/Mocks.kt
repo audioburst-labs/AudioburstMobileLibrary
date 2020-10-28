@@ -3,8 +3,13 @@ package com.audioburst.library.interactors
 import com.audioburst.library.data.ErrorType
 import com.audioburst.library.data.Resource
 import com.audioburst.library.data.repository.UserRepository
+import com.audioburst.library.data.repository.mappers.libraryConfigurationOf
+import com.audioburst.library.data.repository.mappers.userStorageOf
 import com.audioburst.library.data.storage.PlaylistStorage
+import com.audioburst.library.data.storage.UnsentEventStorage
+import com.audioburst.library.data.storage.UserStorage
 import com.audioburst.library.models.*
+import com.audioburst.library.utils.LibraryConfiguration
 
 internal fun resourceErrorOf(errorType: ErrorType = ErrorType.UnexpectedException(Exception())): Resource.Error =
     Resource.Error(errorType)
@@ -142,12 +147,16 @@ internal fun eventPayloadOf(
     playlistId: Int = 0,
     playlistName: String = "",
     burst: Burst = burstOf(),
-    currentPlayBackPosition: Long = 0,
+    isPlaying: Boolean = false,
+    occurrenceTime: Long = 0,
+    currentPlayBackPosition: Duration = 0.0.toDuration(DurationUnit.Seconds),
     playerSessionId: PlayerSessionId = PlayerSessionId(value = ""),
 ): EventPayload = EventPayload(
     playlistId = playlistId,
     playlistName = playlistName,
     burst = burst,
+    isPlaying = isPlaying,
+    occurrenceTime = occurrenceTime,
     currentPlayBackPosition = currentPlayBackPosition,
     playerSessionId = playerSessionId,
 )
@@ -182,6 +191,10 @@ internal class MockUserRepository(private val returns: Returns) : UserRepository
 
     override suspend fun postEvent(advertisementEvent: AdvertisementEvent): Resource<Unit> = returns.postAdvertisementEvent
 
+    override suspend fun postReportingData(reportingData: ReportingData): Resource<Unit> = returns.postReportingData
+
+    override suspend fun postBurstPlayback(playlistId: Long, burstId: String, userId: String): Resource<Unit> = returns.postBurstPlayback
+
     override suspend fun getAdData(adUrl: Url): Resource<Advertisement> = returns.getAdData
 
     data class Returns(
@@ -190,6 +203,32 @@ internal class MockUserRepository(private val returns: Returns) : UserRepository
         val getPlaylist: Resource<Playlist> = Resource.Data(playlistOf()),
         val postPlayerEvent: Resource<Unit> = Resource.Data(Unit),
         val postAdvertisementEvent: Resource<Unit> = Resource.Data(Unit),
+        val postReportingData: Resource<Unit> = Resource.Data(Unit),
+        val postBurstPlayback: Resource<Unit> = Resource.Data(Unit),
         val getAdData: Resource<Advertisement> = Resource.Data(advertisementOf()),
     )
+}
+
+internal fun playbackEventHandlerInteractorOf(
+    userStorage: UserStorage = userStorageOf(),
+    userRepository: UserRepository = userRepositoryOf(),
+    unsentEventStorage: UnsentEventStorage = InMemoryUnsentEventStorage(),
+    libraryConfiguration: LibraryConfiguration = libraryConfigurationOf(),
+): PlaybackEventHandlerInteractor =
+    PlaybackEventHandlerInteractor(
+        userStorage = userStorage,
+        userRepository = userRepository,
+        unsentEventStorage = unsentEventStorage,
+        libraryConfiguration = libraryConfiguration,
+    )
+
+internal class InMemoryUnsentEventStorage : UnsentEventStorage {
+    private val advertisementEvents = mutableListOf<AdvertisementEvent>()
+    override suspend fun getAllAdvertisementEvents(): List<AdvertisementEvent> = advertisementEvents
+    private val playerEvents = mutableListOf<PlayerEvent>()
+    override suspend fun getAllPlayerEvents(): List<PlayerEvent> = playerEvents
+    override suspend fun add(advertisementEvent: AdvertisementEvent) { advertisementEvents.add(advertisementEvent) }
+    override suspend fun add(playerEvent: PlayerEvent) { playerEvents.add(playerEvent) }
+    override suspend fun remove(advertisementEvent: AdvertisementEvent) { advertisementEvents.remove(advertisementEvent) }
+    override suspend fun remove(playerEvent: PlayerEvent) { playerEvents.remove(playerEvent) }
 }

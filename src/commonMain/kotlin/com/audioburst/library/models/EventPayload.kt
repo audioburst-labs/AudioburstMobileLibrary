@@ -4,6 +4,8 @@ internal data class EventPayload(
     val playlistName: String,
     val playlistId: Int,
     val burst: Burst,
-    val currentPlayBackPosition: Long,
+    val isPlaying: Boolean,
+    val occurrenceTime: Long,
+    val currentPlayBackPosition: Duration,
     val playerSessionId: PlayerSessionId
 )

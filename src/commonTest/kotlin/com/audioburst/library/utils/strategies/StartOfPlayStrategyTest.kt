@@ -3,7 +3,7 @@ package com.audioburst.library.utils.strategies
 import com.audioburst.library.interactors.burstOf
 import com.audioburst.library.interactors.playlistOf
 import com.audioburst.library.models.PlaybackEvent
-import com.audioburst.library.models.PlaybackState
+import com.audioburst.library.models.InternalPlaybackState
 import com.audioburst.library.utils.fixedQueueOf
 import com.audioburst.library.utils.playbackStateOf
 import kotlin.test.Test
@@ -67,7 +67,7 @@ internal class StartOfPlayStrategyTest {
         )
         val previousStates = fixedQueueOf(
             limit = 10,
-            items = arrayOf<PlaybackState>()
+            items = arrayOf<InternalPlaybackState>()
         )
 
         // WHEN

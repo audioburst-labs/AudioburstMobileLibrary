@@ -14,7 +14,7 @@ class TopStoryResponseToPlaylistTest {
 
     private val mapper = TopStoryResponseToPlaylist(
         burstResponseToBurstMapper = BurstResponseToBurstMapper(
-            subscriptionKeyGetter = subscriptionKeyGetterOf(),
+            libraryConfiguration = libraryConfigurationOf(),
             sourceResponseToBurstSourceMapper = SourceResponseToBurstSourceMapper(),
         ),
         playerSessionIdGetter = playerSessionIdGetterOf(playerSessionId = playerSessionId),

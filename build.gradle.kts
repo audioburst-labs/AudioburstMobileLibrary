@@ -50,9 +50,6 @@ kotlin {
                 implementation(Dependencies.Ktor.logging)
                 implementation(Dependencies.Ktor.serialization)
 
-                implementation(Dependencies.SqlDelight.runtime)
-                implementation(Dependencies.SqlDelight.coroutinesExtensions)
-
                 implementation(Dependencies.Settings.commonMain)
             }
         }
@@ -67,7 +64,6 @@ kotlin {
         val jvmMain by getting {
             dependencies {
                 implementation(Dependencies.Ktor.jvmMain)
-                implementation(Dependencies.SqlDelight.jvmMain)
             }
         }
         val jvmTest by getting {
@@ -78,7 +74,6 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(Dependencies.Ktor.androidMain)
-                implementation(Dependencies.SqlDelight.androidMain)
                 implementation(Dependencies.Android.Startup.runtime)
             }
         }
@@ -90,7 +85,6 @@ kotlin {
         val iosMain by getting {
             dependencies {
                 implementation(Dependencies.Ktor.iOSMain)
-                implementation(Dependencies.SqlDelight.iOSMain)
             }
         }
         val iosTest by getting

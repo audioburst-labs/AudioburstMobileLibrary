@@ -1,18 +1,21 @@
 package com.audioburst.library.data.repository.mappers
 
+import com.audioburst.library.models.LibraryKey
+import com.audioburst.library.models.LibraryVersion
+import com.audioburst.library.models.SessionId
 import com.audioburst.library.models.SubscriptionKey
-import com.audioburst.library.utils.SubscriptionKeyGetter
+import com.audioburst.library.utils.LibraryConfiguration
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class BurstResponseToBurstTest {
 
-    private val subscriptionKey = "subscriptionKey"
+    private val libraryKey = "libraryKey"
     private val userId = "userId"
 
     private val mapper = BurstResponseToBurstMapper(
-        subscriptionKeyGetter = subscriptionKeyGetterOf(subscriptionKey),
+        libraryConfiguration = libraryConfigurationOf(libraryKey = libraryKey),
         sourceResponseToBurstSourceMapper = SourceResponseToBurstSourceMapper(),
     )
 
@@ -71,7 +74,7 @@ class BurstResponseToBurstTest {
 
         // THEN
         assertTrue(mapped.shareUrl.contains("utm_source"))
-        assertTrue(mapped.shareUrl.contains(subscriptionKey))
+        assertTrue(mapped.shareUrl.contains(libraryKey))
     }
 
     @Test
@@ -118,7 +121,15 @@ class BurstResponseToBurstTest {
     }
 }
 
-internal fun subscriptionKeyGetterOf(subscriptionKey: String = ""): SubscriptionKeyGetter =
-    object : SubscriptionKeyGetter {
+internal fun libraryConfigurationOf(
+    sessionId: String = "",
+    libraryKey: String = "",
+    libraryVersion: String = "",
+    subscriptionKey: String = "",
+): LibraryConfiguration =
+    object : LibraryConfiguration {
+        override val sessionId: SessionId = SessionId(sessionId)
+        override val libraryKey: LibraryKey = LibraryKey(libraryKey)
+        override val libraryVersion: LibraryVersion = LibraryVersion(libraryVersion)
         override val subscriptionKey: SubscriptionKey = SubscriptionKey(subscriptionKey)
     }

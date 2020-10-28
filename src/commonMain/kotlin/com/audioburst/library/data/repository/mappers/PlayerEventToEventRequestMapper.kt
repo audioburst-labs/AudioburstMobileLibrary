@@ -3,15 +3,16 @@ package com.audioburst.library.data.repository.mappers
 import com.audioburst.library.data.repository.models.AudioStateRequest
 import com.audioburst.library.data.repository.models.EventRequest
 import com.audioburst.library.models.PlayerEvent
-import com.audioburst.library.utils.JsonEncoder
+import kotlinx.serialization.encodeToString
+import kotlinx.serialization.json.Json
 
 internal class PlayerEventToEventRequestMapper(
-    private val jsonEncoder: JsonEncoder,
+    private val json: Json,
 ) {
 
     fun map(from: PlayerEvent) =
         EventRequest(
-            audio_state = jsonEncoder.encodeToString(
+            audio_state = json.encodeToString(
                 AudioStateRequest(
                     burst_id = from.burstId,
                     burst_length = from.burstLength,
@@ -30,7 +31,6 @@ internal class PlayerEventToEventRequestMapper(
             playlist_id = from.playlistId,
             events_source = from.header,
             playlist_name = from.playlistName,
-            experience_id = from.experienceId,
             pageview_id = from.pageViewId,
             app_session_id = from.appSessionId
         )
