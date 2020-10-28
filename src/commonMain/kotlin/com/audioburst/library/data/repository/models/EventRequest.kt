@@ -1,5 +1,8 @@
 package com.audioburst.library.data.repository.models
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 internal data class EventRequest(
     val audio_state: String,
     val burst_id: String?,
@@ -11,11 +14,11 @@ internal data class EventRequest(
     val playlist_id: String?,
     val player_instance_id: String,
     val query_id: Long,
-    val experience_id: String?,
     val pageview_id: String?,
     val app_session_id: String
 )
 
+@Serializable
 internal data class AudioStateRequest(
     val burst_id: String?,
     val burst_length: Double?,

@@ -9,6 +9,7 @@ import com.audioburst.library.models.Playlist
 import com.audioburst.library.models.PlaylistInfo
 import com.audioburst.library.models.SubscriptionKey
 import com.audioburst.library.utils.EventDetector
+import com.audioburst.library.utils.PlaybackStateListener
 import com.audioburst.library.utils.SubscriptionKeySetter
 
 class AudioburstLibrary(applicationKey: String) {
@@ -28,15 +29,19 @@ class AudioburstLibrary(applicationKey: String) {
 
     suspend fun getPlaylist(playlistInfo: PlaylistInfo): Resource<Playlist> = getPlaylist.invoke(playlistInfo)
 
-    fun play(url: String, position: Double) {
-        eventDetector.play(url, position)
+    fun play() {
+        eventDetector.play()
     }
 
-    fun pause(url: String, position: Double) {
-        eventDetector.pause(url, position)
+    fun pause() {
+        eventDetector.pause()
     }
 
-    fun setCurrentState(url: String, position: Double) {
-        eventDetector.setCurrentState(url, position)
+    fun setPlaybackStateListener(playbackStateListener: PlaybackStateListener) {
+        eventDetector.setPlaybackStateListener(playbackStateListener)
+    }
+
+    fun removePlaybackStateListener(playbackStateListener: PlaybackStateListener) {
+        eventDetector.removePlaybackStateListener(playbackStateListener)
     }
 }

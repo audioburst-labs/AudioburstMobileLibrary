@@ -84,4 +84,31 @@ class GetUserInteractorTest {
         assertEquals(resource.result.userId, userId)
         assertEquals(resource.result.deviceId, deviceId)
     }
+
+    @Test
+    fun testIfUserCredentialsAreSavedInStorageAfterRegisteringNewAccount() = runTest {
+        // GIVEN
+        val userId = "userId"
+        val deviceId = "deviceId"
+        val userRepositoryReturns = Resource.Data(
+            userOf(
+                userId = userId,
+                deviceId = deviceId
+            )
+        )
+        val userStorage = userStorageOf(userId = null, deviceId = null)
+        val uuidFactory = UuidFactory
+
+        // WHEN
+        val resource = interactor(
+            userRepositoryReturns = userRepositoryReturns,
+            userStorage = userStorage,
+            uuidFactory = uuidFactory,
+        )()
+
+        // THEN
+        require(resource is Resource.Data)
+        assertEquals(userStorage.userId, userId)
+        assertEquals(userStorage.deviceId, deviceId)
+    }
 }

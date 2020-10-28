@@ -17,7 +17,6 @@ internal data class PlayerEvent(
     val stream: Boolean?,
     val totalPlayTime: Double?,
     val pageViewId: String,
-    val experienceId: String?,
 ) {
 
     enum class Status {

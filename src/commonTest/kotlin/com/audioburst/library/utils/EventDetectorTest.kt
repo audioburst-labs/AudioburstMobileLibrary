@@ -1,10 +1,10 @@
 package com.audioburst.library.utils
 
 import com.audioburst.library.interactors.*
-import com.audioburst.library.models.DownloadedAdvertisement
-import com.audioburst.library.models.PlaybackEvent
-import com.audioburst.library.models.Playlist
+import com.audioburst.library.models.*
 import com.audioburst.library.utils.strategies.PlaybackEventStrategy
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
@@ -25,9 +25,15 @@ class EventDetectorTest {
             ),
             playbackEventHandler = { handledPlaybackEvents.add(it) }
         )
+        eventDetector.setPlaybackStateListener {
+            PlaybackState(
+                url = audioUrl,
+                positionMillis = 1000
+            )
+        }
 
         // WHEN
-        eventDetector.play(audioUrl, 0.0)
+        eventDetector.play()
 
         // THEN
         assertTrue(handledPlaybackEvents.filterIsInstance<PlaybackEvent.Play>().isNotEmpty())
@@ -48,9 +54,15 @@ class EventDetectorTest {
             ),
             playbackEventHandler = { handledPlaybackEvents.add(it) }
         )
+        eventDetector.setPlaybackStateListener {
+            PlaybackState(
+                url = audioUrl,
+                positionMillis = 1000
+            )
+        }
 
         // WHEN
-        eventDetector.pause(audioUrl, 0.0)
+        eventDetector.pause()
 
         // THEN
         assertTrue(handledPlaybackEvents.filterIsInstance<PlaybackEvent.Pause>().isNotEmpty())
@@ -61,17 +73,30 @@ class EventDetectorTest {
         // GIVEN
         val handledPlaybackEvents = mutableListOf<PlaybackEvent>()
         val playbackEvent = PlaybackEvent.Play(eventPayloadOf())
+        val audioUrl = "audioUrl"
         val eventDetector = eventDetectorOf(
-            playlist = playlistOf(),
+            playlist = playlistOf(
+                bursts = listOf(
+                    burstOf(
+                        audioUrl = audioUrl
+                    )
+                )
+            ),
             playbackEvent = playbackEvent,
             playbackEventHandler = { handledPlaybackEvents.add(it) }
         )
+        eventDetector.setPlaybackStateListener {
+            PlaybackState(
+                url = audioUrl,
+                positionMillis = 1000
+            )
+        }
 
         // WHEN
-        eventDetector.setCurrentState("", 0.0)
+        eventDetector.play()
 
         // THEN
-        assertTrue(handledPlaybackEvents.contains(playbackEvent))
+        assertTrue(handledPlaybackEvents.isNotEmpty())
     }
 }
 
@@ -85,9 +110,14 @@ internal fun eventDetectorOf(
     EventDetector(
         currentPlaylist = currentPlaylistOf(playlist),
         currentAds = currentAdsOf(ads),
-        playbackEventHandler = playbackEventHandler,
+        playbackEventHandler = object : PlaybackEventHandler {
+            override suspend fun handle(playbackEvent: PlaybackEvent) {
+                playbackEventHandler(playbackEvent)
+            }
+        },
         strategies = listOf(strategyOf(playbackEvent)),
         timestampProvider = timestampProviderOf(timestamp),
+        appDispatchers = appDispatchersOf(),
     )
 
 internal fun currentPlaylistOf(playlist: Playlist? = null): CurrentPlaylist =
@@ -101,3 +131,10 @@ internal fun strategyOf(playbackEvent: PlaybackEvent = PlaybackEvent.Skip(eventP
 
 internal fun timestampProviderOf(timestamp: Long = 0): TimestampProvider =
     TimestampProvider { timestamp }
+
+internal fun appDispatchersOf(dispatcher: CoroutineDispatcher = Dispatchers.Unconfined): AppDispatchers =
+    AppDispatchers(
+        io = dispatcher,
+        main = dispatcher,
+        computation = dispatcher,
+    )

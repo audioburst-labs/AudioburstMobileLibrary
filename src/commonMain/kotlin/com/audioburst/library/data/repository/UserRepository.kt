@@ -5,6 +5,7 @@ import com.audioburst.library.data.execute
 import com.audioburst.library.data.map
 import com.audioburst.library.data.onData
 import com.audioburst.library.data.remote.AbAiRouterApi
+import com.audioburst.library.data.remote.AudioburstApi
 import com.audioburst.library.data.remote.AudioburstV2Api
 import com.audioburst.library.data.repository.mappers.*
 import com.audioburst.library.data.repository.models.PlaylistsResponse
@@ -13,6 +14,7 @@ import com.audioburst.library.data.repository.models.RegisterResponse
 import com.audioburst.library.data.repository.models.TopStoryResponse
 import com.audioburst.library.data.storage.PlaylistStorage
 import com.audioburst.library.models.*
+import com.audioburst.library.utils.LibraryConfiguration
 import io.ktor.client.*
 
 internal interface UserRepository {
@@ -26,13 +28,19 @@ internal interface UserRepository {
 
     suspend fun postEvent(advertisementEvent: AdvertisementEvent): Resource<Unit>
 
+    suspend fun postReportingData(reportingData: ReportingData): Resource<Unit>
+
+    suspend fun postBurstPlayback(playlistId: Long, burstId: String, userId: String): Resource<Unit>
+
     suspend fun getAdData(adUrl: Url): Resource<Advertisement>
 }
 
 internal class HttpUserRepository(
     private val httpClient: HttpClient,
     private val audioburstV2Api: AudioburstV2Api,
+    private val audioburstApi: AudioburstApi,
     private val abAiRouterApi: AbAiRouterApi,
+    private val libraryConfiguration: LibraryConfiguration,
     private val registerResponseToUserMapper: RegisterResponseToUserMapper,
     private val playlistResponseToPlaylistInfoMapper: PlaylistResponseToPlaylistInfoMapper,
     private val topStoryResponseToPlaylist: TopStoryResponseToPlaylist,
@@ -70,6 +78,21 @@ internal class HttpUserRepository(
             )
         )
 
+    override suspend fun postReportingData(reportingData: ReportingData): Resource<Unit> =
+        httpClient.execute(Url(reportingData.url))
+
+    override suspend fun postBurstPlayback(playlistId: Long, burstId: String, userId: String): Resource<Unit> =
+        httpClient.execute(
+            audioburstApi.getBurstPlay(
+                userId = userId,
+                burstId = burstId,
+                libraryKey = libraryConfiguration.libraryKey,
+                playlistId = playlistId,
+                downloadType = LOG_ONLY_DOWNLOAD_TYPE,
+                subscriptionKey = libraryConfiguration.subscriptionKey,
+            )
+        )
+
     override suspend fun getAdData(adUrl: Url): Resource<Advertisement> =
         httpClient.execute<PromoteResponse>(adUrl)
             .map(promoteResponseToAdvertisementMapper::map)
@@ -79,4 +102,8 @@ internal class HttpUserRepository(
                     advertisement = it
                 )
         }
+
+    companion object {
+        private const val LOG_ONLY_DOWNLOAD_TYPE = 2
+    }
 }
