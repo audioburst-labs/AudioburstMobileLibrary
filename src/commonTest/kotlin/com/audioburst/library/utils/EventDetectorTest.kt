@@ -33,7 +33,7 @@ class EventDetectorTest {
         }
 
         // WHEN
-        eventDetector.play()
+        eventDetector.start()
 
         // THEN
         assertTrue(handledPlaybackEvents.filterIsInstance<PlaybackEvent.Play>().isNotEmpty())
@@ -62,7 +62,7 @@ class EventDetectorTest {
         }
 
         // WHEN
-        eventDetector.pause()
+        eventDetector.stop()
 
         // THEN
         assertTrue(handledPlaybackEvents.filterIsInstance<PlaybackEvent.Pause>().isNotEmpty())
@@ -93,7 +93,7 @@ class EventDetectorTest {
         }
 
         // WHEN
-        eventDetector.play()
+        eventDetector.start()
 
         // THEN
         assertTrue(handledPlaybackEvents.isNotEmpty())

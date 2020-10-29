@@ -1,7 +1,7 @@
 package com.audioburst.library.utils
 
-fun interface TimestampProvider {
+internal fun interface TimestampProvider {
     fun currentTimeMillis(): Long
 }
 
-expect object PlatformTimestampProvider : TimestampProvider
+internal expect object PlatformTimestampProvider : TimestampProvider

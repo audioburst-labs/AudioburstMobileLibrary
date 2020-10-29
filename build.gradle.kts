@@ -117,11 +117,7 @@ android {
         targetSdkVersion(Constants.Android.targetSdkVersion)
         versionCode = Constants.Android.versionCode
         versionName = Constants.Android.versionName
-    }
-    buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
-        }
+        consumerProguardFile("proguard-rules.pro")
     }
 }
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {

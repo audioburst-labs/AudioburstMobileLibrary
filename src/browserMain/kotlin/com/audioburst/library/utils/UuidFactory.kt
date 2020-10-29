@@ -1,5 +1,5 @@
 package com.audioburst.library.utils
 
-actual object UuidFactory {
+internal actual object UuidFactory {
     actual fun getUuid(): String = uuidv4()
 }
