@@ -130,8 +130,8 @@ internal object Injector {
             userRepository = userRepositoryProvider.get(),
         )
     }
-    private val getAdDataProvider: Provider<GetAdData> = provider {
-        GetAdData(
+    private val getAdDataProvider: Provider<GetAdUrl> = provider {
+        GetAdUrl(
             userRepository = userRepositoryProvider.get(),
         )
     }
@@ -159,7 +159,7 @@ internal object Injector {
             getPlaylistsInfo = getPlaylistsInfoProvider.get()
             eventDetector = eventDetectorProvider.get()
             getPlaylist = getPlaylistProvider.get()
-            getAdData = getAdDataProvider.get()
+            getAdUrl = getAdDataProvider.get()
         }
     }
 }

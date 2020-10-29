@@ -27,13 +27,13 @@ internal class EventDetector(
     private val playingEventTimer: PeriodicTimer = PeriodicTimer()
     private var playbackStateListener: PlaybackStateListener? = null
 
-    fun play() {
+    fun start() {
         startTimers()
         val eventPayload = currentEventPayload(isPlaying = true) ?: return
         handle(PlaybackEvent.Play(eventPayload))
     }
 
-    fun pause() {
+    fun stop() {
         stopTimers()
         val eventPayload = currentEventPayload(isPlaying = false) ?: return
         handle(PlaybackEvent.Pause(eventPayload))

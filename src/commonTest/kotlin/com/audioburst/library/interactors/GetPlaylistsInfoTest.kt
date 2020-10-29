@@ -2,6 +2,7 @@ package com.audioburst.library.interactors
 
 import com.audioburst.library.data.Resource
 import com.audioburst.library.models.PlaylistInfo
+import com.audioburst.library.models.Result
 import com.audioburst.library.models.User
 import com.audioburst.library.runTest
 import kotlin.test.Test
@@ -31,7 +32,7 @@ class GetPlaylistsInfoTest {
         )()
 
         // THEN
-        assertTrue(resource is Resource.Data)
+        assertTrue(resource is Result.Data)
     }
 
     @Test
@@ -47,7 +48,7 @@ class GetPlaylistsInfoTest {
         )()
 
         // THEN
-        assertTrue(resource is Resource.Error)
+        assertTrue(resource is Result.Error)
     }
 
     @Test
@@ -63,6 +64,6 @@ class GetPlaylistsInfoTest {
         )()
 
         // THEN
-        assertTrue(resource is Resource.Error)
+        assertTrue(resource is Result.Error)
     }
 }

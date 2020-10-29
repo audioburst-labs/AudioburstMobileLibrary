@@ -33,4 +33,4 @@ private const val DEVICE_ID_KEY = "$SETTINGS_NAME.deviceId"
 
 internal fun settings(): Settings = createSettings(SETTINGS_NAME)
 
-expect fun createSettings(name: String): Settings
+internal expect fun createSettings(name: String): Settings

@@ -3,7 +3,7 @@ package com.audioburst.library.utils
 /**
  * Copy of the interface that is available on JVM.
  */
-interface Queue<E> : MutableCollection<E> {
+internal interface Queue<E> : MutableCollection<E> {
     /**
      * Inserts the specified element into this queue if it is possible to do so
      * immediately without violating capacity restrictions, returning
@@ -79,7 +79,7 @@ interface Queue<E> : MutableCollection<E> {
     fun peek(): E?
 }
 
-class FixedSizeQueue<T>(private val limit: Int) : Queue<T> {
+internal class FixedSizeQueue<T>(private val limit: Int) : Queue<T> {
 
     private val array = ArrayDeque<T>(limit)
 
@@ -165,7 +165,7 @@ class FixedSizeQueue<T>(private val limit: Int) : Queue<T> {
     }
 }
 
-fun <T> fixedQueueOf(limit: Int = 10, vararg items: T): FixedSizeQueue<T> =
+internal fun <T> fixedQueueOf(limit: Int = 10, vararg items: T): FixedSizeQueue<T> =
     FixedSizeQueue<T>(limit).apply {
         items.forEach { item ->
             add(item)
