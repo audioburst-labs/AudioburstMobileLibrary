@@ -1,3 +1,5 @@
+import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+
 plugins {
     kotlin(Dependencies.Plugins.multiplatform) version Dependencies.kotlinVersion
     kotlin(Dependencies.Plugins.cocoapods) version Dependencies.kotlinVersion
@@ -117,4 +119,63 @@ android {
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     kotlinOptions.freeCompilerArgs += "-Xinline-classes"
     kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"
+}
+
+// PUBLISHING ANDROID
+
+val sourcesJar by tasks.registering(Jar::class) {
+    archiveClassifier.set("sources")
+    from(android.sourceSets["main"].java.srcDirs)
+}
+
+publishing {
+    publications {
+        create<MavenPublication>("aar") {
+            groupId = Constants.Library.packageName
+            artifactId = Constants.Library.archiveName
+            version = Constants.Library.version
+
+            artifact("$buildDir/outputs/aar/AudioburstMobileLibrary-release.aar")
+            artifact(sourcesJar.get())
+
+            pom.withXml {
+                val dependenciesNode = asNode().appendNode("dependencies")
+                configurations.releaseImplementation.get().allDependencies.forEach {
+                    dependenciesNode.appendNode("dependency").apply {
+                        appendNode("groupId", it.group)
+                        appendNode("artifactId", it.name)
+                        appendNode("version", it.version)
+                    }
+                }
+            }
+            repositories {
+                maven {
+                    val user = gradleLocalProperties(rootDir).getProperty("bintray.user")
+                    val apiKey = gradleLocalProperties(rootDir).getProperty("bintray.apikey")
+
+                    url = uri("https://api.bintray.com/maven/$user/maven/${Constants.Library.archiveName}/;publish=0;override=1")
+                    credentials {
+                        username = user
+                        password = apiKey
+                    }
+                }
+            }
+        }
+    }
+}
+
+val assembleReleaseAndPublishToMavenRepository by tasks.registering {
+    dependsOn("assembleRelease")
+    dependsOn("generatePomFileForAarPublication")
+    dependsOn("publishAarPublicationToMavenRepository")
+    tasks.findByName("generatePomFileForAarPublication")?.mustRunAfter("assembleRelease")
+    tasks.findByName("publishAarPublicationToMavenRepository")?.mustRunAfter("generatePomFileForAarPublication")
+}
+
+val assembleReleaseAndPublishToMavenLocal by tasks.registering {
+    dependsOn("assembleRelease")
+    dependsOn("generatePomFileForAarPublication")
+    dependsOn("publishAarPublicationToMavenLocal")
+    tasks.findByName("generatePomFileForAarPublication")?.mustRunAfter("assembleRelease")
+    tasks.findByName("publishAarPublicationToMavenLocal")?.mustRunAfter("generatePomFileForAarPublication")
 }

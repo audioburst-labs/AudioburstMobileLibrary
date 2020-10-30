@@ -5,6 +5,7 @@ object Constants {
     object Library {
         const val packageName = "com.audioburst"
         const val version = projectVersion
+        const val archiveName = "mobile-library"
     }
 
     object Cocoapods {
