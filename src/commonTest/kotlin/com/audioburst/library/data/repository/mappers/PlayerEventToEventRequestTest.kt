@@ -1,6 +1,7 @@
 package com.audioburst.library.data.repository.mappers
 
 import com.audioburst.library.models.PlayerEvent
+import com.audioburst.library.models.SubscriptionKey
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -41,6 +42,7 @@ internal fun playerEventOf(
     time: Long = 0L,
     playlistName: String? = null,
     header: String = "",
+    subscriptionKey: SubscriptionKey = SubscriptionKey(""),
     appSessionId: String = "",
     burstLength: Double? = null,
     playerInstanceId: String = "",
@@ -59,6 +61,7 @@ internal fun playerEventOf(
         time = time,
         playlistName = playlistName,
         header = header,
+        subscriptionKey = subscriptionKey,
         appSessionId = appSessionId,
         burstLength = burstLength,
         playerInstanceId = playerInstanceId,

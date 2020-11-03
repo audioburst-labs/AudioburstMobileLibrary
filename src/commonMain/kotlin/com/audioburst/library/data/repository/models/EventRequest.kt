@@ -6,6 +6,7 @@ import kotlinx.serialization.Serializable
 internal data class EventRequest(
     val audio_state: String,
     val burst_id: String?,
+    val audioburst_appkey: String?,
     val cookie_uid: String,
     val player_version: String,
     val client_ts: Long,

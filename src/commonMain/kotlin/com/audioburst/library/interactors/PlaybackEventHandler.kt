@@ -82,6 +82,7 @@ internal class PlaybackEventHandlerInteractor(
             playlistId = playlistId.toString(),
             userId = userId,
             playerVersion = libraryConfiguration.libraryVersion.value,
+            subscriptionKey = libraryConfiguration.subscriptionKey,
             time = occurrenceTime,
             playlistName = playlistName,
             header = libraryConfiguration.libraryKey.value,

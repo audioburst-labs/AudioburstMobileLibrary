@@ -24,6 +24,7 @@ internal class PlayerEventToEventRequestMapper(
             ),
             burst_id = from.burstId,
             cookie_uid = from.userId,
+            audioburst_appkey = from.subscriptionKey.value,
             player_version = from.playerVersion,
             player_instance_id = from.playerInstanceId,
             query_id = from.playlistQueryId,

@@ -4,6 +4,7 @@ internal data class PlayerEvent(
     val userId: String,
     val burstId: String?,
     val playerVersion: String,
+    val subscriptionKey: SubscriptionKey,
     val time: Long,
     val playlistName: String?,
     val header: String,
