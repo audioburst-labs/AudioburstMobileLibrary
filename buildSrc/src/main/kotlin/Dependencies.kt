@@ -1,6 +1,6 @@
 object Constants {
     const val projectName = "AudioburstMobileLibrary"
-    const val projectVersion = "0.0.2"
+    const val projectVersion = "0.0.3"
 
     object Library {
         const val packageName = "com.audioburst"
