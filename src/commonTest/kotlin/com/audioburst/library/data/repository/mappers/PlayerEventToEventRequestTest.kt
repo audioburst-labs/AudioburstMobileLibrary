@@ -1,5 +1,6 @@
 package com.audioburst.library.data.repository.mappers
 
+import com.audioburst.library.models.AdvertisementEvent
 import com.audioburst.library.models.PlayerEvent
 import com.audioburst.library.models.SubscriptionKey
 import kotlinx.serialization.json.Json
@@ -9,7 +10,8 @@ import kotlin.test.assertEquals
 class PlayerEventToEventRequestTest {
 
     private val mapper = PlayerEventToEventRequestMapper(
-        json = Json {  }
+        json = Json {  },
+        advertisementEventToAdvertisementEventRequestMapper = AdvertisementEventToAdvertisementEventRequestMapper()
     )
 
     @Test
@@ -53,6 +55,7 @@ internal fun playerEventOf(
     stream: Boolean? = null,
     totalPlayTime: Double? = null,
     pageViewId: String = "",
+    advertisementEvent: AdvertisementEvent? = null,
 ) : PlayerEvent =
     PlayerEvent(
         userId = userId,
@@ -72,4 +75,5 @@ internal fun playerEventOf(
         stream = stream,
         totalPlayTime = totalPlayTime,
         pageViewId = pageViewId,
+        advertisementEvent = advertisementEvent,
     )

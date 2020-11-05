@@ -63,7 +63,8 @@ internal object Injector {
     private val advertisementEventToAdvertisementEventRequestProvider: Provider<AdvertisementEventToAdvertisementEventRequestMapper> = provider { AdvertisementEventToAdvertisementEventRequestMapper() }
     private val playerEventToEventRequestProvider: Provider<PlayerEventToEventRequestMapper> = provider {
         PlayerEventToEventRequestMapper(
-            json = jsonProvider.get()
+            json = jsonProvider.get(),
+            advertisementEventToAdvertisementEventRequestMapper = advertisementEventToAdvertisementEventRequestProvider.get(),
         )
     }
     private val playlistStorageProvider: Provider<PlaylistStorage> = provider { InMemoryPlaylistStorage }
@@ -78,7 +79,6 @@ internal object Injector {
             playlistResponseToPlaylistInfoMapper = playlistResponseToPlaylistInfoProvider.get(),
             topStoryResponseToPlaylist = topStoryResponseToPlaylistProvider.get(),
             promoteResponseToAdvertisementMapper = promoteResponseToAdvertisementProvider.get(),
-            advertisementEventToAdvertisementEventRequestMapper = advertisementEventToAdvertisementEventRequestProvider.get(),
             playerEventToEventRequestMapper = playerEventToEventRequestProvider.get(),
             playlistStorage = playlistStorageProvider.get(),
         )

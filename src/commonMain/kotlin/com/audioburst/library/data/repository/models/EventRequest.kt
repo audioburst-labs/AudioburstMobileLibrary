@@ -16,7 +16,8 @@ internal data class EventRequest(
     val player_instance_id: String,
     val query_id: Long,
     val pageview_id: String?,
-    val app_session_id: String
+    val app_session_id: String,
+    val ad: String?,
 )
 
 @Serializable

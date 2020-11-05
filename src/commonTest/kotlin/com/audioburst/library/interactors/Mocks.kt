@@ -189,8 +189,6 @@ internal class MockUserRepository(private val returns: Returns) : UserRepository
 
     override suspend fun postEvent(playerEvent: PlayerEvent, name: String): Resource<Unit> = returns.postPlayerEvent
 
-    override suspend fun postEvent(advertisementEvent: AdvertisementEvent): Resource<Unit> = returns.postAdvertisementEvent
-
     override suspend fun postReportingData(reportingData: ReportingData): Resource<Unit> = returns.postReportingData
 
     override suspend fun postBurstPlayback(playlistId: Long, burstId: String, userId: String): Resource<Unit> = returns.postBurstPlayback
@@ -202,7 +200,6 @@ internal class MockUserRepository(private val returns: Returns) : UserRepository
         val getPlaylists: Resource<List<PlaylistInfo>> = Resource.Data(listOf()),
         val getPlaylist: Resource<Playlist> = Resource.Data(playlistOf()),
         val postPlayerEvent: Resource<Unit> = Resource.Data(Unit),
-        val postAdvertisementEvent: Resource<Unit> = Resource.Data(Unit),
         val postReportingData: Resource<Unit> = Resource.Data(Unit),
         val postBurstPlayback: Resource<Unit> = Resource.Data(Unit),
         val getAdData: Resource<Advertisement> = Resource.Data(advertisementOf()),
@@ -223,12 +220,8 @@ internal fun playbackEventHandlerInteractorOf(
     )
 
 internal class InMemoryUnsentEventStorage : UnsentEventStorage {
-    private val advertisementEvents = mutableListOf<AdvertisementEvent>()
-    override suspend fun getAllAdvertisementEvents(): List<AdvertisementEvent> = advertisementEvents
     private val playerEvents = mutableListOf<PlayerEvent>()
     override suspend fun getAllPlayerEvents(): List<PlayerEvent> = playerEvents
-    override suspend fun add(advertisementEvent: AdvertisementEvent) { advertisementEvents.add(advertisementEvent) }
     override suspend fun add(playerEvent: PlayerEvent) { playerEvents.add(playerEvent) }
-    override suspend fun remove(advertisementEvent: AdvertisementEvent) { advertisementEvents.remove(advertisementEvent) }
     override suspend fun remove(playerEvent: PlayerEvent) { playerEvents.remove(playerEvent) }
 }

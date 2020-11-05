@@ -1,7 +1,6 @@
 package com.audioburst.library.interactors
 
 import com.audioburst.library.data.Resource
-import com.audioburst.library.data.onData
 import com.audioburst.library.data.repository.UserRepository
 import com.audioburst.library.data.storage.UnsentEventStorage
 import com.audioburst.library.data.storage.UserStorage
@@ -30,13 +29,11 @@ internal class PlaybackEventHandlerInteractor(
     }
 
     private suspend fun postAdvertisementEvent(adListened: PlaybackEvent.AdListened) {
-        userRepository.postReportingData(adListened.reportingData) onData {
-            val event = adListened.toEvent()
-            val resource = userRepository.postEvent(adListened.toEvent())
-            if (resource is Resource.Error) {
-                unsentEventStorage.add(event)
-            }
-        }
+        userRepository.postReportingData(adListened.reportingData)
+        postPlayerEvent(
+            playbackEvent = adListened,
+            advertisementEvent = adListened.toEvent()
+        )
     }
 
     private fun PlaybackEvent.AdListened.toEvent(): AdvertisementEvent =
@@ -53,9 +50,12 @@ internal class PlaybackEventHandlerInteractor(
             currentPixelURL = reportingData.url
         )
 
-    private suspend fun postPlayerEvent(playbackEvent: PlaybackEvent) {
+    private suspend fun postPlayerEvent(playbackEvent: PlaybackEvent, advertisementEvent: AdvertisementEvent? = null) {
         val userId = userStorage.userId ?: return
-        val playerEvent = playbackEvent.eventPayload.toPlayerEvent(userId)
+        val playerEvent = playbackEvent.eventPayload.toPlayerEvent(
+            userId = userId,
+            advertisementEvent = advertisementEvent
+        )
         val resource = userRepository.postEvent(playerEvent, playbackEvent.actionName)
         if (resource is Resource.Error) {
             unsentEventStorage.add(playerEvent)
@@ -69,7 +69,7 @@ internal class PlaybackEventHandlerInteractor(
         }
     }
 
-    private fun EventPayload.toPlayerEvent(userId: String): PlayerEvent =
+    private fun EventPayload.toPlayerEvent(userId: String, advertisementEvent: AdvertisementEvent? = null): PlayerEvent =
         PlayerEvent(
             burstLength = burst.duration.seconds,
             playerInstanceId = playerSessionId.value,
@@ -88,6 +88,7 @@ internal class PlaybackEventHandlerInteractor(
             header = libraryConfiguration.libraryKey.value,
             appSessionId = libraryConfiguration.sessionId.value,
             pageViewId = playerSessionId.value,
+            advertisementEvent = advertisementEvent,
         )
 
     private fun playerStatus(isPlaying: Boolean): PlayerEvent.Status =

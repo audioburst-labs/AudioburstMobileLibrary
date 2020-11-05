@@ -1,6 +1,5 @@
 package com.audioburst.library.data.remote
 
-import com.audioburst.library.data.repository.models.AdvertisementEventRequest
 import com.audioburst.library.data.repository.models.EventRequest
 
 internal class AbAiRouterApi {
@@ -37,17 +36,9 @@ internal class AbAiRouterApi {
             name = name
         )
 
-    fun postEvent(advertisementEventRequest: AdvertisementEventRequest): Endpoint =
-        eventEndpoint(
-            body = advertisementEventRequest,
-            name = AD_EVENT_NAME
-        )
-
     companion object {
         private const val BASE_URL = "ab-ai-router.azurewebsites.net"
 
         private const val EVENT_LOG_LEVEL = "event"
-
-        private const val AD_EVENT_NAME = "AD"
     }
 }

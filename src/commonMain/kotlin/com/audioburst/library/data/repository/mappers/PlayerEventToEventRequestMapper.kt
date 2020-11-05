@@ -8,6 +8,7 @@ import kotlinx.serialization.json.Json
 
 internal class PlayerEventToEventRequestMapper(
     private val json: Json,
+    private val advertisementEventToAdvertisementEventRequestMapper: AdvertisementEventToAdvertisementEventRequestMapper,
 ) {
 
     fun map(from: PlayerEvent) =
@@ -33,6 +34,7 @@ internal class PlayerEventToEventRequestMapper(
             events_source = from.header,
             playlist_name = from.playlistName,
             pageview_id = from.pageViewId,
-            app_session_id = from.appSessionId
+            app_session_id = from.appSessionId,
+            ad = from.advertisementEvent?.let(advertisementEventToAdvertisementEventRequestMapper::map)?.let(json::encodeToString)
         )
 }

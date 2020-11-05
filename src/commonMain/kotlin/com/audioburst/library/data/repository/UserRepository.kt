@@ -26,8 +26,6 @@ internal interface UserRepository {
 
     suspend fun postEvent(playerEvent: PlayerEvent, name: String): Resource<Unit>
 
-    suspend fun postEvent(advertisementEvent: AdvertisementEvent): Resource<Unit>
-
     suspend fun postReportingData(reportingData: ReportingData): Resource<Unit>
 
     suspend fun postBurstPlayback(playlistId: Long, burstId: String, userId: String): Resource<Unit>
@@ -45,7 +43,6 @@ internal class HttpUserRepository(
     private val playlistResponseToPlaylistInfoMapper: PlaylistResponseToPlaylistInfoMapper,
     private val topStoryResponseToPlaylist: TopStoryResponseToPlaylist,
     private val promoteResponseToAdvertisementMapper: PromoteResponseToAdvertisementMapper,
-    private val advertisementEventToAdvertisementEventRequestMapper: AdvertisementEventToAdvertisementEventRequestMapper,
     private val playerEventToEventRequestMapper: PlayerEventToEventRequestMapper,
     private val playlistStorage: PlaylistStorage,
 ) : UserRepository {
@@ -68,13 +65,6 @@ internal class HttpUserRepository(
             endpoint = abAiRouterApi.postEvent(
                 eventRequest = playerEventToEventRequestMapper.map(playerEvent),
                 name = name
-            )
-        )
-
-    override suspend fun postEvent(advertisementEvent: AdvertisementEvent): Resource<Unit> =
-        httpClient.execute(
-            endpoint = abAiRouterApi.postEvent(
-                advertisementEventRequest = advertisementEventToAdvertisementEventRequestMapper.map(advertisementEvent)
             )
         )
 
