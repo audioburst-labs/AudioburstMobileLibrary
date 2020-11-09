@@ -1,18 +1,18 @@
 # Audioburst Mobile Library
 
 ## Introduction
-AudioburstMobileLibrary is the multiplatform library that eases access to the Audioburst API. You can easily download available playlists, let your user choose one and request additional information about the playlist. 
+AudioburstMobileLibrary is a multi platform library that allows convenient access to the Audioburst’s Content APIs. Playlists can be accessed, selected by users and additional information can be requested about the playlist. 
 
 ## Features
-AudioburstMobileLibrary offers simple API that will let you:
-- get all available playlists,
-- get information about specific playlist, inlcuding list of `Burst`,
-- handle sending required events to the API without any effort.
+AudioburstMobileLibrary offers a simple API that lets you:
+- Get all available playlists
+- Get information about specific playlists, including lists of `Burst` 
+- Handle sending required events to the API without any effort.
 
 ## Prerequisites
 
 ### Audioburst API key
-The library requires an application key, which can be obtained via [Audioburst Publishers](https://publishers.audioburst.com/).
+The library requires an application key that can be obtained via [Audioburst Publishers](https://publishers.audioburst.com/).
 
 ## Get Started - Android
 
@@ -28,7 +28,8 @@ Add AudioburstMobileLibrary Android SDK to your project. To do this, add the fol
 implementation 'com.audioburst:mobile-library:{latest-version}'
 ```
 
-The library is built in Kotlin language and is using `Coroutines`, so to be able to support it you need to add following configurations to your `android` script in app level `build.config` file:
+The library is built in Kotlin language and is using `Coroutines`, so to be able to support it you need to add the following configurations to your `android` script in the app level `build.config` file:
+
 ```gradle
 android {
     compileOptions {
@@ -38,7 +39,7 @@ android {
 }
 ```
 
-In case your are getting a "Duplicate class" on Kotlin Coroutines dependencies, you need to exclude those from AudioburstPlayer library in a following way:
+In the event you are getting a "Duplicate class" on Kotlin Coroutines dependencies, you need to exclude those from the AudioburstPlayer library in the following way:
 ```gradle
 implementation ("com.audioburst:mobile-library:{latest-version}") {
     exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-core-jvm"
@@ -53,7 +54,9 @@ You can use this class by instantiating its instance every time you need this or
 
 ### Step 3. Request Audioburst content
 
-All the functions below are `suspending`, which means that you need to call them in some `CoroutineScope`. Additionally, they are returning the `Result` object which can be either `Data` or `Error`. Library offers few handy extension functions that will make it easy to work with this type. Check `Result` class to learn more about it.  
+All the functions below are `suspending`, which means that you need to call them using a `CoroutineScope`. 
+Additionally, they return the `Result` object which can be either `Data` or `Error`.
+The library offers a few handy extension functions that make it easier to work with this type. Check the [Result](https://github.com/audioburst-labs/AudioburstMobileLibrary/blob/master/src/commonMain/kotlin/com/audioburst/library/models/Result.kt) class to learn more about it.  
 
 ## Get all available playlists
 ```kotlin
@@ -78,7 +81,9 @@ audioburstLibrary.getPlaylist(playlistItem)
 ```
 
 ## Get advertisement url
-You can also play advertisements. To do so, you need to check if specific `Burst` has ad by calling `Burst.isAdAvailable`. If it's available then just before playing this `Burst` content you need to get `adUrl` which let you play `Burst` with ad. 
+You can also play advertisements in between playlist items (bursts). 
+To do so, check if a specific `Burst` has an ad by calling `Burst.isAdAvailable`. 
+If an ad is available then before playing the `Burst` content call `getAdUrl` which allows a Burst to be played with an ad. 
 ```kotlin
 audioburstLibrary.getAdUrl(burst)
     .onData { adUrl ->
@@ -114,7 +119,7 @@ override fun onIsPlayingChanged(isPlaying: Boolean) {
 ```
 
 ## Returning current playback state
-This interface can be called by the library at any time, so please try always return current playback state, even if it is not playing anything currently.
+This interface can be called by the library at any time, so please try to always return the current playback state, even when nothing is currently playing.
 ```kotlin
 audioburstLibrary.setPlaybackStateListener(this)
 
