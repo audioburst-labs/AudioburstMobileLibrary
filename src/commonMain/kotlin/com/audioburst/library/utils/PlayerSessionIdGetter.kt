@@ -14,6 +14,9 @@ internal class UuidBasedPlayerSessionIdGetter (
     override fun get(): PlayerSessionId = PlayerSessionId(uuidFactory.getUuid())
 }
 
-internal expect object UuidFactory {
+internal fun interface UuidFactory {
+
     fun getUuid(): String
 }
+
+internal expect class PlatformUuidFactory() : UuidFactory

@@ -24,7 +24,11 @@ internal object Injector {
 
     private val jsonProvider: Provider<Json> = JsonProvider()
     private val serializerProvider: Provider<JsonSerializer> = provider { KotlinxSerializer(json = jsonProvider.get()) }
-    private val libraryConfigurationProvider: Provider<LibraryConfiguration> = provider { LibraryConfigurationHolder }
+    private val libraryConfigurationProvider: Provider<LibraryConfiguration> = singleton {
+        LibraryConfigurationHolder(
+            uuidFactory = uuidFactoryProvider.get()
+        )
+    }
     private val httpClientProvider: Provider<HttpClient> = HttpClientProvider(
         serializerProvider = serializerProvider,
         libraryConfigurationProvider = libraryConfigurationProvider,
@@ -39,7 +43,7 @@ internal object Injector {
         )
     }
     private val playlistResponseToPlaylistInfoProvider: Provider<PlaylistResponseToPlaylistInfoMapper> = provider { PlaylistResponseToPlaylistInfoMapper() }
-    private val uuidFactoryProvider: Provider<UuidFactory> = provider { UuidFactory }
+    private val uuidFactoryProvider: Provider<UuidFactory> = singleton { PlatformUuidFactory() }
     private val playerSessionIdGetterProvider: Provider<PlayerSessionIdGetter> = provider {
         UuidBasedPlayerSessionIdGetter(
             uuidFactory = uuidFactoryProvider.get()
@@ -67,7 +71,7 @@ internal object Injector {
             advertisementEventToAdvertisementEventRequestMapper = advertisementEventToAdvertisementEventRequestProvider.get(),
         )
     }
-    private val playlistStorageProvider: Provider<PlaylistStorage> = provider { InMemoryPlaylistStorage }
+    private val playlistStorageProvider: Provider<PlaylistStorage> = singleton { InMemoryPlaylistStorage() }
     private val userRepositoryProvider: Provider<UserRepository> = provider {
         HttpUserRepository(
             httpClient = httpClientProvider.get(),
@@ -110,7 +114,7 @@ internal object Injector {
             Skip30SecStrategy(), SkipStrategy(), StartOfPlayStrategy()
         )
     }
-    private val subscriptionKeySetterProvider: Provider<SubscriptionKeySetter> = provider { LibraryConfigurationHolder }
+    private val subscriptionKeySetterProvider: Provider<SubscriptionKeySetter> = provider { libraryConfigurationProvider.get() as SubscriptionKeySetter }
     private val getUserProvider: Provider<GetUser> = provider {
         GetUserInteractor(
             uuidFactory = uuidFactoryProvider.get(),

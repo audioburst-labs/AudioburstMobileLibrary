@@ -22,7 +22,7 @@ internal interface PlaylistStorage {
     fun setAdvertisement(url: Url, advertisement: Advertisement)
 }
 
-internal object InMemoryPlaylistStorage : PlaylistStorage {
+internal class InMemoryPlaylistStorage : PlaylistStorage {
 
     private var _currentPlaylist: Playlist? = null
     override val currentPlaylist: Playlist?

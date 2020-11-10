@@ -32,7 +32,7 @@ class GetUserInteractorTest {
         // GIVEN
         val userRepositoryReturns = Resource.Data(userOf())
         val userStorage = userStorageOf(userId = null, deviceId = null)
-        val uuidFactory = UuidFactory
+        val uuidFactory = uuidFactoryOf()
 
         // WHEN
         val resource = interactor(
@@ -50,7 +50,7 @@ class GetUserInteractorTest {
         // GIVEN
         val userRepositoryReturns = resourceErrorOf()
         val userStorage = userStorageOf(userId = null, deviceId = null)
-        val uuidFactory = UuidFactory
+        val uuidFactory = uuidFactoryOf()
 
         // WHEN
         val resource = interactor(
@@ -70,7 +70,7 @@ class GetUserInteractorTest {
         val userId = "userId"
         val deviceId = "deviceId"
         val userStorage = userStorageOf(userId = userId, deviceId = deviceId)
-        val uuidFactory = UuidFactory
+        val uuidFactory = uuidFactoryOf()
 
         // WHEN
         val resource = interactor(
@@ -97,7 +97,7 @@ class GetUserInteractorTest {
             )
         )
         val userStorage = userStorageOf(userId = null, deviceId = null)
-        val uuidFactory = UuidFactory
+        val uuidFactory = uuidFactoryOf()
 
         // WHEN
         val resource = interactor(

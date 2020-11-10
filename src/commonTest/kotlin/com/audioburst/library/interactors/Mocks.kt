@@ -10,6 +10,7 @@ import com.audioburst.library.data.storage.UnsentEventStorage
 import com.audioburst.library.data.storage.UserStorage
 import com.audioburst.library.models.*
 import com.audioburst.library.utils.LibraryConfiguration
+import com.audioburst.library.utils.UuidFactory
 
 internal fun resourceErrorOf(errorType: ErrorType = ErrorType.UnexpectedException(Exception())): Resource.Error =
     Resource.Error(errorType)
@@ -225,3 +226,6 @@ internal class InMemoryUnsentEventStorage : UnsentEventStorage {
     override suspend fun add(playerEvent: PlayerEvent) { playerEvents.add(playerEvent) }
     override suspend fun remove(playerEvent: PlayerEvent) { playerEvents.remove(playerEvent) }
 }
+
+internal fun uuidFactoryOf(uuid: String = ""): UuidFactory =
+    UuidFactory { uuid }

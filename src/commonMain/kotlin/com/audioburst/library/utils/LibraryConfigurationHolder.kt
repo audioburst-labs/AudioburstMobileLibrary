@@ -13,12 +13,13 @@ internal interface SubscriptionKeySetter {
     fun set(subscriptionKey: SubscriptionKey)
 }
 
-internal object LibraryConfigurationHolder: LibraryConfiguration, SubscriptionKeySetter {
+internal class LibraryConfigurationHolder(
+    uuidFactory: UuidFactory
+): LibraryConfiguration, SubscriptionKeySetter {
 
-    override val sessionId: SessionId = SessionId(UuidFactory.getUuid())
+    override val sessionId: SessionId = SessionId(uuidFactory.getUuid())
     override val libraryKey: LibraryKey = platformLibraryKey
-    private const val _libraryVersion = "0.0.5"
-    override val libraryVersion: LibraryVersion = LibraryVersion(_libraryVersion)
+    override val libraryVersion: LibraryVersion = LibraryVersion(LIBRARY_VERSION)
 
     private var _subscriptionKey: SubscriptionKey? = null
     override val subscriptionKey: SubscriptionKey
@@ -28,5 +29,9 @@ internal object LibraryConfigurationHolder: LibraryConfiguration, SubscriptionKe
 
     override fun set(subscriptionKey: SubscriptionKey) {
         _subscriptionKey = subscriptionKey
+    }
+
+    companion object {
+        private const val LIBRARY_VERSION = "0.0.5"
     }
 }

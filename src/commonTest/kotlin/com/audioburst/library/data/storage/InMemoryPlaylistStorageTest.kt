@@ -10,7 +10,7 @@ import kotlin.test.assertTrue
 
 class InMemoryPlaylistStorageTest {
 
-    private val playlistStorage = InMemoryPlaylistStorage
+    private val playlistStorage = InMemoryPlaylistStorage()
 
     @AfterTest
     fun clear() {
