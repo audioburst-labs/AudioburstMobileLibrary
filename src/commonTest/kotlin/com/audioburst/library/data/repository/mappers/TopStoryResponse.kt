@@ -152,3 +152,33 @@ internal fun reportingPixelURLResponseOf(
         PositionText = PositionText,
         Position = Position,
     )
+
+internal fun advertisementResponseOf(
+    adData: AdvertisementDataResponse = advertisementAdDataResponseOf(),
+    type: String = "",
+    url: String? = null,
+): AdvertisementResponse =
+    AdvertisementResponse(
+        adData = adData,
+        type = type,
+        url = url,
+    )
+
+internal fun advertisementAdDataResponseOf(
+    audioURL: String = "",
+    duration: Double = 0.0,
+    id: String = "",
+    pixelURL: String = "",
+    position: String = "",
+    provider: String = "",
+    reportingPixelURLs: List<AdvertisementReportingPixelURLResponse> = emptyList(),
+): AdvertisementDataResponse =
+    AdvertisementDataResponse(
+        audioURL = audioURL,
+        duration = duration,
+        id = id,
+        pixelURL = pixelURL,
+        position = position,
+        provider = provider,
+        reportingPixelURLs = reportingPixelURLs,
+    )

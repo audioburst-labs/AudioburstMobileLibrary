@@ -1,21 +1,38 @@
 
 import com.audioburst.library.AudioburstLibrary
-import com.audioburst.library.models.value
+import com.audioburst.library.models.onData
+import com.audioburst.library.models.onError
 import kotlinx.coroutines.runBlocking
 
 fun main(args: Array<String>) {
     runBlocking {
         val audioburstLibrary = AudioburstLibrary(applicationKey = "AndroidApp")
-        val playlists = audioburstLibrary.getPlaylists()
-        println(playlists)
-        val playlist = audioburstLibrary.getPlaylist(playlists.value!!.first())
-        println(playlist)
-        val burstWithAd = playlist.value!!.bursts.firstOrNull { it.isAdAvailable }
-        if (burstWithAd != null) {
-            val adData = audioburstLibrary.getAdUrl(burstWithAd)
-            println(adData)
-        } else {
-            println("None of Bursts has ad")
-        }
+
+        audioburstLibrary.getPlaylists()
+            .onData { playlists ->
+                playlists.forEach { playlistInfo ->
+                    audioburstLibrary.getPlaylist(playlistInfo)
+                        .onData { playlist ->
+                            val burstWithId = playlist.bursts.firstOrNull { it.isAdAvailable }
+                            if (burstWithId != null) {
+                                audioburstLibrary.getAdUrl(burstWithId)
+                                    .onData {
+                                        println("adUrl: $it")
+                                    }
+                                    .onError {
+                                        println("getAdUrl: ${it.message}")
+                                    }
+                            } else {
+                                println("None bursts has ad")
+                            }
+                        }
+                        .onError {
+                            println("getPlaylist: ${it.message}")
+                        }
+                }
+            }
+            .onError {
+                println("getPlaylists: ${it.message}")
+            }
     }
 }

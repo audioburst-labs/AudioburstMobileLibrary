@@ -45,7 +45,7 @@ internal object Injector {
             uuidFactory = uuidFactoryProvider.get()
         )
     }
-    private val promoteResponseToAdvertisementProvider: Provider<PromoteResponseToAdvertisementMapper> = provider { PromoteResponseToAdvertisementMapper() }
+    private val advertisementResponseToAdvertisementMapperProvider: Provider<AdvertisementResponseToAdvertisementMapper> = provider { AdvertisementResponseToAdvertisementMapper() }
     private val sourceResponseToBurstSourceProvider: Provider<SourceResponseToBurstSourceMapper> = provider { SourceResponseToBurstSourceMapper() }
     private val burstResponseToBurstProvider: Provider<BurstResponseToBurstMapper> = provider {
         BurstResponseToBurstMapper(
@@ -78,7 +78,7 @@ internal object Injector {
             registerResponseToUserMapper = registerResponseToUserProvider.get(),
             playlistResponseToPlaylistInfoMapper = playlistResponseToPlaylistInfoProvider.get(),
             topStoryResponseToPlaylist = topStoryResponseToPlaylistProvider.get(),
-            promoteResponseToAdvertisementMapper = promoteResponseToAdvertisementProvider.get(),
+            advertisementResponseToAdvertisementMapper = advertisementResponseToAdvertisementMapperProvider.get(),
             playerEventToEventRequestMapper = playerEventToEventRequestProvider.get(),
             playlistStorage = playlistStorageProvider.get(),
         )

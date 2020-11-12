@@ -15,7 +15,7 @@ data class Burst(
     val source: BurstSource,
     val shareUrl: String,
     val keywords: List<String>,
-    val adUrl: String?,
+    internal val adUrl: String?,
 ) {
     val isAdAvailable: Boolean
         get() = adUrl != null

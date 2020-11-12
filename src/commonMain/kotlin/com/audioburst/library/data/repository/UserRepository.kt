@@ -8,8 +8,8 @@ import com.audioburst.library.data.remote.AbAiRouterApi
 import com.audioburst.library.data.remote.AudioburstApi
 import com.audioburst.library.data.remote.AudioburstV2Api
 import com.audioburst.library.data.repository.mappers.*
+import com.audioburst.library.data.repository.models.AdvertisementResponse
 import com.audioburst.library.data.repository.models.PlaylistsResponse
-import com.audioburst.library.data.repository.models.PromoteResponse
 import com.audioburst.library.data.repository.models.RegisterResponse
 import com.audioburst.library.data.repository.models.TopStoryResponse
 import com.audioburst.library.data.storage.PlaylistStorage
@@ -42,7 +42,7 @@ internal class HttpUserRepository(
     private val registerResponseToUserMapper: RegisterResponseToUserMapper,
     private val playlistResponseToPlaylistInfoMapper: PlaylistResponseToPlaylistInfoMapper,
     private val topStoryResponseToPlaylist: TopStoryResponseToPlaylist,
-    private val promoteResponseToAdvertisementMapper: PromoteResponseToAdvertisementMapper,
+    private val advertisementResponseToAdvertisementMapper: AdvertisementResponseToAdvertisementMapper,
     private val playerEventToEventRequestMapper: PlayerEventToEventRequestMapper,
     private val playlistStorage: PlaylistStorage,
 ) : UserRepository {
@@ -84,8 +84,8 @@ internal class HttpUserRepository(
         )
 
     override suspend fun getAdData(adUrl: Url): Resource<Advertisement> =
-        httpClient.execute<PromoteResponse>(adUrl)
-            .map(promoteResponseToAdvertisementMapper::map)
+        httpClient.execute<AdvertisementResponse>(adUrl)
+            .map(advertisementResponseToAdvertisementMapper::map)
             .onData {
                 playlistStorage.setAdvertisement(
                     url = adUrl,
