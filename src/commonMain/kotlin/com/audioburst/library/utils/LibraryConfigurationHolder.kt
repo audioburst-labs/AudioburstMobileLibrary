@@ -17,7 +17,7 @@ internal object LibraryConfigurationHolder: LibraryConfiguration, SubscriptionKe
 
     override val sessionId: SessionId = SessionId(UuidFactory.getUuid())
     override val libraryKey: LibraryKey = platformLibraryKey
-    private const val _libraryVersion = "0.0.4"
+    private const val _libraryVersion = "0.0.5"
     override val libraryVersion: LibraryVersion = LibraryVersion(_libraryVersion)
 
     private var _subscriptionKey: SubscriptionKey? = null
