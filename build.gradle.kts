@@ -1,11 +1,11 @@
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
 
 plugins {
-    kotlin(Dependencies.Plugins.multiplatform) version Dependencies.kotlinVersion
-    kotlin(Dependencies.Plugins.cocoapods) version Dependencies.kotlinVersion
-    kotlin(Dependencies.Plugins.serialization) version Dependencies.kotlinVersion
     id(Dependencies.Plugins.androidLibrary)
+    kotlin(Dependencies.Plugins.multiplatform) version Dependencies.kotlinVersion
+    kotlin(Dependencies.Plugins.serialization) version Dependencies.kotlinVersion
     id(Dependencies.Plugins.kotlinAndroidExtensions)
+    id(Dependencies.Plugins.swiftPackage) version Dependencies.Plugins.swiftPackageVersion
     id(Dependencies.Plugins.mavenPublish)
 }
 group = Constants.Library.packageName
@@ -18,10 +18,6 @@ repositories {
     mavenCentral()
 }
 kotlin {
-    cocoapods {
-        summary = Constants.Cocoapods.summary
-        homepage = Constants.Cocoapods.homepage
-    }
     jvm {
         compilations.all {
             kotlinOptions.jvmTarget = "1.8"
@@ -30,11 +26,12 @@ kotlin {
     android {
         publishLibraryVariants("release", "debug")
     }
-    val isBuildForPhysicalDevice = System.getenv("SDK_NAME")?.startsWith("iphoneos") ?: false
-    if (isBuildForPhysicalDevice) {
-        iosArm64("ios")
-    } else {
-        iosX64("ios")
+    ios {
+        binaries {
+            framework {
+                baseName = Constants.projectName
+            }
+        }
     }
     js("browser") {
         browser {
@@ -53,6 +50,10 @@ kotlin {
                 implementation(Dependencies.Ktor.serialization)
 
                 implementation(Dependencies.Settings.commonMain)
+
+                implementation(Dependencies.Stately.concurrency)
+                implementation(Dependencies.Stately.isoCollections)
+                implementation(Dependencies.Stately.isolate)
             }
         }
         val commonTest by getting {
@@ -118,12 +119,12 @@ android {
 }
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     kotlinOptions.freeCompilerArgs += "-Xinline-classes"
-    kotlinOptions.freeCompilerArgs += "-Xuse-experimental=kotlinx.coroutines.ExperimentalCoroutinesApi"
+    kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }
 
 // PUBLISHING ANDROID
 
-val sourcesJar by tasks.registering(Jar::class) {
+val sources by tasks.registering(Jar::class) {
     archiveClassifier.set("sources")
     from(android.sourceSets["main"].java.srcDirs)
 }
@@ -136,7 +137,7 @@ publishing {
             version = Constants.Library.version
 
             artifact("$buildDir/outputs/aar/AudioburstMobileLibrary-release.aar")
-            artifact(sourcesJar.get())
+            artifact(sources.get())
 
             pom.withXml {
                 val dependenciesNode = asNode().appendNode("dependencies")
@@ -178,4 +179,18 @@ val assembleReleaseAndPublishToMavenLocal by tasks.registering {
     dependsOn("publishAarPublicationToMavenLocal")
     tasks.findByName("generatePomFileForAarPublication")?.mustRunAfter("assembleRelease")
     tasks.findByName("publishAarPublicationToMavenLocal")?.mustRunAfter("generatePomFileForAarPublication")
+}
+
+// PUBLISHING iOS
+
+multiplatformSwiftPackage {
+    swiftToolsVersion("5.3")
+    targetPlatforms {
+        iOS { v("12") }
+    }
+    distributionMode {
+        local()
+    }
+    buildConfiguration { release() }
+    outputDirectory(File(projectDir.path))
 }

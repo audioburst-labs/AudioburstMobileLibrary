@@ -1,16 +1,11 @@
 object Constants {
     const val projectName = "AudioburstMobileLibrary"
-    const val projectVersion = "0.0.5"
+    const val projectVersion = "0.0.6"
 
     object Library {
         const val packageName = "com.audioburst"
         const val version = projectVersion
         const val archiveName = "mobile-library"
-    }
-
-    object Cocoapods {
-        const val summary = projectName
-        const val homepage = "Link to GitHub" // TODO: Provide url to GitHub when it's set up
     }
 
     object Android {
@@ -34,6 +29,8 @@ object Dependencies {
         const val kotlinAndroidExtensions = "kotlin-android-extensions"
         const val mavenPublish = "maven-publish"
         const val serialization = "plugin.serialization"
+        const val swiftPackageVersion = "1.0.2"
+        const val swiftPackage = "com.chromaticnoise.multiplatform-swiftpackage"
     }
 
     object Coroutines {
@@ -74,6 +71,12 @@ object Dependencies {
         private const val version = "0.6.2"
         const val commonMain = "com.russhwolf:multiplatform-settings:$version"
         const val commonTest = "com.russhwolf:multiplatform-settings-test:$version"
+    }
+
+    object Stately {
+        const val concurrency =  "co.touchlab:stately-concurrency:1.1.1"
+        const val isoCollections =  "co.touchlab:stately-iso-collections:1.1.1-a1"
+        const val isolate =  "co.touchlab:stately-isolate:1.1.1-a1"
     }
 
     object Android {

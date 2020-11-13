@@ -1,6 +1,6 @@
 package com.audioburst.library.di
 
-import com.audioburst.library.AudioburstLibrary
+import com.audioburst.library.AudioburstLibraryDelegate
 import com.audioburst.library.data.remote.AbAiRouterApi
 import com.audioburst.library.data.remote.AudioburstApi
 import com.audioburst.library.data.remote.AudioburstV2Api
@@ -157,10 +157,11 @@ internal object Injector {
         )
     }
 
-    fun inject(audioburstLibrary: AudioburstLibrary) {
+    fun inject(audioburstLibrary: AudioburstLibraryDelegate) {
         with(audioburstLibrary) {
             subscriptionKeySetter = subscriptionKeySetterProvider.get()
             getPlaylistsInfo = getPlaylistsInfoProvider.get()
+            appDispatchers = appDispatchersProvider.get()
             eventDetector = eventDetectorProvider.get()
             getPlaylist = getPlaylistProvider.get()
             getAdUrl = getAdDataProvider.get()

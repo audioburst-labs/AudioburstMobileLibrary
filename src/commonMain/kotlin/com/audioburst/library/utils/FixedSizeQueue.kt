@@ -1,5 +1,7 @@
 package com.audioburst.library.utils
 
+import co.touchlab.stately.collections.IsoArrayDeque
+
 /**
  * Copy of the interface that is available on JVM.
  */
@@ -79,9 +81,10 @@ internal interface Queue<E> : MutableCollection<E> {
     fun peek(): E?
 }
 
+@OptIn(ExperimentalStdlibApi::class)
 internal class FixedSizeQueue<T>(private val limit: Int) : Queue<T> {
 
-    private val array = ArrayDeque<T>(limit)
+    private val array = IsoArrayDeque<T>()
 
     private fun trim(): Boolean {
         val changed = array.size > limit

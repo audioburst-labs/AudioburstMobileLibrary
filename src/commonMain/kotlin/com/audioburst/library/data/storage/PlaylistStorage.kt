@@ -1,5 +1,7 @@
 package com.audioburst.library.data.storage
 
+import co.touchlab.stately.collections.IsoMutableList
+import co.touchlab.stately.concurrency.AtomicReference
 import com.audioburst.library.models.Advertisement
 import com.audioburst.library.models.DownloadedAdvertisement
 import com.audioburst.library.models.Playlist
@@ -24,21 +26,21 @@ internal interface PlaylistStorage {
 
 internal class InMemoryPlaylistStorage : PlaylistStorage {
 
-    private var _currentPlaylist: Playlist? = null
+    private var _currentPlaylist: AtomicReference<Playlist?> = AtomicReference(null)
     override val currentPlaylist: Playlist?
-        get() = _currentPlaylist
+        get() = _currentPlaylist.get()
 
-    private val _currentAds: MutableList<DownloadedAdvertisement> = mutableListOf()
+    private val _currentAds: IsoMutableList<DownloadedAdvertisement> = IsoMutableList()
     override val currentAds: List<DownloadedAdvertisement>
         get() = _currentAds
 
     override fun setPlaylist(playlist: Playlist) {
-        _currentPlaylist = playlist
+        _currentPlaylist.set(playlist)
         _currentAds.clear()
     }
 
     override fun setAdvertisement(url: Url, advertisement: Advertisement) {
-        if (_currentPlaylist?.bursts?.mapNotNull { it.adUrl }?.contains(url.value) == true) {
+        if (_currentPlaylist.get()?.bursts?.mapNotNull { it.adUrl }?.contains(url.value) == true) {
             _currentAds.add(
                 DownloadedAdvertisement(
                     downloadUrl = url,
@@ -49,7 +51,7 @@ internal class InMemoryPlaylistStorage : PlaylistStorage {
     }
 
     fun clear() {
-        _currentPlaylist = null
+        _currentPlaylist.set(null)
         _currentAds.clear()
     }
 }

@@ -1,0 +1,6 @@
+framework module AudioburstMobileLibrary {
+    umbrella header "AudioburstMobileLibrary.h"
+
+    export *
+    module * { export * }
+}

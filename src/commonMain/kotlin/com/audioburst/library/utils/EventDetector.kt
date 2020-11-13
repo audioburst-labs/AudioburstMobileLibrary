@@ -1,5 +1,6 @@
 package com.audioburst.library.utils
 
+import co.touchlab.stately.concurrency.AtomicReference
 import com.audioburst.library.interactors.CurrentAdsProvider
 import com.audioburst.library.interactors.CurrentPlaylist
 import com.audioburst.library.interactors.PlaybackEventHandler
@@ -25,7 +26,7 @@ internal class EventDetector(
     private val previousStates: Queue<InternalPlaybackState> = FixedSizeQueue(NUMBER_OF_CACHED_STATES)
     private val listenerCallTimer: PeriodicTimer = PeriodicTimer()
     private val playingEventTimer: PeriodicTimer = PeriodicTimer()
-    private var playbackStateListener: PlaybackStateListener? = null
+    private var playbackStateListener: AtomicReference<PlaybackStateListener?> = AtomicReference(null)
 
     fun start() {
         startTimers()
@@ -63,17 +64,17 @@ internal class EventDetector(
     }
 
     private fun currentEventPayload(isPlaying: Boolean): EventPayload? =
-     playbackStateListener?.getPlaybackState()?.let { playbackState ->
+     playbackStateListener.get()?.getPlaybackState()?.let { playbackState ->
          input(playbackState)?.currentEventPayload(isPlaying = isPlaying)
      }
 
     fun setPlaybackStateListener(listener: PlaybackStateListener) {
-        this.playbackStateListener = listener
+        playbackStateListener.set(listener)
     }
 
     fun removePlaybackStateListener(listener: PlaybackStateListener) {
-        if (this.playbackEventHandler == listener) {
-            this.playbackStateListener = null
+        if (playbackStateListener.get() == listener) {
+            playbackStateListener.set(null)
         }
     }
 
@@ -82,7 +83,7 @@ internal class EventDetector(
             interval = LISTENER_CALL_SECONDS_TIMEOUT.toDuration(DurationUnit.Seconds)
         ).onEach { result ->
             if (result is PeriodicTimer.Result.OnTick) {
-                playbackStateListener?.getPlaybackState()?.let(this@EventDetector::setCurrentState)
+                playbackStateListener.get()?.getPlaybackState()?.let(this@EventDetector::setCurrentState)
             }
         }.launchIn(scope)
         playingEventTimer.start(
