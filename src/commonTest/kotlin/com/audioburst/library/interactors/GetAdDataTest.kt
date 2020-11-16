@@ -2,6 +2,7 @@ package com.audioburst.library.interactors
 
 import com.audioburst.library.data.Resource
 import com.audioburst.library.models.Advertisement
+import com.audioburst.library.models.LibraryError
 import com.audioburst.library.models.Result
 import com.audioburst.library.models.errorType
 import com.audioburst.library.runTest
@@ -50,7 +51,7 @@ class GetAdDataTest {
 
         // THEN
         require(resource is Result.Error)
-        require(resource.errorType == Result.Error.Type.AdUrlNotFound)
+        require(resource.errorType == LibraryError.AdUrlNotFound)
     }
 
     @Test

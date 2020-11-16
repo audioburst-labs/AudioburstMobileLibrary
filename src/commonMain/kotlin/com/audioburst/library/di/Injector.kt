@@ -146,8 +146,8 @@ internal object Injector {
             main = Dispatchers.Main
         )
     }
-    private val eventDetectorProvider: Provider<EventDetector> = singleton {
-        EventDetector(
+    private val eventDetectorProvider: Provider<StrategyBasedEventDetector> = singleton {
+        StrategyBasedEventDetector(
             currentPlaylist = currentPlaylistProvider.get(),
             currentAds = currentAdsProvider.get(),
             playbackEventHandler = playbackEventHandlerProvider.get(),

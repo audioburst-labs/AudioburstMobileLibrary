@@ -64,7 +64,7 @@ audioburstLibrary.getPlaylists()
     .onData { playlists ->
         // Display available playlists
     }
-    .onError { type -> 
+    .onError { error -> 
         // Handle error
     }
 ```
@@ -75,7 +75,7 @@ audioburstLibrary.getPlaylist(playlistItem)
     .onData { playlist ->
         // Build your playback queue by using list of Bursts
     }
-    .onError { type -> 
+    .onError { error -> 
         // Handle error
     }
 ```
@@ -89,7 +89,7 @@ audioburstLibrary.getAdUrl(burst)
     .onData { adUrl ->
         // Play ad
     }
-    .onError { type -> 
+    .onError { error -> 
         // Handle error
     }
 ```

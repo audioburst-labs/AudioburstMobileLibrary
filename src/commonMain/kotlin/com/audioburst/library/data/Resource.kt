@@ -1,5 +1,6 @@
 package com.audioburst.library.data
 
+import com.audioburst.library.models.LibraryError
 import com.audioburst.library.models.Result
 
 internal sealed class Resource<out T> {
@@ -33,14 +34,14 @@ internal fun <T> Resource<T>.result(): T? = when (this) {
 internal fun <T> Resource<T>.asResult(): Result<T> =
     when (this) {
         is Resource.Data -> Result.Data(result)
-        is Resource.Error -> Result.Error(errorType.toResultErrorType())
+        is Resource.Error -> Result.Error(errorType.toLibraryError())
     }
 
-internal fun ErrorType.toResultErrorType(): Result.Error.Type =
+internal fun ErrorType.toLibraryError(): LibraryError =
     when (this) {
-        is ErrorType.ConnectionError -> Result.Error.Type.Network
-        ErrorType.HttpError.UnauthorizedException -> Result.Error.Type.WrongApplicationKey
+        is ErrorType.ConnectionError -> LibraryError.Network
+        ErrorType.HttpError.UnauthorizedException -> LibraryError.WrongApplicationKey
         ErrorType.HttpError.BadRequestException, ErrorType.HttpError.ForbiddenException,
-        ErrorType.HttpError.NotFoundException, ErrorType.HttpError.InternalServerErrorException -> Result.Error.Type.Server
-        is ErrorType.HttpError.UnexpectedException, is ErrorType.UnexpectedException -> Result.Error.Type.Unexpected
+        ErrorType.HttpError.NotFoundException, ErrorType.HttpError.InternalServerErrorException -> LibraryError.Server
+        is ErrorType.HttpError.UnexpectedException, is ErrorType.UnexpectedException -> LibraryError.Unexpected
     }

@@ -106,8 +106,8 @@ internal fun eventDetectorOf(
     playbackEventHandler: (PlaybackEvent) -> Unit = {},
     playbackEvent: PlaybackEvent = PlaybackEvent.Skip(eventPayloadOf()),
     timestamp: Long = 0,
-): EventDetector =
-    EventDetector(
+): StrategyBasedEventDetector =
+    StrategyBasedEventDetector(
         currentPlaylist = currentPlaylistOf(playlist),
         currentAds = currentAdsOf(ads),
         playbackEventHandler = object : PlaybackEventHandler {

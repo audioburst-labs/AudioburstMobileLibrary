@@ -5,16 +5,15 @@ import com.audioburst.library.utils.Strings
 sealed class Result<out T> {
 
     data class Data<out T>(val value: T) : Result<T>()
-    data class Error(val type: Type) : Result<Nothing>() {
+    data class Error(val error: LibraryError) : Result<Nothing>()
+}
 
-        enum class Type(val message: String) {
-            Network(Strings.errorNetwork),
-            Server(Strings.errorServer),
-            Unexpected(Strings.errorUnexpected),
-            WrongApplicationKey(Strings.errorWrongApplicationKey),
-            AdUrlNotFound(Strings.errorAdUrlNotFound),
-        }
-    }
+enum class LibraryError(val message: String) {
+    Network(Strings.errorNetwork),
+    Server(Strings.errorServer),
+    Unexpected(Strings.errorUnexpected),
+    WrongApplicationKey(Strings.errorWrongApplicationKey),
+    AdUrlNotFound(Strings.errorAdUrlNotFound),
 }
 
 inline fun <T, U> Result<T>.map(f: (T) -> U): Result<U> = when (this) {
@@ -30,10 +29,10 @@ inline fun <T> Result<T>.onData(f: (T) -> Unit): Result<T> = when (this) {
     is Result.Error -> this
 }
 
-inline fun <T> Result<T>.onError(f: (Result.Error.Type) -> Unit): Result<T> = when (this) {
+inline fun <T> Result<T>.onError(f: (LibraryError) -> Unit): Result<T> = when (this) {
     is Result.Data -> this
     is Result.Error -> {
-        f(type)
+        f(error)
         this
     }
 }
@@ -44,8 +43,8 @@ val <T> Result<T>.value: T?
         is Result.Error -> null
     }
 
-val Result<*>.errorType: Result.Error.Type?
+val Result<*>.errorType: LibraryError?
     get() = when (this) {
         is Result.Data -> null
-        is Result.Error -> this.type
+        is Result.Error -> this.error
     }
