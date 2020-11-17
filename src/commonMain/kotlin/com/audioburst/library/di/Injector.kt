@@ -4,7 +4,9 @@ import com.audioburst.library.AudioburstLibraryDelegate
 import com.audioburst.library.data.remote.AbAiRouterApi
 import com.audioburst.library.data.remote.AudioburstApi
 import com.audioburst.library.data.remote.AudioburstV2Api
+import com.audioburst.library.data.repository.HttpPersonalPlaylistRepository
 import com.audioburst.library.data.repository.HttpUserRepository
+import com.audioburst.library.data.repository.PersonalPlaylistRepository
 import com.audioburst.library.data.repository.UserRepository
 import com.audioburst.library.data.repository.mappers.*
 import com.audioburst.library.data.storage.*
@@ -33,7 +35,7 @@ internal object Injector {
         serializerProvider = serializerProvider,
         libraryConfigurationProvider = libraryConfigurationProvider,
     )
-    private val audioburstV2ApiProvider: Provider<AudioburstV2Api> = provider { AudioburstV2Api() }
+    private val audioburstV2ApiProvider: Provider<AudioburstV2Api> = provider { AudioburstV2Api(jsonProvider.get()) }
     private val audioburstApiProvider: Provider<AudioburstApi> = provider { AudioburstApi() }
     private val registerResponseToUserProvider: Provider<RegisterResponseToUserMapper> = provider { RegisterResponseToUserMapper() }
     private val settingsProvider: Provider<Settings> = singleton { settings() }
@@ -157,10 +159,39 @@ internal object Injector {
         )
     }
 
+    private val userPreferenceResponseToPreferenceMapperProvider: Provider<UserPreferenceResponseToPreferenceMapper> = provider { UserPreferenceResponseToPreferenceMapper() }
+
+    private val preferenceToUserPreferenceResponseMapperProvider: Provider<PreferenceToUserPreferenceResponseMapper> = provider { PreferenceToUserPreferenceResponseMapper() }
+
+    private val personalPlaylistRepositoryProvider: Provider<PersonalPlaylistRepository> = provider {
+        HttpPersonalPlaylistRepository(
+            httpClient = httpClientProvider.get(),
+            audioburstV2Api = audioburstV2ApiProvider.get(),
+            userPreferenceResponseToPreferenceMapper = userPreferenceResponseToPreferenceMapperProvider.get(),
+            preferenceToUserPreferenceResponseMapper = preferenceToUserPreferenceResponseMapperProvider.get(),
+        )
+    }
+
+    private val getUserPreferencesProvider: Provider<GetUserPreferences> = provider {
+        GetUserPreferences(
+            getUser = getUserProvider.get(),
+            personalPlaylistRepository = personalPlaylistRepositoryProvider.get(),
+        )
+    }
+
+    private val postUserPreferencesProvider: Provider<PostUserPreferences> = provider {
+        PostUserPreferences(
+            getUser = getUserProvider.get(),
+            personalPlaylistRepository = personalPlaylistRepositoryProvider.get(),
+        )
+    }
+
     fun inject(audioburstLibrary: AudioburstLibraryDelegate) {
         with(audioburstLibrary) {
             subscriptionKeySetter = subscriptionKeySetterProvider.get()
             getPlaylistsInfo = getPlaylistsInfoProvider.get()
+            postUserPreferences = postUserPreferencesProvider.get()
+            getUserPreferences = getUserPreferencesProvider.get()
             appDispatchers = appDispatchersProvider.get()
             eventDetector = eventDetectorProvider.get()
             getPlaylist = getPlaylistProvider.get()

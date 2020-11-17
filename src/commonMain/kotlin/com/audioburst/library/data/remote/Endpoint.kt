@@ -1,6 +1,7 @@
 package com.audioburst.library.data.remote
 
 import io.ktor.client.request.*
+import io.ktor.content.*
 import io.ktor.http.*
 
 internal data class Endpoint(
@@ -8,7 +9,7 @@ internal data class Endpoint(
     val protocol: Protocol,
     val path: String,
     val method: Method,
-    val body: Any? = null,
+    val body: Body? = null,
     val queryParams: Map<String, Any?> = emptyMap(),
 ) {
 
@@ -18,6 +19,11 @@ internal data class Endpoint(
 
     enum class Protocol {
         Http, Https
+    }
+
+    sealed class Body {
+        data class Json(val body: Any): Body()
+        data class Plain(val text: String): Body()
     }
 }
 
@@ -36,7 +42,15 @@ internal inline fun Endpoint.toHttpRequest(): HttpRequestBuilder =
         }
         queryParams.forEach { parameter(it.key, it.value) }
         this@toHttpRequest.body?.let {
-            headers.append(HttpHeaders.ContentType, ContentType.Application.Json)
-            body = it
+            body = when (it) {
+                is Endpoint.Body.Json -> {
+                    headers.append(HttpHeaders.ContentType, ContentType.Application.Json)
+                    it.body
+                }
+                is Endpoint.Body.Plain -> TextContent(
+                    text = it.text,
+                    contentType = ContentType.Text.Plain
+                )
+            }
         }
     }

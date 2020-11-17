@@ -1,5 +1,6 @@
 package com.audioburst.library.data
 
+import com.audioburst.library.models.LibraryError
 import io.ktor.client.call.*
 import io.ktor.client.features.*
 import io.ktor.client.statement.*
@@ -9,6 +10,7 @@ import io.ktor.utils.io.*
 import io.ktor.utils.io.errors.*
 import kotlin.coroutines.CoroutineContext
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ErrorTypeTest {
@@ -95,6 +97,90 @@ class ErrorTypeTest {
 
         // THEN
         assertTrue(error is ErrorType.HttpError.InternalServerErrorException)
+    }
+
+    @Test
+    fun testIfErrorTypeConnectionIsGettingMappedToLibraryErrorNetwork() {
+        // GIVEN
+        val error = ErrorType.ConnectionError(IOException(""))
+
+        // WHEN
+        val libraryError = error.toLibraryError()
+
+        // THEN
+        assertEquals(libraryError, LibraryError.Network)
+    }
+
+    @Test
+    fun testIfErrorTypeUnauthorizedExceptionIsGettingMappedToLibraryWrongApplicationKey() {
+        // GIVEN
+        val error = ErrorType.HttpError.UnauthorizedException
+
+        // WHEN
+        val libraryError = error.toLibraryError()
+
+        // THEN
+        assertEquals(libraryError, LibraryError.WrongApplicationKey)
+    }
+
+    @Test
+    fun testIfErrorTypeBadRequestExceptionIsGettingMappedToLibraryErrorServer() {
+        // GIVEN
+        val error = ErrorType.HttpError.BadRequestException
+
+        // WHEN
+        val libraryError = error.toLibraryError()
+
+        // THEN
+        assertEquals(libraryError, LibraryError.Server)
+    }
+
+    @Test
+    fun testIfErrorTypeForbiddenExceptionIsGettingMappedToLibraryErrorServer() {
+        // GIVEN
+        val error = ErrorType.HttpError.ForbiddenException
+
+        // WHEN
+        val libraryError = error.toLibraryError()
+
+        // THEN
+        assertEquals(libraryError, LibraryError.Server)
+    }
+
+    @Test
+    fun testIfErrorTypeNotFoundExceptionIsGettingMappedToLibraryErrorNetwork() {
+        // GIVEN
+        val error = ErrorType.HttpError.NotFoundException
+
+        // WHEN
+        val libraryError = error.toLibraryError()
+
+        // THEN
+        assertEquals(libraryError, LibraryError.Server)
+    }
+
+    @Test
+    fun testIfErrorTypeInternalServerErrorExceptionIsGettingMappedToLibraryErrorNetwork() {
+        // GIVEN
+        val error = ErrorType.HttpError.InternalServerErrorException
+
+        // WHEN
+        val libraryError = error.toLibraryError()
+
+        // THEN
+        assertEquals(libraryError, LibraryError.Server)
+    }
+
+    @Test
+    fun testIfErrorTypeUnexpectedExceptionExceptionIsGettingMappedToLibraryErrorNetwork() {
+        // GIVEN
+        val error = ErrorType.UnexpectedException(IllegalStateException())
+
+        // WHEN
+        val libraryError = error.toLibraryError()
+
+        // THEN
+        assertEquals(libraryError, LibraryError.Unexpected)
     }
 }
 

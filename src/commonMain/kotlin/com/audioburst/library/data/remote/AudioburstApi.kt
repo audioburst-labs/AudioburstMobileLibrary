@@ -8,7 +8,7 @@ internal class AudioburstApi {
     private fun endpoint(
         path: String,
         method: Endpoint.Method,
-        body: Any? = null,
+        body: Endpoint.Body? = null,
         queryParams: Map<String, Any?> = emptyMap()
     ): Endpoint =
         Endpoint(

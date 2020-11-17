@@ -7,7 +7,7 @@ internal class AbAiRouterApi {
     private fun endpoint(
         path: String,
         method: Endpoint.Method,
-        body: Any? = null,
+        body: Endpoint.Body? = null,
         queryParams: Map<String, Any?> = emptyMap()
     ): Endpoint =
         Endpoint(
@@ -19,7 +19,7 @@ internal class AbAiRouterApi {
             queryParams = queryParams
         )
 
-    private fun eventEndpoint(body: Any, name: String): Endpoint =
+    private fun eventEndpoint(body: Endpoint.Body, name: String): Endpoint =
         endpoint(
             path = "event",
             method = Endpoint.Method.POST,
@@ -32,7 +32,7 @@ internal class AbAiRouterApi {
 
     fun postEvent(eventRequest: EventRequest, name: String): Endpoint =
         eventEndpoint(
-            body = eventRequest,
+            body = Endpoint.Body.Json(eventRequest),
             name = name
         )
 

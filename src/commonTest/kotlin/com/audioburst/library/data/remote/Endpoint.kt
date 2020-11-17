@@ -1,5 +1,7 @@
 package com.audioburst.library.data.remote
 
+import io.ktor.http.*
+import io.ktor.http.content.*
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -11,7 +13,7 @@ class EndpointTest {
         protocol: Endpoint.Protocol = Endpoint.Protocol.Https,
         path: String = "",
         method: Endpoint.Method = Endpoint.Method.GET,
-        body: Any? = null,
+        body: Endpoint.Body? = null,
         queryParams: Map<String, Any?> = emptyMap(),
     ) = endpointOf(
         baseUrl = baseUrl,
@@ -23,12 +25,12 @@ class EndpointTest {
     )
 
     @Test
-    fun testIfEndpointIsCorrectlyTransformedIntoUrl() {
+    fun testIfEndpointWithPlainBodyIsCorrectlyTransformedIntoUrl() {
         // GIVEN
         val path = "users"
         val method = Endpoint.Method.GET
         val protocol = Endpoint.Protocol.Https
-        val body = "body"
+        val body = Endpoint.Body.Plain("body")
         val endpoint = sapiEndpoint(
             path = path,
             method = method,
@@ -42,7 +44,35 @@ class EndpointTest {
 
         // THEN
         assertEquals(request.method.value, method.name)
-        assertEquals(request.body, body)
+        assertEquals((request.body as TextContent).text, body.text)
+        assertTrue(url.contains(path))
+        assertTrue(url.contains(protocol.name, ignoreCase = true))
+        assertTrue(url.contains(baseUrl))
+        assertTrue(!url.contains("?"))
+    }
+
+    @Test
+    fun testIfEndpointWithJsonBodyIsCorrectlyTransformedIntoUrl() {
+        // GIVEN
+        val path = "users"
+        val method = Endpoint.Method.GET
+        val protocol = Endpoint.Protocol.Https
+        val body = Endpoint.Body.Json("body")
+        val endpoint = sapiEndpoint(
+            path = path,
+            method = method,
+            protocol = protocol,
+            body = body,
+        )
+
+        // WHEN
+        val request = endpoint.toHttpRequest()
+        val url = request.url.buildString()
+
+        // THEN
+        assertEquals(request.method.value, method.name)
+        assertEquals(request.body, body.body)
+        assertEquals(request.headers[HttpHeaders.ContentType], ContentType.Application.Json.toString())
         assertTrue(url.contains(path))
         assertTrue(url.contains(protocol.name, ignoreCase = true))
         assertTrue(url.contains(baseUrl))
@@ -80,7 +110,7 @@ internal fun endpointOf(
     protocol: Endpoint.Protocol = Endpoint.Protocol.Https,
     path: String = "",
     method: Endpoint.Method = Endpoint.Method.GET,
-    body: Any? = null,
+    body: Endpoint.Body? = null,
     queryParams: Map<String, Any?> = emptyMap(),
 ): Endpoint =
     Endpoint(

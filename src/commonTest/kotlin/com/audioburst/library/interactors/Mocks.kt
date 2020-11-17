@@ -2,8 +2,10 @@ package com.audioburst.library.interactors
 
 import com.audioburst.library.data.ErrorType
 import com.audioburst.library.data.Resource
+import com.audioburst.library.data.repository.PersonalPlaylistRepository
 import com.audioburst.library.data.repository.UserRepository
 import com.audioburst.library.data.repository.mappers.libraryConfigurationOf
+import com.audioburst.library.data.repository.mappers.userPreferenceOf
 import com.audioburst.library.data.repository.mappers.userStorageOf
 import com.audioburst.library.data.storage.PlaylistStorage
 import com.audioburst.library.data.storage.UnsentEventStorage
@@ -229,3 +231,20 @@ internal class InMemoryUnsentEventStorage : UnsentEventStorage {
 
 internal fun uuidFactoryOf(uuid: String = ""): UuidFactory =
     UuidFactory { uuid }
+
+internal fun personalPlaylistRepositoryOf(
+    returns: MockPersonalPlaylistRepository.Returns = MockPersonalPlaylistRepository.Returns()
+): PersonalPlaylistRepository =
+    MockPersonalPlaylistRepository(returns = returns)
+
+internal class MockPersonalPlaylistRepository(private val returns: Returns) : PersonalPlaylistRepository {
+
+    override suspend fun getUserPreferences(user: User): Resource<UserPreferences> = returns.getUserPreferences
+
+    override suspend fun postUserPreferences(user: User, userPreferences: UserPreferences): Resource<UserPreferences> = returns.postUserPreferences
+
+    data class Returns(
+        val getUserPreferences: Resource<UserPreferences> = Resource.Data(userPreferenceOf()),
+        val postUserPreferences: Resource<UserPreferences> = Resource.Data(userPreferenceOf()),
+    )
+}

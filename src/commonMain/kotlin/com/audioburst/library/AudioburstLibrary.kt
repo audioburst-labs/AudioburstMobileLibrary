@@ -23,6 +23,10 @@ internal interface CoroutineAudioburstLibrary : EventDetector {
     suspend fun getPlaylist(playlistInfo: PlaylistInfo): Result<Playlist>
 
     suspend fun getAdUrl(burst: Burst): Result<String>
+
+    suspend fun getUserPreferences(): Result<UserPreferences>
+
+    suspend fun setUserPreferences(userPreferences: UserPreferences): Result<UserPreferences>
 }
 
 internal interface CallbackAudioburstLibrary : EventDetector {
@@ -32,4 +36,8 @@ internal interface CallbackAudioburstLibrary : EventDetector {
     fun getPlaylist(playlistInfo: PlaylistInfo, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit)
 
     fun getAdUrl(burst: Burst, onData: (String) -> Unit, onError: (LibraryError) -> Unit)
+
+    fun getUserPreferences(onData: (UserPreferences) -> Unit, onError: (LibraryError) -> Unit)
+
+    fun setUserPreferences(userPreferences: UserPreferences, onData: (UserPreferences) -> Unit, onError: (LibraryError) -> Unit)
 }

@@ -1,9 +1,7 @@
 package com.audioburst.library
 
 import com.audioburst.library.di.Injector
-import com.audioburst.library.interactors.GetAdUrl
-import com.audioburst.library.interactors.GetPlaylist
-import com.audioburst.library.interactors.GetPlaylistsInfo
+import com.audioburst.library.interactors.*
 import com.audioburst.library.models.*
 import com.audioburst.library.utils.PlaybackStateListener
 import com.audioburst.library.utils.StrategyBasedEventDetector
@@ -16,6 +14,8 @@ internal class AudioburstLibraryDelegate(applicationKey: String) : CoroutineAudi
 
     internal lateinit var subscriptionKeySetter: SubscriptionKeySetter
     internal lateinit var getPlaylistsInfo: GetPlaylistsInfo
+    internal lateinit var postUserPreferences: PostUserPreferences
+    internal lateinit var getUserPreferences: GetUserPreferences
     internal lateinit var appDispatchers: AppDispatchers
     internal lateinit var eventDetector: StrategyBasedEventDetector
     internal lateinit var getPlaylist: GetPlaylist
@@ -84,6 +84,44 @@ internal class AudioburstLibraryDelegate(applicationKey: String) : CoroutineAudi
     override fun getAdUrl(burst: Burst, onData: (String) -> Unit, onError: (LibraryError) -> Unit) {
         scope.launch {
             getAdUrl.invoke(burst)
+                .onData { onData(it) }
+                .onError { onError(it) }
+        }
+    }
+
+    /**
+     * Use this function to get information about user's [UserPreferences].
+     *
+     * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it
+     * [Result.Error] will be returned with a proper error ([LibraryError]).
+     */
+    override suspend fun getUserPreferences(): Result<UserPreferences> = getUserPreferences.invoke()
+
+    /**
+     * Use this function to get information about user's [UserPreferences].
+     */
+    override fun getUserPreferences(onData: (UserPreferences) -> Unit, onError: (LibraryError) -> Unit) {
+        scope.launch {
+            getUserPreferences.invoke()
+                .onData { onData(it) }
+                .onError { onError(it) }
+        }
+    }
+
+    /**
+     * Use this function to update information about user's [UserPreferences].
+     *
+     * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it
+     * [Result.Error] will be returned with a proper error ([LibraryError]).
+     */
+    override suspend fun setUserPreferences(userPreferences: UserPreferences): Result<UserPreferences> = postUserPreferences(userPreferences)
+
+    /**
+     * Use this function to update information about user's [UserPreferences].
+     */
+    override fun setUserPreferences(userPreferences: UserPreferences, onData: (UserPreferences) -> Unit, onError: (LibraryError) -> Unit) {
+        scope.launch {
+            postUserPreferences(userPreferences)
                 .onData { onData(it) }
                 .onError { onError(it) }
         }
