@@ -27,7 +27,7 @@ internal fun userOf(
     )
 
 internal fun playlistOf(
-    id: Int = 0,
+    id: String = "",
     name: String = "",
     query: String = "",
     bursts: List<Burst> = emptyList(),
@@ -147,7 +147,7 @@ internal fun burstSourceOf(
     )
 
 internal fun eventPayloadOf(
-    playlistId: Int = 0,
+    playlistId: String = "",
     playlistName: String = "",
     burst: Burst = burstOf(),
     isPlaying: Boolean = false,
@@ -232,6 +232,17 @@ internal class InMemoryUnsentEventStorage : UnsentEventStorage {
 internal fun uuidFactoryOf(uuid: String = ""): UuidFactory =
     UuidFactory { uuid }
 
+internal fun personalPlaylistQueryIdOf(queryId: Long = 0L) = PersonalPlaylistQueryId(queryId)
+
+internal fun pendingPlaylistOf(
+    isReady: Boolean = false,
+    playlist: Playlist = playlistOf(),
+): PendingPlaylist =
+    PendingPlaylist(
+        isReady = isReady,
+        playlist = playlist,
+    )
+
 internal fun personalPlaylistRepositoryOf(
     returns: MockPersonalPlaylistRepository.Returns = MockPersonalPlaylistRepository.Returns()
 ): PersonalPlaylistRepository =
@@ -243,8 +254,16 @@ internal class MockPersonalPlaylistRepository(private val returns: Returns) : Pe
 
     override suspend fun postUserPreferences(user: User, userPreferences: UserPreferences): Resource<UserPreferences> = returns.postUserPreferences
 
+    override suspend fun getPersonalPlaylistQueryId(user: User): Resource<PersonalPlaylistQueryId> = returns.getPersonalPlaylistQueryId
+
+    private var callNumber = 0
+    override suspend fun getPersonalPlaylist(user: User, personalPlaylistQueryId: PersonalPlaylistQueryId): Resource<PendingPlaylist> =
+        returns.getPersonalPlaylist[callNumber].apply { callNumber++ }
+
     data class Returns(
         val getUserPreferences: Resource<UserPreferences> = Resource.Data(userPreferenceOf()),
         val postUserPreferences: Resource<UserPreferences> = Resource.Data(userPreferenceOf()),
+        val getPersonalPlaylistQueryId: Resource<PersonalPlaylistQueryId> = Resource.Data(personalPlaylistQueryIdOf()),
+        val getPersonalPlaylist: List<Resource<PendingPlaylist>> = listOf(Resource.Data(pendingPlaylistOf()))
     )
 }

@@ -8,10 +8,14 @@ import com.audioburst.library.utils.StrategyBasedEventDetector
 import com.audioburst.library.utils.SubscriptionKeySetter
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 internal class AudioburstLibraryDelegate(applicationKey: String) : CoroutineAudioburstLibrary, CallbackAudioburstLibrary {
 
+    internal lateinit var observePersonalPlaylist: ObservePersonalPlaylist
     internal lateinit var subscriptionKeySetter: SubscriptionKeySetter
     internal lateinit var getPlaylistsInfo: GetPlaylistsInfo
     internal lateinit var postUserPreferences: PostUserPreferences
@@ -87,6 +91,30 @@ internal class AudioburstLibraryDelegate(applicationKey: String) : CoroutineAudi
                 .onData { onData(it) }
                 .onError { onError(it) }
         }
+    }
+
+    /**
+     * Personal playlist is a special type of playlist that is built with user preferences in mind. Sometimes it takes
+     * more time to prepare a personal playlist that is why library exposes an ability to "subscribe" to ongoing changes
+     * to personal playlist. By subscribing you will be notified every time there are new [Burst]`s in the playlist until
+     * playlist is ready. You can check whether playlist is ready by querying [PendingPlaylist.isReady] value.
+     */
+    override suspend fun getPersonalPlaylist(): Flow<Result<PendingPlaylist>> = observePersonalPlaylist()
+
+    /**
+     * Personal playlist is a special type of playlist that is built with user preferences in mind. Sometimes it takes
+     * more time to prepare a personal playlist that is why library exposes an ability to "subscribe" to ongoing changes
+     * to personal playlist. [onData] callback will be called every time there are new [Burst]`s in the playlist until
+     * playlist is ready. You can check whether playlist is ready by querying [PendingPlaylist.isReady] value.
+     */
+    override fun getPersonalPlaylist(onData: (PendingPlaylist) -> Unit, onError: (LibraryError) -> Unit) {
+        observePersonalPlaylist()
+            .onEach { result ->
+                result
+                    .onData { onData(it) }
+                    .onError { onError(it) }
+            }
+            .launchIn(scope)
     }
 
     /**

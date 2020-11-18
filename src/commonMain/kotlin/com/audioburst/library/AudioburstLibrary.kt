@@ -3,6 +3,7 @@ package com.audioburst.library
 import com.audioburst.library.models.*
 import com.audioburst.library.utils.EventDetector
 import com.audioburst.library.utils.PlaybackStateListener
+import kotlinx.coroutines.flow.Flow
 
 /**
  * Main entry point to the library. In a constructor you should pass applicationKey you can obtain from Audioburst
@@ -24,6 +25,8 @@ internal interface CoroutineAudioburstLibrary : EventDetector {
 
     suspend fun getAdUrl(burst: Burst): Result<String>
 
+    suspend fun getPersonalPlaylist(): Flow<Result<PendingPlaylist>>
+
     suspend fun getUserPreferences(): Result<UserPreferences>
 
     suspend fun setUserPreferences(userPreferences: UserPreferences): Result<UserPreferences>
@@ -36,6 +39,8 @@ internal interface CallbackAudioburstLibrary : EventDetector {
     fun getPlaylist(playlistInfo: PlaylistInfo, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit)
 
     fun getAdUrl(burst: Burst, onData: (String) -> Unit, onError: (LibraryError) -> Unit)
+
+    fun getPersonalPlaylist(onData: (PendingPlaylist) -> Unit, onError: (LibraryError) -> Unit)
 
     fun getUserPreferences(onData: (UserPreferences) -> Unit, onError: (LibraryError) -> Unit)
 

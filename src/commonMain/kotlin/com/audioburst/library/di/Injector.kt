@@ -163,12 +163,19 @@ internal object Injector {
 
     private val preferenceToUserPreferenceResponseMapperProvider: Provider<PreferenceToUserPreferenceResponseMapper> = provider { PreferenceToUserPreferenceResponseMapper() }
 
+    private val topStoryResponseToPendingPlaylistProvider: Provider<TopStoryResponseToPendingPlaylist> = provider {
+        TopStoryResponseToPendingPlaylist(
+            topStoryResponseToPlaylist = topStoryResponseToPlaylistProvider.get()
+        )
+    }
+
     private val personalPlaylistRepositoryProvider: Provider<PersonalPlaylistRepository> = provider {
         HttpPersonalPlaylistRepository(
             httpClient = httpClientProvider.get(),
             audioburstV2Api = audioburstV2ApiProvider.get(),
             userPreferenceResponseToPreferenceMapper = userPreferenceResponseToPreferenceMapperProvider.get(),
             preferenceToUserPreferenceResponseMapper = preferenceToUserPreferenceResponseMapperProvider.get(),
+            topStoryResponseToPendingPlaylist = topStoryResponseToPendingPlaylistProvider.get(),
         )
     }
 
@@ -186,8 +193,16 @@ internal object Injector {
         )
     }
 
+    private val observePersonalPlaylistProvider: Provider<ObservePersonalPlaylist> = provider {
+        ObservePersonalPlaylist(
+            getUser = getUserProvider.get(),
+            personalPlaylistRepository = personalPlaylistRepositoryProvider.get(),
+        )
+    }
+
     fun inject(audioburstLibrary: AudioburstLibraryDelegate) {
         with(audioburstLibrary) {
+            observePersonalPlaylist = observePersonalPlaylistProvider.get()
             subscriptionKeySetter = subscriptionKeySetterProvider.get()
             getPlaylistsInfo = getPlaylistsInfoProvider.get()
             postUserPreferences = postUserPreferencesProvider.get()

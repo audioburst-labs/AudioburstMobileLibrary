@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 internal data class TopStoryResponse(
     val type: String?,
     val queryID: Long,
-    val query: String,
+    val query: String?,
     val actualQuery: String?,
     val bursts: List<BurstsResponse>?,
     val message: String?,

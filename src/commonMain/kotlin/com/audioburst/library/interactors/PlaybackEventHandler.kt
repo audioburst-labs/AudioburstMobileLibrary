@@ -62,7 +62,7 @@ internal class PlaybackEventHandlerInteractor(
         }
         if (playbackEvent is PlaybackEvent.StartOfPlay) {
             userRepository.postBurstPlayback(
-                playlistId = playbackEvent.eventPayload.playlistId.toLong(),
+                playlistId = playbackEvent.eventPayload.burst.playlistId,
                 burstId = playbackEvent.eventPayload.burst.id,
                 userId = userId,
             )
@@ -79,7 +79,7 @@ internal class PlaybackEventHandlerInteractor(
             stream = burst.streamUrl != null,
             totalPlayTime = currentPlayBackPosition.seconds,
             burstId = burst.id,
-            playlistId = playlistId.toString(),
+            playlistId = playlistId,
             userId = userId,
             playerVersion = libraryConfiguration.libraryVersion.value,
             subscriptionKey = libraryConfiguration.subscriptionKey,

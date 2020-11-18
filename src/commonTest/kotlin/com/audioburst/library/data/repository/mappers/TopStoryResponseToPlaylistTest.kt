@@ -1,6 +1,5 @@
 package com.audioburst.library.data.repository.mappers
 
-import com.audioburst.library.interactors.playlistInfoOf
 import com.audioburst.library.models.PlayerSessionId
 import com.audioburst.library.utils.PlayerSessionIdGetter
 import kotlin.test.Test
@@ -24,12 +23,16 @@ class TopStoryResponseToPlaylistTest {
     fun testMapper() {
         // GIVEN
         val response = topStoryResponseOf()
+        val playlistId = ""
+        val playlistName = ""
 
         // WHEN
-        val mapped = mapper.map(response, userId, playlistInfoOf())
+        val mapped = mapper.map(response, userId, playlistId, playlistName)
 
         // THEN
         assertEquals(mapped.playerSessionId.value, playerSessionId)
+        assertEquals(mapped.id, playlistId)
+        assertEquals(mapped.name, playlistName)
     }
 
     @Test
@@ -40,8 +43,8 @@ class TopStoryResponseToPlaylistTest {
         val nonnullBurstResponse = topStoryResponseOf(bursts = bursts)
 
         // WHEN
-        val mappedNullBurstResponse = mapper.map(nullBurstResponse, userId, playlistInfoOf())
-        val mappedNonnullBurstResponse = mapper.map(nonnullBurstResponse, userId, playlistInfoOf())
+        val mappedNullBurstResponse = mapper.map(nullBurstResponse, userId, "", "")
+        val mappedNonnullBurstResponse = mapper.map(nonnullBurstResponse, userId, "", "")
 
         // THEN
         assertTrue(mappedNullBurstResponse.bursts.isEmpty())
@@ -56,8 +59,8 @@ class TopStoryResponseToPlaylistTest {
         val nonnullBurstResponse = topStoryResponseOf(actualQuery = actualQuery)
 
         // WHEN
-        val mappedNullQueryResponse = mapper.map(nullQueryResponse, userId, playlistInfoOf())
-        val mappedNonnullQueryResponse = mapper.map(nonnullBurstResponse, userId, playlistInfoOf())
+        val mappedNullQueryResponse = mapper.map(nullQueryResponse, userId, "", "")
+        val mappedNonnullQueryResponse = mapper.map(nonnullBurstResponse, userId, "", "")
 
         // THEN
         assertTrue(mappedNullQueryResponse.query.isEmpty())

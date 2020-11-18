@@ -5,7 +5,7 @@ import com.audioburst.library.data.repository.models.*
 internal fun topStoryResponseOf(
     type: String? = null,
     queryID: Long = 0L,
-    query: String = "",
+    query: String? = null,
     actualQuery: String? = null,
     bursts: List<BurstsResponse>? = null,
     message: String? = null,

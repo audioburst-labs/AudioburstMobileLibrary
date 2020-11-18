@@ -2,7 +2,7 @@ package com.audioburst.library.models
 
 internal data class EventPayload(
     val playlistName: String,
-    val playlistId: Int,
+    val playlistId: String,
     val burst: Burst,
     val isPlaying: Boolean,
     val occurrenceTime: Long,

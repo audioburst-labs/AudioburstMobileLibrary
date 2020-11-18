@@ -1,7 +1,7 @@
 package com.audioburst.library.models
 
 data class Playlist(
-    val id: Int,
+    val id: String,
     val name: String,
     val query: String,
     val bursts: List<Burst>,

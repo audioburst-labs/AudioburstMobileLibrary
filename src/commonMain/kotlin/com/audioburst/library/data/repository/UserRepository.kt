@@ -57,7 +57,14 @@ internal class HttpUserRepository(
 
     override suspend fun getPlaylist(userId: String, playlistInfo: PlaylistInfo): Resource<Playlist> =
         httpClient.execute<TopStoryResponse>(Url(playlistInfo.url))
-            .map { topStoryResponseToPlaylist.map(it, userId, playlistInfo) }
+            .map { topStoryResponse ->
+                topStoryResponseToPlaylist.map(
+                    from = topStoryResponse,
+                    userId = userId,
+                    playlistId = playlistInfo.id.toString(),
+                    playlistName = playlistInfo.name,
+                )
+            }
             .onData(playlistStorage::setPlaylist)
 
     override suspend fun postEvent(playerEvent: PlayerEvent, name: String): Resource<Unit> =
