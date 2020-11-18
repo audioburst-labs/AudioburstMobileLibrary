@@ -6,7 +6,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class AMLBurst, AMLResultErrorType, AMLPlaylistInfo, AMLPlaylist, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLDurationUnit, AMLKotlinEnum<E>, AMLResult<__covariant T>, AMLResultData<__covariant T>, AMLResultError, AMLKotlinNothing;
+@class AMLBurst, AMLLibraryError, AMLPlaylistInfo, AMLPlaylist, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLDurationUnit, AMLKotlinEnum<E>, AMLResult<__covariant T>, AMLResultData<__covariant T>, AMLResultError, AMLKotlinNothing;
 
 @protocol AMLPlaybackStateListener, AMLKotlinComparable;
 
@@ -142,11 +142,11 @@ __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("AudioburstLibrary")))
 @interface AMLAudioburstLibrary : AMLBase
 - (instancetype)initWithApplicationKey:(NSString *)applicationKey __attribute__((swift_name("init(applicationKey:)"))) __attribute__((objc_designated_initializer));
-- (void)getAdUrlBurst:(AMLBurst *)burst onData:(void (^)(NSString *))onData onError:(void (^)(AMLResultErrorType *))onError __attribute__((swift_name("getAdUrl(burst:onData:onError:)")));
-- (void)getPlaylistPlaylistInfo:(AMLPlaylistInfo *)playlistInfo onData:(void (^)(AMLPlaylist *))onData onError:(void (^)(AMLResultErrorType *))onError __attribute__((swift_name("getPlaylist(playlistInfo:onData:onError:)")));
-- (void)getPlaylistsOnData:(void (^)(NSArray<AMLPlaylistInfo *> *))onData onError:(void (^)(AMLResultErrorType *))onError __attribute__((swift_name("getPlaylists(onData:onError:)")));
-- (void)removePlaybackStateListenerPlaybackStateListener:(id<AMLPlaybackStateListener>)playbackStateListener __attribute__((swift_name("removePlaybackStateListener(playbackStateListener:)")));
-- (void)setPlaybackStateListenerPlaybackStateListener:(id<AMLPlaybackStateListener>)playbackStateListener __attribute__((swift_name("setPlaybackStateListener(playbackStateListener:)")));
+- (void)getAdUrlBurst:(AMLBurst *)burst onData:(void (^)(NSString *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getAdUrl(burst:onData:onError:)")));
+- (void)getPlaylistPlaylistInfo:(AMLPlaylistInfo *)playlistInfo onData:(void (^)(AMLPlaylist *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPlaylist(playlistInfo:onData:onError:)")));
+- (void)getPlaylistsOnData:(void (^)(NSArray<AMLPlaylistInfo *> *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPlaylists(onData:onError:)")));
+- (void)removePlaybackStateListenerListener:(id<AMLPlaybackStateListener>)listener __attribute__((swift_name("removePlaybackStateListener(listener:)")));
+- (void)setPlaybackStateListenerListener:(id<AMLPlaybackStateListener>)listener __attribute__((swift_name("setPlaybackStateListener(listener:)")));
 - (void)start __attribute__((swift_name("start()")));
 - (void)stop __attribute__((swift_name("stop()")));
 @end;
@@ -273,6 +273,20 @@ __attribute__((swift_name("DurationUnit")))
 @end;
 
 __attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("LibraryError")))
+@interface AMLLibraryError : AMLKotlinEnum<AMLLibraryError *>
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@property (class, readonly) AMLLibraryError *network __attribute__((swift_name("network")));
+@property (class, readonly) AMLLibraryError *server __attribute__((swift_name("server")));
+@property (class, readonly) AMLLibraryError *unexpected __attribute__((swift_name("unexpected")));
+@property (class, readonly) AMLLibraryError *wrongapplicationkey __attribute__((swift_name("wrongapplicationkey")));
+@property (class, readonly) AMLLibraryError *adurlnotfound __attribute__((swift_name("adurlnotfound")));
+@property (readonly) NSString *message __attribute__((swift_name("message")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("PlaybackState")))
 @interface AMLPlaybackState : AMLBase
 - (instancetype)initWithUrl:(NSString *)url positionMillis:(int64_t)positionMillis __attribute__((swift_name("init(url:positionMillis:)"))) __attribute__((objc_designated_initializer));
@@ -345,34 +359,20 @@ __attribute__((swift_name("ResultData")))
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("ResultError")))
 @interface AMLResultError : AMLResult<AMLKotlinNothing *>
-- (instancetype)initWithType:(AMLResultErrorType *)type __attribute__((swift_name("init(type:)"))) __attribute__((objc_designated_initializer));
-- (AMLResultErrorType *)component1 __attribute__((swift_name("component1()")));
-- (AMLResultError *)doCopyType:(AMLResultErrorType *)type __attribute__((swift_name("doCopy(type:)")));
+- (instancetype)initWithError:(AMLLibraryError *)error __attribute__((swift_name("init(error:)"))) __attribute__((objc_designated_initializer));
+- (AMLLibraryError *)component1 __attribute__((swift_name("component1()")));
+- (AMLResultError *)doCopyError:(AMLLibraryError *)error __attribute__((swift_name("doCopy(error:)")));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
-@property (readonly) AMLResultErrorType *type __attribute__((swift_name("type")));
-@end;
-
-__attribute__((objc_subclassing_restricted))
-__attribute__((swift_name("ResultError.Type_")))
-@interface AMLResultErrorType : AMLKotlinEnum<AMLResultErrorType *>
-+ (instancetype)alloc __attribute__((unavailable));
-+ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
-- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
-@property (class, readonly) AMLResultErrorType *network __attribute__((swift_name("network")));
-@property (class, readonly) AMLResultErrorType *server __attribute__((swift_name("server")));
-@property (class, readonly) AMLResultErrorType *unexpected __attribute__((swift_name("unexpected")));
-@property (class, readonly) AMLResultErrorType *wrongapplicationkey __attribute__((swift_name("wrongapplicationkey")));
-@property (class, readonly) AMLResultErrorType *adurlnotfound __attribute__((swift_name("adurlnotfound")));
-@property (readonly) NSString *message __attribute__((swift_name("message")));
+@property (readonly) AMLLibraryError *error __attribute__((swift_name("error")));
 @end;
 
 @interface AMLResult (Extensions)
 - (AMLResult<id> *)mapF:(id _Nullable (^)(id _Nullable))f __attribute__((swift_name("map(f:)")));
 - (AMLResult<id> *)onDataF:(void (^)(id _Nullable))f __attribute__((swift_name("onData(f:)")));
-- (AMLResult<id> *)onErrorF:(void (^)(AMLResultErrorType *))f __attribute__((swift_name("onError(f:)")));
-@property (readonly) AMLResultErrorType * _Nullable errorType __attribute__((swift_name("errorType")));
+- (AMLResult<id> *)onErrorF:(void (^)(AMLLibraryError *))f __attribute__((swift_name("onError(f:)")));
+@property (readonly) AMLLibraryError * _Nullable errorType __attribute__((swift_name("errorType")));
 @property (readonly) id _Nullable value_ __attribute__((swift_name("value_")));
 @end;
 
