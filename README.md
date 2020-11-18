@@ -172,6 +172,153 @@ class MediaService : MediaBrowserServiceCompat(), Player.EventListener, Playback
 }
 ```
 
+## Get Started - iOS
+
+This guide is a quick walkthrough to add AudioburstMobileLibrary to an iOS app. We recommend XCode as the development environment for building an app with the AudioburstMobileLibrary.
+
+### Requirements
+
+- iOS 12.0+
+- Xcode 11
+
+## Add AudioburstMobileLibrary to your app
+
+### Step 1. Add AudioburstMobileLibrary dependency
+You can use [CocoaPods](http://cocoapods.org/) to install [AudioburstPlayer](https://cocoapods.org/pods/AudioburstMobileLibrary) by adding it to your `Podfile`:
+
+```ruby
+platform :ios, '12.0'
+use_frameworks!
+
+target 'MyApp' do
+    pod 'AudioburstMobileLibrary', '~> 0.0.7'
+end
+```
+
+### Step 2. Initialize `AudioburstLibrary` object
+```swift
+let audioburstLibrary = AudioburstLibrary(applicationKey: "YOUR_API_KEY_HERE")
+```
+You can use this class by instantiating its instance every time you need this or as a singleton.
+
+### Step 3. Request Audioburst content
+
+All the functions below lets you pass a closure that contains a requested data or error information.   
+
+## Get all available playlists
+```swift
+audioburstLibrary.getPlaylists { playlists in
+    // Display available playlists
+} onError: { errorType in
+    // Handle error
+}
+```
+
+## Get playlist information
+```swift
+audioburstLibrary.getPlaylist(playlistInfo: playlistInfo) { playlist in
+    // Build your playback queue by using list of Bursts
+} onError: { errorType in
+    // Handle error
+}
+```
+
+## Get advertisement url
+You can also play advertisements before playlist items (bursts.)
+To do so, check if a specific `Burst` has an ad by calling `Burst.isAdAvailable`. 
+If an ad is available then before playing the `Burst` content call `getAdUrl` which allows a Burst to be played with an ad. 
+```swift
+library.getAdUrl(burst: burst) { adUrl in
+    // Play ad
+} onError: { errorType in
+    // Handle error
+}
+```
+
+### Step 4. Inform library about current playback state
+Audioburst is obligated to provide content owners comprehensive information about content playback, therefore all play events need to be reported. This library implements that functionality, and the only event required is to inform when playback starts and stops, and return the current playback state every time the library requests that information. 
+
+## Playback start/stop
+```swift
+audioburstLibrary.start()
+audioburstLibrary.stop()
+```
+
+If you are using iOS's `AVPlayer` then it can be easily done in a following way:
+```swift
+private var statusObservation: NSKeyValueObservation?
+
+let playerItem = AVPlayerItem(url: url)
+statusObservation = player?.observe(\.timeControlStatus, options: [.new, .old], changeHandler: { [weak self]
+    (playerItem, change) in
+    switch (playerItem.timeControlStatus) {
+    case .playing:
+        self?.audioburstLibrary.start()
+    default:
+        self?.audioburstLibrary.stop()
+    }
+})
+player = AVPlayer(playerItem: playerItem)
+```
+
+## Returning current playback state
+This interface can be called by the library at any time, so please try to always return the current playback state, even when nothing is currently playing.
+```swift
+audioburstLibrary.setPlaybackStateListener(playbackStateListener: self)
+
+extension PlayerInteractor: PlaybackStateListener {
+    func getPlaybackState() -> PlaybackState? {
+        return PlaybackState(url: currentUrl, positionMillis: Int64(contentPositionMilis))
+    }
+}
+```
+
+## Full example using `AVPlayer`
+We recommend initializing and keeping `PlayerInteractor` in `AppDelegate`. This way you are sure you can return a current playback state every time library ask for it. 
+```swift
+class PlayerInteractor {
+
+    var player: AVPlayer?
+    let audioburstLibrary = AudioburstLibrary(applicationKey: "123456")
+
+    private var statusObservation: NSKeyValueObservation?
+
+    init() {
+        audioburstLibrary.setPlaybackStateListener(playbackStateListener: self)
+        //get url and load item to play (...)
+        let playerItem = AVPlayerItem(url: url)
+        statusObservation = player?.observe(\.timeControlStatus, options: [.new, .old], changeHandler: { [weak self]
+            (playerItem, change) in
+
+            switch (playerItem.timeControlStatus) {
+            case .playing:
+                self?.audioburstLibrary.start()
+            default:
+                self?.audioburstLibrary.stop()
+            }
+        })
+
+        player = AVPlayer(playerItem: playerItem)
+    }
+    
+    deinit {
+        audioburstLibrary.stop()
+        audioburstLibrary.removePlaybackStateListener(playbackStateListener: self)
+    }
+}
+
+extension PlayerInteractor: PlaybackStateListener {
+    func getPlaybackState() -> PlaybackState? {
+        guard let asset = (player?.currentItem?.asset) as? AVURLAsset, let player = self.player else {
+            return nil
+        }
+        let url = asset.url.absoluteString
+        let contentPositionMilis = (player.currentTime().seconds)/1000
+        return PlaybackState(url: url, positionMillis: Int64(contentPositionMilis))
+    }
+}
+```
+
 ## Privacy Policy
 [Privacy Policy](https://audioburst.com/privacy)
 
