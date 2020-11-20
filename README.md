@@ -94,6 +94,49 @@ audioburstLibrary.getAdUrl(burst)
     }
 ```
 
+## Manage user preferences
+Library also offers an ability to manage (get and update) user preference.
+```kotlin
+audioburstLibrary.getUserPreferences()
+    .onData { userPreferences ->
+        // Use user preferences
+    }
+    .onError { error -> 
+        // Handle error
+    }
+```
+
+```kotlin
+audioburstLibrary.setUserPreferences(userPreferences)
+    .onData { userPreferences ->
+        // Use updated user preferences
+    }
+    .onError { error -> 
+        // Handle error
+    }
+```
+
+## Get Personal Playlist in an async way
+Library offers an ability to get personal playlist. This is a special type of playlist that is built with user preferences in mind.
+Sometimes it takes more time to prepare a personal playlist that is why library exposes an ability to "subscribe" to ongoing changes to personal playlist. By subscribing you will be notified every time there are new `Burst`s in the playlist. You can also check if playlist is ready.
+```kotlin
+audioburstLibrary
+    .getPersonalPlaylist()
+    .collect { result -> 
+        result
+            .onData { pendingPlaylist -> 
+                if (pendingPlaylist.isReady) {
+                    // Your playlist is ready
+                } else {
+                    // Your playlist is still being prepared
+                }
+            }
+            .onError { error -> 
+                // Handle error
+            } 
+    }
+```  
+
 ### Step 4. Inform library about current playback state
 Audioburst is obligated to provide content owners comprehensive information about content playback, therefore all play events need to be reported. This library implements that functionality, and the only event required is to inform when playback starts and stops, and return the current playback state every time the library requests that information. 
 
@@ -228,12 +271,45 @@ You can also play advertisements before playlist items (bursts.)
 To do so, check if a specific `Burst` has an ad by calling `Burst.isAdAvailable`. 
 If an ad is available then before playing the `Burst` content call `getAdUrl` which allows a Burst to be played with an ad. 
 ```swift
-library.getAdUrl(burst: burst) { adUrl in
+audioburstLibrary.getAdUrl(burst: burst) { adUrl in
     // Play ad
 } onError: { errorType in
     // Handle error
 }
 ```
+
+## Manage user preferences
+Library also offers an ability to manage (get and update) user preference.
+```swift
+audioburstLibrary.getUserPreferences { userPreferences in
+    // Use user preferences
+} onError: { error in
+    // Handle error
+}
+```
+
+```swift
+audioburstLibrary.postUserPreferences(userPreferences: userPreferences) { userPreferences in
+    // Use updated user preferences
+} onError: { error in
+    // Handle error
+}
+```
+
+## Get Personal Playlist in an async way
+Library offers an ability to get personal playlist. This is a special type of playlist that is built with user preferences in mind.
+Sometimes it takes more time to prepare a personal playlist that is why in this case, `onData` callback will be called every time there are new `Burst`'s. You can also check if playlist is ready.
+```swift
+audioburstLibrary.getPersonalPlaylist { pendingPlaylist in
+    if (pendingPlaylist.isReady) {
+        // Your playlist is ready
+    } else {
+        // Your playlist is still being prepared
+    }
+} onError: { error in
+    // Handle error
+}
+```  
 
 ### Step 4. Inform library about current playback state
 Audioburst is obligated to provide content owners comprehensive information about content playback, therefore all play events need to be reported. This library implements that functionality, and the only event required is to inform when playback starts and stops, and return the current playback state every time the library requests that information. 
