@@ -17,6 +17,7 @@ class ObservePersonalPlaylistTest {
         getPersonalPlaylistQueryId: Resource<PersonalPlaylistQueryId>,
         getPersonalPlaylist: List<Resource<PendingPlaylist>>,
         getUserReturns: Resource<User>,
+        postContentLoadEvent: PostContentLoadEvent = postContentLoadEventOf()
     ): ObservePersonalPlaylist =
         ObservePersonalPlaylist(
             getUser = getUserOf(getUserReturns),
@@ -25,7 +26,8 @@ class ObservePersonalPlaylistTest {
                     getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
                     getPersonalPlaylist = getPersonalPlaylist,
                 )
-            )
+            ),
+            postContentLoadEvent = postContentLoadEvent
         )
 
     @Test
@@ -176,5 +178,29 @@ class ObservePersonalPlaylistTest {
 
         // THEN
         assertTrue(result.toList().size == 2)
+    }
+
+    @Test
+    fun testIfContentLoadEventIsGettingSentWhenThereIsReadyPlaylist()= runTest {
+        // GIVEN
+        val getUserReturns = Resource.Data(userOf())
+        val getPersonalPlaylistQueryId = Resource.Data(personalPlaylistQueryIdOf())
+        val getPersonalPlaylist = listOf(
+            Resource.Data(pendingPlaylistOf(isReady = true, playlistOf(bursts = listOf(burstOf())))),
+        )
+        val playbackEventHandler = MemorablePlaybackEventHandler()
+
+        // WHEN
+        interactor(
+            getUserReturns = getUserReturns,
+            getPersonalPlaylist = getPersonalPlaylist,
+            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
+            postContentLoadEvent = postContentLoadEventOf(
+                playbackEventHandler = playbackEventHandler
+            )
+        )().toList()
+
+        // THEN
+        assertTrue(playbackEventHandler.sentEvents.isNotEmpty())
     }
 }

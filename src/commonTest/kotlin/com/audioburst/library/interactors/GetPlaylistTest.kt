@@ -13,10 +13,12 @@ class GetPlaylistTest {
     private fun interactor(
         getPlaylistReturn: Resource<Playlist>,
         userResource: Resource<User>,
+        postContentLoadEvent: PostContentLoadEvent = postContentLoadEventOf()
     ): GetPlaylist =
         GetPlaylist(
             getUser = getUserOf(userResource),
             userRepository = userRepositoryOf(returns = MockUserRepository.Returns(getPlaylist = getPlaylistReturn)),
+            postContentLoadEvent = postContentLoadEvent,
         )
 
     @Test
@@ -65,5 +67,25 @@ class GetPlaylistTest {
 
         // THEN
         assertTrue(resource is Result.Error)
+    }
+
+    @Test
+    fun testIfContentLoadEventIsGettingSentWhenThereIsReadyPlaylist()= runTest {
+        // GIVEN
+        val getPlaylistReturn = Resource.Data(playlistOf(bursts = listOf(burstOf())))
+        val userResource = Resource.Data(userOf())
+        val playbackEventHandler = MemorablePlaybackEventHandler()
+
+        // WHEN
+        interactor(
+            getPlaylistReturn = getPlaylistReturn,
+            userResource = userResource,
+            postContentLoadEvent = postContentLoadEventOf(
+                playbackEventHandler = playbackEventHandler
+            )
+        )(playlistInfoOf())
+
+        // THEN
+        assertTrue(playbackEventHandler.sentEvents.isNotEmpty())
     }
 }

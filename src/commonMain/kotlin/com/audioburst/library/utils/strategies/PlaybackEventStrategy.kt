@@ -24,6 +24,7 @@ internal fun interface PlaybackEventStrategy<T : PlaybackEvent> {
 internal fun PlaybackEventStrategy.Input.currentEventPayload(isPlaying: Boolean = true): EventPayload? {
     val currentBurst = currentBurst() ?: return null
     return EventPayload(
+        playerAction = playlist.playerAction,
         playlistId = playlist.id,
         playlistName = playlist.name,
         burst = currentBurst,

@@ -1,14 +1,13 @@
 package com.audioburst.library.models
 
+import com.audioburst.library.utils.LibraryConfiguration
+
 internal data class PlayerEvent(
     val userId: String,
-    val burstId: String?,
-    val playerVersion: String,
-    val subscriptionKey: SubscriptionKey,
+    val burstId: String,
+    val libraryConfiguration: LibraryConfiguration,
     val time: Long,
     val playlistName: String?,
-    val header: String,
-    val appSessionId: String,
     val burstLength: Double?,
     val playerInstanceId: String,
     val playerStatus: Status,
@@ -19,6 +18,7 @@ internal data class PlayerEvent(
     val totalPlayTime: Double?,
     val pageViewId: String,
     val advertisementEvent: AdvertisementEvent?,
+    val action: PlayerAction,
 ) {
 
     enum class Status {

@@ -5,6 +5,7 @@ import com.audioburst.library.data.Resource
 import com.audioburst.library.data.repository.PersonalPlaylistRepository
 import com.audioburst.library.data.repository.UserRepository
 import com.audioburst.library.data.repository.mappers.libraryConfigurationOf
+import com.audioburst.library.data.repository.mappers.playerActionOf
 import com.audioburst.library.data.repository.mappers.userPreferenceOf
 import com.audioburst.library.data.repository.mappers.userStorageOf
 import com.audioburst.library.data.storage.PlaylistStorage
@@ -12,7 +13,9 @@ import com.audioburst.library.data.storage.UnsentEventStorage
 import com.audioburst.library.data.storage.UserStorage
 import com.audioburst.library.models.*
 import com.audioburst.library.utils.LibraryConfiguration
+import com.audioburst.library.utils.TimestampProvider
 import com.audioburst.library.utils.UuidFactory
+import com.audioburst.library.utils.timestampProviderOf
 
 internal fun resourceErrorOf(errorType: ErrorType = ErrorType.UnexpectedException(Exception())): Resource.Error =
     Resource.Error(errorType)
@@ -32,6 +35,7 @@ internal fun playlistOf(
     query: String = "",
     bursts: List<Burst> = emptyList(),
     playerSessionId: PlayerSessionId = PlayerSessionId(""),
+    playerAction: PlayerAction = playerActionOf(),
 ): Playlist =
     Playlist(
         id = id,
@@ -39,6 +43,7 @@ internal fun playlistOf(
         query = query,
         bursts = bursts,
         playerSessionId = playerSessionId,
+        playerAction = playerAction,
     )
 
 internal fun playlistInfoOf(
@@ -147,6 +152,7 @@ internal fun burstSourceOf(
     )
 
 internal fun eventPayloadOf(
+    playerAction: PlayerAction = playerActionOf(),
     playlistId: String = "",
     playlistName: String = "",
     burst: Burst = burstOf(),
@@ -155,6 +161,7 @@ internal fun eventPayloadOf(
     currentPlayBackPosition: Duration = 0.0.toDuration(DurationUnit.Seconds),
     playerSessionId: PlayerSessionId = PlayerSessionId(value = ""),
 ): EventPayload = EventPayload(
+    playerAction = playerAction,
     playlistId = playlistId,
     playlistName = playlistName,
     burst = burst,
@@ -222,6 +229,13 @@ internal fun playbackEventHandlerInteractorOf(
         libraryConfiguration = libraryConfiguration,
     )
 
+internal class MemorablePlaybackEventHandler : PlaybackEventHandler {
+    val sentEvents: MutableList<PlaybackEvent> = mutableListOf()
+    override suspend fun handle(playbackEvent: PlaybackEvent) {
+        sentEvents.add(playbackEvent)
+    }
+}
+
 internal class InMemoryUnsentEventStorage : UnsentEventStorage {
     private val playerEvents = mutableListOf<PlayerEvent>()
     override suspend fun getAllPlayerEvents(): List<PlayerEvent> = playerEvents
@@ -267,3 +281,12 @@ internal class MockPersonalPlaylistRepository(private val returns: Returns) : Pe
         val getPersonalPlaylist: List<Resource<PendingPlaylist>> = listOf(Resource.Data(pendingPlaylistOf()))
     )
 }
+
+internal fun postContentLoadEventOf(
+    playbackEventHandler: PlaybackEventHandler = playbackEventHandlerInteractorOf(),
+    timestampProvider: TimestampProvider = timestampProviderOf(),
+) : PostContentLoadEvent =
+    PostContentLoadEvent(
+        playbackEventHandler = playbackEventHandler,
+        timestampProvider = timestampProvider,
+    )

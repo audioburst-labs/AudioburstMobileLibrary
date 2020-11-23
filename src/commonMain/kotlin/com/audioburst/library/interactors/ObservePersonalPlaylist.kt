@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.map
 internal class ObservePersonalPlaylist(
     private val getUser: GetUser,
     private val personalPlaylistRepository: PersonalPlaylistRepository,
+    private val postContentLoadEvent: PostContentLoadEvent,
 ) {
 
     operator fun invoke(): Flow<Result<PendingPlaylist>> = flow {
@@ -37,6 +38,7 @@ internal class ObservePersonalPlaylist(
                 is Resource.Data -> {
                     emit(pendingPlaylist)
                     if (pendingPlaylist.result.isReady) {
+                        postContentLoadEvent(pendingPlaylist.result.playlist)
                         break@loop
                     } else {
                         delay()

@@ -2,6 +2,7 @@ package com.audioburst.library.data.repository.mappers
 
 import com.audioburst.library.data.repository.models.TopStoryResponse
 import com.audioburst.library.models.PendingPlaylist
+import com.audioburst.library.models.PlayerAction
 
 internal class TopStoryResponseToPendingPlaylist constructor(
     private val topStoryResponseToPlaylist: TopStoryResponseToPlaylist,
@@ -15,6 +16,10 @@ internal class TopStoryResponseToPendingPlaylist constructor(
                 userId = userId,
                 playlistId = userId,
                 playlistName = from.actualQuery ?: from.query ?: "",
+                playerAction = PlayerAction(
+                    type = PlayerAction.Type.Personalized,
+                    value = userId,
+                )
             )
         )
 

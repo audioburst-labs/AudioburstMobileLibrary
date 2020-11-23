@@ -81,14 +81,12 @@ internal class PlaybackEventHandlerInteractor(
             burstId = burst.id,
             playlistId = playlistId,
             userId = userId,
-            playerVersion = libraryConfiguration.libraryVersion.value,
-            subscriptionKey = libraryConfiguration.subscriptionKey,
+            libraryConfiguration = libraryConfiguration,
             time = occurrenceTime,
             playlistName = playlistName,
-            header = libraryConfiguration.libraryKey.value,
-            appSessionId = libraryConfiguration.sessionId.value,
             pageViewId = playerSessionId.value,
             advertisementEvent = advertisementEvent,
+            action = playerAction,
         )
 
     private fun playerStatus(isPlaying: Boolean): PlayerEvent.Status =

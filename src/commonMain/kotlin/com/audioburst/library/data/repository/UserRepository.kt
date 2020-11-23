@@ -63,6 +63,10 @@ internal class HttpUserRepository(
                     userId = userId,
                     playlistId = playlistInfo.id.toString(),
                     playlistName = playlistInfo.name,
+                    playerAction = PlayerAction(
+                        type = PlayerAction.Type.Channel,
+                        value = playlistInfo.id.toString(),
+                    )
                 )
             }
             .onData(playlistStorage::setPlaylist)

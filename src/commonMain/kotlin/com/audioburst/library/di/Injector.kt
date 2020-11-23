@@ -130,10 +130,17 @@ internal object Injector {
             userRepository = userRepositoryProvider.get(),
         )
     }
+    private val postContentLoadEventProvider: Provider<PostContentLoadEvent> = provider {
+        PostContentLoadEvent(
+            playbackEventHandler = playbackEventHandlerProvider.get(),
+            timestampProvider = timestampProviderProvider.get(),
+        )
+    }
     private val getPlaylistProvider: Provider<GetPlaylist> = provider {
         GetPlaylist(
             getUser = getUserProvider.get(),
             userRepository = userRepositoryProvider.get(),
+            postContentLoadEvent = postContentLoadEventProvider.get(),
         )
     }
     private val getAdDataProvider: Provider<GetAdUrl> = provider {
@@ -197,6 +204,7 @@ internal object Injector {
         ObservePersonalPlaylist(
             getUser = getUserProvider.get(),
             personalPlaylistRepository = personalPlaylistRepositoryProvider.get(),
+            postContentLoadEvent = postContentLoadEventProvider.get(),
         )
     }
 

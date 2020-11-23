@@ -25,14 +25,16 @@ class TopStoryResponseToPlaylistTest {
         val response = topStoryResponseOf()
         val playlistId = ""
         val playlistName = ""
+        val playerAction = playerActionOf()
 
         // WHEN
-        val mapped = mapper.map(response, userId, playlistId, playlistName)
+        val mapped = mapper.map(response, userId, playlistId, playlistName, playerAction)
 
         // THEN
         assertEquals(mapped.playerSessionId.value, playerSessionId)
         assertEquals(mapped.id, playlistId)
         assertEquals(mapped.name, playlistName)
+        assertEquals(mapped.playerAction, playerAction)
     }
 
     @Test
@@ -43,8 +45,8 @@ class TopStoryResponseToPlaylistTest {
         val nonnullBurstResponse = topStoryResponseOf(bursts = bursts)
 
         // WHEN
-        val mappedNullBurstResponse = mapper.map(nullBurstResponse, userId, "", "")
-        val mappedNonnullBurstResponse = mapper.map(nonnullBurstResponse, userId, "", "")
+        val mappedNullBurstResponse = mapper.map(nullBurstResponse, userId, "", "", playerActionOf())
+        val mappedNonnullBurstResponse = mapper.map(nonnullBurstResponse, userId, "", "", playerActionOf())
 
         // THEN
         assertTrue(mappedNullBurstResponse.bursts.isEmpty())
@@ -59,8 +61,8 @@ class TopStoryResponseToPlaylistTest {
         val nonnullBurstResponse = topStoryResponseOf(actualQuery = actualQuery)
 
         // WHEN
-        val mappedNullQueryResponse = mapper.map(nullQueryResponse, userId, "", "")
-        val mappedNonnullQueryResponse = mapper.map(nonnullBurstResponse, userId, "", "")
+        val mappedNullQueryResponse = mapper.map(nullQueryResponse, userId, "", "", playerActionOf())
+        val mappedNonnullQueryResponse = mapper.map(nonnullBurstResponse, userId, "", "", playerActionOf())
 
         // THEN
         assertTrue(mappedNullQueryResponse.query.isEmpty())

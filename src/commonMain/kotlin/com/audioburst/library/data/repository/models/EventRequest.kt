@@ -18,6 +18,16 @@ internal data class EventRequest(
     val pageview_id: String?,
     val app_session_id: String,
     val ad: String?,
+    val action_type: String,
+    val action_value: String,
+    val player_type: String?,
+    val screen_size: String?,
+    val experience_id: String?,
+    val player_settings: String?,
+    val page_url: String?,
+    val referrer_url: String?,
+    val ab_cta: String?,
+    val ab_cta_link: String?,
 )
 
 @Serializable

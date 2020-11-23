@@ -6,4 +6,5 @@ data class Playlist(
     val query: String,
     val bursts: List<Burst>,
     val playerSessionId: PlayerSessionId,
+    internal val playerAction: PlayerAction,
 )

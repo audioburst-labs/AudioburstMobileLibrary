@@ -22,4 +22,5 @@ internal sealed class PlaybackEvent(val actionName: String, val eventPayload: Ev
         val reportingData: ReportingData,
         eventPayload: EventPayload,
     ) : PlaybackEvent("AD", eventPayload)
+    class ContentLoaded(eventPayload: EventPayload) : PlaybackEvent("contentLoad", eventPayload)
 }
