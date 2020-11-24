@@ -23,7 +23,7 @@ internal class AudioburstApi {
     fun getBurstPlay(libraryKey: LibraryKey, playlistId: Long, burstId: String, userId: String, subscriptionKey: SubscriptionKey, downloadType: Int): Endpoint =
         endpoint(
             path = "audio/repo/play/${libraryKey.value}/$playlistId/$burstId.mp3",
-            method = Endpoint.Method.POST,
+            method = Endpoint.Method.GET,
             queryParams = mapOf(
                 "userId" to userId,
                 "appName" to subscriptionKey.value,

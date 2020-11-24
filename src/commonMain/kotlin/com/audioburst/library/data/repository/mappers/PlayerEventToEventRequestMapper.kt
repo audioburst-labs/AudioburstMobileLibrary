@@ -38,7 +38,7 @@ internal class PlayerEventToEventRequestMapper(
             ad = from.advertisementEvent?.let(advertisementEventToAdvertisementEventRequestMapper::map)?.let(json::encodeToString) ?: EMPTY_OBJECT,
             action_type = from.action.type.id,
             action_value = from.action.value,
-            player_type = EMPTY_OBJECT,
+            player_type = EMPTY_STRING,
             screen_size = EMPTY_STRING,
             experience_id = EMPTY_STRING,
             player_settings = EMPTY_OBJECT,

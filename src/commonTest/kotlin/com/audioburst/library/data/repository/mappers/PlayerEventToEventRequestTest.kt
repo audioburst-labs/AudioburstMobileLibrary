@@ -37,7 +37,7 @@ class PlayerEventToEventRequestTest {
         assertEquals(mapped.app_session_id, playerEvent.libraryConfiguration.sessionId.value)
         assertEquals(mapped.action_type, playerEvent.action.type.id)
         assertEquals(mapped.action_value, playerEvent.action.value)
-        assertEquals(mapped.player_type, "{}")
+        assertEquals(mapped.player_type, "")
         assertEquals(mapped.screen_size, "")
         assertEquals(mapped.experience_id, "")
         assertEquals(mapped.player_settings, "{}")
