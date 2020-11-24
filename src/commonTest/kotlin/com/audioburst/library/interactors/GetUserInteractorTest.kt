@@ -25,13 +25,13 @@ class GetUserInteractorTest {
             ),
             userStorage = userStorage,
             uuidFactory = uuidFactory
-    )
+        )
 
     @Test
     fun testIfThereAreNoUserCredentialsInStorageAndRepositoryReturnsDataThenDataIsReturned() = runTest {
         // GIVEN
         val userRepositoryReturns = Resource.Data(userOf())
-        val userStorage = userStorageOf(userId = null, deviceId = null)
+        val userStorage = userStorageOf(userId = null)
         val uuidFactory = uuidFactoryOf()
 
         // WHEN
@@ -49,7 +49,7 @@ class GetUserInteractorTest {
     fun testIfThereAreNoUserCredentialsInStorageAndRepositoryReturnsErrorThenErrorIsReturned() = runTest {
         // GIVEN
         val userRepositoryReturns = resourceErrorOf()
-        val userStorage = userStorageOf(userId = null, deviceId = null)
+        val userStorage = userStorageOf(userId = null)
         val uuidFactory = uuidFactoryOf()
 
         // WHEN
@@ -68,8 +68,7 @@ class GetUserInteractorTest {
         // GIVEN
         val userRepositoryReturns = resourceErrorOf()
         val userId = "userId"
-        val deviceId = "deviceId"
-        val userStorage = userStorageOf(userId = userId, deviceId = deviceId)
+        val userStorage = userStorageOf(userId = userId)
         val uuidFactory = uuidFactoryOf()
 
         // WHEN
@@ -82,21 +81,16 @@ class GetUserInteractorTest {
         // THEN
         require(resource is Resource.Data)
         assertEquals(resource.result.userId, userId)
-        assertEquals(resource.result.deviceId, deviceId)
     }
 
     @Test
     fun testIfUserCredentialsAreSavedInStorageAfterRegisteringNewAccount() = runTest {
         // GIVEN
         val userId = "userId"
-        val deviceId = "deviceId"
         val userRepositoryReturns = Resource.Data(
-            userOf(
-                userId = userId,
-                deviceId = deviceId
-            )
+            userOf(userId = userId)
         )
-        val userStorage = userStorageOf(userId = null, deviceId = null)
+        val userStorage = userStorageOf(userId = null)
         val uuidFactory = uuidFactoryOf()
 
         // WHEN
@@ -109,6 +103,5 @@ class GetUserInteractorTest {
         // THEN
         require(resource is Resource.Data)
         assertEquals(userStorage.userId, userId)
-        assertEquals(userStorage.deviceId, deviceId)
     }
 }

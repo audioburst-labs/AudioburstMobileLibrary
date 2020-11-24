@@ -20,7 +20,6 @@ class SettingsUserStorageTest {
     @Test
     fun testIfStorageValuesAreNullAfterInitialization() {
         assertEquals(expected = null, storage.userId)
-        assertEquals(expected = null, storage.deviceId)
     }
 
     @Test
@@ -36,18 +35,6 @@ class SettingsUserStorageTest {
     }
 
     @Test
-    fun testIfDeviceIdIsSavedProperly() {
-        // GIVEN
-        val deviceId = "deviceId"
-
-        // WHEN
-        storage.deviceId = deviceId
-
-        // THEN
-        assertEquals(deviceId, storage.deviceId)
-    }
-
-    @Test
     fun testIfUserIdIsNulledOut() {
         // GIVEN
         val userId = null
@@ -57,17 +44,5 @@ class SettingsUserStorageTest {
 
         // THEN
         assertEquals(userId, storage.userId)
-    }
-
-    @Test
-    fun testIfDeviceIdIsNulledOut() {
-        // GIVEN
-        val deviceId = null
-
-        // WHEN
-        storage.deviceId = deviceId
-
-        // THEN
-        assertEquals(deviceId, storage.deviceId)
     }
 }

@@ -31,6 +31,15 @@ internal class AudioburstV2Api(private val json: Json) {
             )
         )
 
+    fun verify(userId: String): Endpoint =
+        endpoint(
+            path = "users/verify",
+            method = Endpoint.Method.GET,
+            queryParams = mapOf(
+                "userId" to userId
+            )
+        )
+
     fun getAllPlaylists(): Endpoint =
         endpoint(
             path = "playlists",

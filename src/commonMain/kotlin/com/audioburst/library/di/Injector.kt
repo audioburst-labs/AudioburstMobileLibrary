@@ -208,15 +208,23 @@ internal object Injector {
         )
     }
 
+    private val updateUserIdProvider: Provider<UpdateUserId> = provider {
+        UpdateUserId(
+            userStorage = userStorageProvider.get(),
+            userRepository = userRepositoryProvider.get()
+        )
+    }
+
     fun inject(audioburstLibrary: AudioburstLibraryDelegate) {
         with(audioburstLibrary) {
             observePersonalPlaylist = observePersonalPlaylistProvider.get()
             subscriptionKeySetter = subscriptionKeySetterProvider.get()
-            getPlaylistsInfo = getPlaylistsInfoProvider.get()
             postUserPreferences = postUserPreferencesProvider.get()
             getUserPreferences = getUserPreferencesProvider.get()
+            getPlaylistsInfo = getPlaylistsInfoProvider.get()
             appDispatchers = appDispatchersProvider.get()
             eventDetector = eventDetectorProvider.get()
+            updateUserId = updateUserIdProvider.get()
             getPlaylist = getPlaylistProvider.get()
             getAdUrl = getAdDataProvider.get()
         }

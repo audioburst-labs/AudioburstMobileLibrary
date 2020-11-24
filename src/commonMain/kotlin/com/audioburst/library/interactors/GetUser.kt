@@ -19,18 +19,13 @@ internal class GetUserInteractor(
 
     override suspend operator fun invoke(): Resource<User> {
         val userId = userStorage.userId
-        val deviceId = userStorage.deviceId
-        return if (userId != null && deviceId != null) {
+        return if (userId != null) {
             Resource.Data(
-                User(
-                    userId = userId,
-                    deviceId = deviceId
-                )
+                User(userId)
             )
         } else {
             userRepository.registerUser(uuidFactory.getUuid()).onData {
                 userStorage.userId = it.userId
-                userStorage.deviceId = it.deviceId
             }
         }
     }

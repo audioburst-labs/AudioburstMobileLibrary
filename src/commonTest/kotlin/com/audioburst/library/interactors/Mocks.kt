@@ -20,14 +20,7 @@ import com.audioburst.library.utils.timestampProviderOf
 internal fun resourceErrorOf(errorType: ErrorType = ErrorType.UnexpectedException(Exception())): Resource.Error =
     Resource.Error(errorType)
 
-internal fun userOf(
-    userId: String = "",
-    deviceId: String = "",
-): User =
-    User(
-        userId = userId,
-        deviceId = deviceId,
-    )
+internal fun userOf(userId: String = ""): User = User(userId = userId)
 
 internal fun playlistOf(
     id: String = "",
@@ -193,6 +186,8 @@ internal class MockUserRepository(private val returns: Returns) : UserRepository
 
     override suspend fun registerUser(userId: String): Resource<User> = returns.registerUser
 
+    override suspend fun verifyUserId(userId: String): Resource<User> = returns.verifyUserId
+
     override suspend fun getPlaylists(userId: String): Resource<List<PlaylistInfo>> = returns.getPlaylists
 
     override suspend fun getPlaylist(userId: String, playlistInfo: PlaylistInfo): Resource<Playlist> = returns.getPlaylist
@@ -207,6 +202,7 @@ internal class MockUserRepository(private val returns: Returns) : UserRepository
 
     data class Returns(
         val registerUser: Resource<User> = Resource.Data(userOf()),
+        val verifyUserId: Resource<User> = Resource.Data(userOf()),
         val getPlaylists: Resource<List<PlaylistInfo>> = Resource.Data(listOf()),
         val getPlaylist: Resource<Playlist> = Resource.Data(playlistOf()),
         val postPlayerEvent: Resource<Unit> = Resource.Data(Unit),

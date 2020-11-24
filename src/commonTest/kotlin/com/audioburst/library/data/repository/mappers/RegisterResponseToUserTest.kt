@@ -18,7 +18,6 @@ class RegisterResponseToUserTest {
 
         // THEN
         assertEquals(mapped.userId, response.ABUserID)
-        assertEquals(mapped.deviceId, response.ExternalUserId)
     }
 }
 

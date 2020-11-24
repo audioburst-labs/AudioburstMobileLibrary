@@ -23,7 +23,7 @@ internal class PlayerEventToEventRequestMapper(
                     total_play_time = from.totalPlayTime
                 )
             ),
-            burst_id = from.burstId ?: EMPTY_STRING,
+            burst_id = from.burstId,
             cookie_uid = from.userId,
             audioburst_appkey = from.libraryConfiguration.subscriptionKey.value,
             player_version = from.libraryConfiguration.libraryVersion.value,

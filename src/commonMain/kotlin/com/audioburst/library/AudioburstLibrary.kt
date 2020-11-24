@@ -19,6 +19,8 @@ expect class AudioburstLibrary(applicationKey: String)
 
 internal interface CoroutineAudioburstLibrary : EventDetector {
 
+    suspend fun setAudioburstUserID(userId: String): Result<Boolean>
+
     suspend fun getPlaylists(): Result<List<PlaylistInfo>>
 
     suspend fun getPlaylist(playlistInfo: PlaylistInfo): Result<Playlist>
@@ -33,6 +35,8 @@ internal interface CoroutineAudioburstLibrary : EventDetector {
 }
 
 internal interface CallbackAudioburstLibrary : EventDetector {
+
+    fun setAudioburstUserID(userId: String, onData: (Boolean) -> Unit, onError: (LibraryError) -> Unit)
 
     fun getPlaylists(onData: (List<PlaylistInfo>) -> Unit, onError: (LibraryError) -> Unit)
 

@@ -20,6 +20,8 @@ import io.ktor.client.*
 internal interface UserRepository {
     suspend fun registerUser(userId: String): Resource<User>
 
+    suspend fun verifyUserId(userId: String): Resource<User>
+
     suspend fun getPlaylists(userId: String): Resource<List<PlaylistInfo>>
 
     suspend fun getPlaylist(userId: String, playlistInfo: PlaylistInfo): Resource<Playlist>
@@ -49,6 +51,9 @@ internal class HttpUserRepository(
 
     override suspend fun registerUser(userId: String): Resource<User> =
         httpClient.execute<RegisterResponse>(audioburstV2Api.registerUser(userId)).map(registerResponseToUserMapper::map)
+
+    override suspend fun verifyUserId(userId: String): Resource<User> =
+        httpClient.execute<RegisterResponse>(audioburstV2Api.verify(userId)).map(registerResponseToUserMapper::map)
 
     override suspend fun getPlaylists(userId: String): Resource<List<PlaylistInfo>> =
         httpClient.execute<List<PlaylistsResponse>>(audioburstV2Api.getAllPlaylists()).map { playlistResponses ->

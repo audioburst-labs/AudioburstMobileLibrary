@@ -5,9 +5,5 @@ import com.audioburst.library.models.User
 
 internal class RegisterResponseToUserMapper {
 
-    fun map(from: RegisterResponse): User =
-        User(
-            userId = from.ABUserID,
-            deviceId = from.ExternalUserId
-        )
+    fun map(from: RegisterResponse): User = User(from.ABUserID)
 }

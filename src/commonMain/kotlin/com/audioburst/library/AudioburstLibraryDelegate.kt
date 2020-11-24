@@ -17,11 +17,12 @@ internal class AudioburstLibraryDelegate(applicationKey: String) : CoroutineAudi
 
     internal lateinit var observePersonalPlaylist: ObservePersonalPlaylist
     internal lateinit var subscriptionKeySetter: SubscriptionKeySetter
-    internal lateinit var getPlaylistsInfo: GetPlaylistsInfo
     internal lateinit var postUserPreferences: PostUserPreferences
     internal lateinit var getUserPreferences: GetUserPreferences
+    internal lateinit var getPlaylistsInfo: GetPlaylistsInfo
     internal lateinit var appDispatchers: AppDispatchers
     internal lateinit var eventDetector: StrategyBasedEventDetector
+    internal lateinit var updateUserId: UpdateUserId
     internal lateinit var getPlaylist: GetPlaylist
     internal lateinit var getAdUrl: GetAdUrl
 
@@ -30,6 +31,29 @@ internal class AudioburstLibraryDelegate(applicationKey: String) : CoroutineAudi
     init {
         Injector.inject(this)
         subscriptionKeySetter.set(SubscriptionKey(applicationKey))
+    }
+
+    /**
+     * If you already have users in your app and you wouldn't like to register new one, you can use this function to
+     * inform library what ABUserId it should use to communicate to the API. This function will return true if the given
+     * ABUserId is correct and present in Audioburst database. Otherwise it will return false.
+     *
+     * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it
+     * [Result.Error] will be returned with a proper error ([LibraryError]).
+     */
+    override suspend fun setAudioburstUserID(userId: String): Result<Boolean> = updateUserId(userId)
+
+    /**
+     * If you already have users in your app and you wouldn't like to register new one, you can use this function to
+     * inform library what ABUserId it should use to communicate to the API. This function will return true if the given
+     * ABUserId is correct and present in Audioburst database. Otherwise it will return false.
+     */
+    override fun setAudioburstUserID(userId: String, onData: (Boolean) -> Unit, onError: (LibraryError) -> Unit) {
+        scope.launch {
+            updateUserId(userId)
+                .onData { onData(it) }
+                .onError { onError(it) }
+        }
     }
 
     /**
