@@ -18,7 +18,7 @@ object Constants {
 }
 
 object Dependencies {
-    const val kotlinVersion = "1.4.10"
+    const val kotlinVersion = "1.4.20"
 
     private fun kotlin(dependency: String): String = "org.jetbrains.kotlin:$dependency:$kotlinVersion"
 
@@ -26,7 +26,6 @@ object Dependencies {
         const val multiplatform = "multiplatform"
         const val cocoapods = "native.cocoapods"
         const val androidLibrary = "com.android.library"
-        const val kotlinAndroidExtensions = "kotlin-android-extensions"
         const val mavenPublish = "maven-publish"
         const val serialization = "plugin.serialization"
         const val swiftPackageVersion = "1.0.2"
@@ -34,7 +33,7 @@ object Dependencies {
     }
 
     object Coroutines {
-        private const val version = "1.3.9-native-mt-2"
+        private const val version = "1.4.1-native-mt"
         const val commonMain = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
     }
 
@@ -44,7 +43,7 @@ object Dependencies {
     }
 
     object Ktor {
-        private const val version = "1.4.1"
+        private const val version = "1.4.2"
         const val core = "io.ktor:ktor-client-core:$version"
         const val json = "io.ktor:ktor-client-json:$version"
         const val logging = "io.ktor:ktor-client-logging:$version"

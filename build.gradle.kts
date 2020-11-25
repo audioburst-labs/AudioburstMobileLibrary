@@ -4,7 +4,6 @@ plugins {
     id(Dependencies.Plugins.androidLibrary)
     kotlin(Dependencies.Plugins.multiplatform) version Dependencies.kotlinVersion
     kotlin(Dependencies.Plugins.serialization) version Dependencies.kotlinVersion
-    id(Dependencies.Plugins.kotlinAndroidExtensions)
     id(Dependencies.Plugins.swiftPackage) version Dependencies.Plugins.swiftPackageVersion
     id(Dependencies.Plugins.mavenPublish)
 }
