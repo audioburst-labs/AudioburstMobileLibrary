@@ -8,10 +8,11 @@ internal class PlaylistResponseToPlaylistInfoMapper {
 
     fun map(from: PlaylistsResponse, userId: String): PlaylistInfo =
         PlaylistInfo(
+            section = from.section,
             id = from.playlistId,
             name = from.playlistName,
             description = from.description,
-            image = from.image?.thumbnail,
+            image = from.image.thumbnail,
             url = from.url(userId),
         )
 

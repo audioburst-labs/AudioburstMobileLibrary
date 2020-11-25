@@ -4,10 +4,11 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class PlaylistsResponse(
+    val section: String,
     val playlistId: Int,
     val playlistName: String,
     val description: String,
-    val image: ImageResponse?,
+    val image: ImageResponse,
     val url: String,
 )
 

@@ -44,6 +44,9 @@ internal class AudioburstV2Api(private val json: Json) {
         endpoint(
             path = "playlists",
             method = Endpoint.Method.GET,
+            queryParams = mapOf(
+                "withDisplay" to true
+            )
         )
 
     fun getUserPreferences(userId: String): Endpoint =

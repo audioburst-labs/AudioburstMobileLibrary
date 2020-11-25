@@ -40,13 +40,15 @@ internal fun playlistOf(
     )
 
 internal fun playlistInfoOf(
+    section: String = "",
     id: Int = 0,
     name: String = "",
     description: String = "",
-    image: String? = null,
+    image: String = "",
     url: String = "",
 ): PlaylistInfo =
     PlaylistInfo(
+        section = section,
         id = id,
         name = name,
         description = description,

@@ -22,10 +22,11 @@ class PlaylistResponseToPlaylistInfoTest {
         val mapped = mapper.map(playlistsResponse, userId)
 
         // THEN
+        assertEquals(playlistsResponse.section, mapped.section)
         assertEquals(playlistsResponse.playlistId, mapped.id)
         assertEquals(playlistsResponse.playlistName, mapped.name)
         assertEquals(playlistsResponse.description, mapped.description)
-        assertEquals(playlistsResponse.image?.thumbnail, mapped.image)
+        assertEquals(playlistsResponse.image.thumbnail, mapped.image)
     }
 
     @Test
@@ -43,18 +44,31 @@ class PlaylistResponseToPlaylistInfoTest {
 }
 
 internal fun playlistsResponseOf(
+    section: String = "",
     playlistId: Int = 0,
     playlistName: String = "",
     description: String = "",
-    image: ImageResponse? = null,
+    image: ImageResponse = imageResponseOf(),
     url: String = "",
 ) : PlaylistsResponse =
     PlaylistsResponse(
+        section = section,
         playlistId = playlistId,
         playlistName = playlistName,
         description = description,
         image = image,
         url = url,
+    )
+
+internal fun imageResponseOf(
+    url: String = "",
+    thumbnail: String = "",
+    svg: String = "",
+): ImageResponse =
+    ImageResponse(
+        url = url,
+        thumbnail = thumbnail,
+        svg = svg,
     )
 
 internal fun userStorageOf(userId: String? = null): UserStorage =
