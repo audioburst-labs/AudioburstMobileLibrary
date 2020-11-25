@@ -6,7 +6,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class AMLBurst, AMLLibraryError, AMLPendingPlaylist, AMLPlaylistInfo, AMLPlaylist, AMLUserPreferences, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLDurationUnit, AMLKotlinEnum<E>, AMLKey, AMLPreference, AMLResult<__covariant T>, AMLResultData<__covariant T>, AMLResultError, AMLKotlinNothing;
+@class AMLBurst, AMLLibraryError, AMLPendingPlaylist, AMLPlaylistInfo, AMLPlaylist, AMLUserPreferences, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLDurationUnit, AMLKotlinEnum<E>, AMLKey, AMLPlayerActionType, AMLPlayerAction, AMLPreference, AMLResult<__covariant T>, AMLResultData<__covariant T>, AMLResultError, AMLKotlinNothing;
 
 @protocol AMLPlaybackStateListener, AMLKotlinComparable;
 
@@ -148,6 +148,7 @@ __attribute__((swift_name("AudioburstLibrary")))
 - (void)getPlaylistsOnData:(void (^)(NSArray<AMLPlaylistInfo *> *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPlaylists(onData:onError:)")));
 - (void)getUserPreferencesOnData:(void (^)(AMLUserPreferences *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getUserPreferences(onData:onError:)")));
 - (void)removePlaybackStateListenerListener:(id<AMLPlaybackStateListener>)listener __attribute__((swift_name("removePlaybackStateListener(listener:)")));
+- (void)setAudioburstUserIDUserId:(NSString *)userId onData:(void (^)(AMLBoolean *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("setAudioburstUserID(userId:onData:onError:)")));
 - (void)setPlaybackStateListenerListener:(id<AMLPlaybackStateListener>)listener __attribute__((swift_name("setPlaybackStateListener(listener:)")));
 - (void)setUserPreferencesUserPreferences:(AMLUserPreferences *)userPreferences onData:(void (^)(AMLUserPreferences *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("setUserPreferences(userPreferences:onData:onError:)")));
 - (void)start __attribute__((swift_name("start()")));
@@ -340,15 +341,40 @@ __attribute__((swift_name("PlaybackState")))
 @end;
 
 __attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("PlayerAction")))
+@interface AMLPlayerAction : AMLBase
+- (instancetype)initWithType:(AMLPlayerActionType *)type value:(NSString *)value __attribute__((swift_name("init(type:value:)"))) __attribute__((objc_designated_initializer));
+- (AMLPlayerActionType *)component1 __attribute__((swift_name("component1()")));
+- (NSString *)component2 __attribute__((swift_name("component2()")));
+- (AMLPlayerAction *)doCopyType:(AMLPlayerActionType *)type value:(NSString *)value __attribute__((swift_name("doCopy(type:value:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@property (readonly) AMLPlayerActionType *type __attribute__((swift_name("type")));
+@property (readonly) NSString *value __attribute__((swift_name("value")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("PlayerAction.Type_")))
+@interface AMLPlayerActionType : AMLKotlinEnum<AMLPlayerActionType *>
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@property (class, readonly) AMLPlayerActionType *personalized __attribute__((swift_name("personalized")));
+@property (class, readonly) AMLPlayerActionType *channel __attribute__((swift_name("channel")));
+@property (readonly) NSString *id __attribute__((swift_name("id")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("Playlist")))
 @interface AMLPlaylist : AMLBase
-- (instancetype)initWithId:(NSString *)id name:(NSString *)name query:(NSString *)query bursts:(NSArray<AMLBurst *> *)bursts playerSessionId:(id)playerSessionId __attribute__((swift_name("init(id:name:query:bursts:playerSessionId:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithId:(NSString *)id name:(NSString *)name query:(NSString *)query bursts:(NSArray<AMLBurst *> *)bursts playerSessionId:(id)playerSessionId playerAction:(AMLPlayerAction *)playerAction __attribute__((swift_name("init(id:name:query:bursts:playerSessionId:playerAction:)"))) __attribute__((objc_designated_initializer));
 - (NSString *)component1 __attribute__((swift_name("component1()")));
 - (NSString *)component2 __attribute__((swift_name("component2()")));
 - (NSString *)component3 __attribute__((swift_name("component3()")));
 - (NSArray<AMLBurst *> *)component4 __attribute__((swift_name("component4()")));
 - (id)component5 __attribute__((swift_name("component5()")));
-- (AMLPlaylist *)doCopyId:(NSString *)id name:(NSString *)name query:(NSString *)query bursts:(NSArray<AMLBurst *> *)bursts playerSessionId:(id)playerSessionId __attribute__((swift_name("doCopy(id:name:query:bursts:playerSessionId:)")));
+- (AMLPlaylist *)doCopyId:(NSString *)id name:(NSString *)name query:(NSString *)query bursts:(NSArray<AMLBurst *> *)bursts playerSessionId:(id)playerSessionId playerAction:(AMLPlayerAction *)playerAction __attribute__((swift_name("doCopy(id:name:query:bursts:playerSessionId:playerAction:)")));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
@@ -362,20 +388,22 @@ __attribute__((swift_name("Playlist")))
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("PlaylistInfo")))
 @interface AMLPlaylistInfo : AMLBase
-- (instancetype)initWithId:(int32_t)id name:(NSString *)name description:(NSString *)description image:(NSString * _Nullable)image url:(NSString *)url __attribute__((swift_name("init(id:name:description:image:url:)"))) __attribute__((objc_designated_initializer));
-- (int32_t)component1 __attribute__((swift_name("component1()")));
-- (NSString *)component2 __attribute__((swift_name("component2()")));
+- (instancetype)initWithSection:(NSString *)section id:(int32_t)id name:(NSString *)name description:(NSString *)description image:(NSString *)image url:(NSString *)url __attribute__((swift_name("init(section:id:name:description:image:url:)"))) __attribute__((objc_designated_initializer));
+- (NSString *)component1 __attribute__((swift_name("component1()")));
+- (int32_t)component2 __attribute__((swift_name("component2()")));
 - (NSString *)component3 __attribute__((swift_name("component3()")));
-- (NSString * _Nullable)component4 __attribute__((swift_name("component4()")));
+- (NSString *)component4 __attribute__((swift_name("component4()")));
 - (NSString *)component5 __attribute__((swift_name("component5()")));
-- (AMLPlaylistInfo *)doCopyId:(int32_t)id name:(NSString *)name description:(NSString *)description image:(NSString * _Nullable)image url:(NSString *)url __attribute__((swift_name("doCopy(id:name:description:image:url:)")));
+- (NSString *)component6 __attribute__((swift_name("component6()")));
+- (AMLPlaylistInfo *)doCopySection:(NSString *)section id:(int32_t)id name:(NSString *)name description:(NSString *)description image:(NSString *)image url:(NSString *)url __attribute__((swift_name("doCopy(section:id:name:description:image:url:)")));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
-@property (readonly, getter=description_) NSString *description __attribute__((swift_name("description")));
+@property (readonly) NSString *description_ __attribute__((swift_name("description_")));
 @property (readonly) int32_t id __attribute__((swift_name("id")));
-@property (readonly) NSString * _Nullable image __attribute__((swift_name("image")));
+@property (readonly) NSString *image __attribute__((swift_name("image")));
 @property (readonly) NSString *name __attribute__((swift_name("name")));
+@property (readonly) NSString *section __attribute__((swift_name("section")));
 @property (readonly) NSString *url __attribute__((swift_name("url")));
 @end;
 
