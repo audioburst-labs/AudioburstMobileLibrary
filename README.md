@@ -52,6 +52,18 @@ val audioburstLibrary: AudioburstLibrary = AudioburstLibrary("YOUR_API_KEY_HERE"
 ```
 You can use this class by instantiating its instance every time you need this or as a singleton.
 
+## Legacy support
+Use the library's 'setAudioburstUserID' function to keep a pre-existing Audioburst API User ID.
+```kotlin
+audioburstLibrary.setAudioburstUserID("EXISTING_AUDIOBURST_API_USER_ID")
+    .onData { isSuccess ->
+        // If isSuccess is true, then you are ready to use existing Audioburst API User ID
+    }
+    .onError { error -> 
+        // Handle error 
+    }
+```
+
 ### Step 3. Request Audioburst content
 
 All the functions below are `suspending`, which means that you need to call them using a `CoroutineScope`. 
@@ -95,7 +107,7 @@ audioburstLibrary.getAdUrl(burst)
 ```
 
 ## Manage user preferences
-Library also offers an ability to manage (get and update) user preference.
+The library also includes the capability to manage (get and update) user preferences.
 ```kotlin
 audioburstLibrary.getUserPreferences()
     .onData { userPreferences ->
@@ -116,9 +128,8 @@ audioburstLibrary.setUserPreferences(userPreferences)
     }
 ```
 
-## Get Personal Playlist in an async way
-Library offers an ability to get personal playlist. This is a special type of playlist that is built with user preferences in mind.
-Sometimes it takes more time to prepare a personal playlist that is why library exposes an ability to "subscribe" to ongoing changes to personal playlist. By subscribing you will be notified every time there are new `Burst`s in the playlist. You can also check if playlist is ready.
+## Get Personalized Playlist using async
+The library includes the capability to get a personalized playlist constructed according to a user’s preferences. In order to shorten the loading time of the personalized playlist, the library exposes the ability to "subscribe" to ongoing changes in the playlist. Subscribing enables notifications every time new `Burst`s are added to the playlist and the ability to check if the playlist is ready.
 ```kotlin
 audioburstLibrary
     .getPersonalPlaylist()
@@ -244,6 +255,16 @@ let audioburstLibrary = AudioburstLibrary(applicationKey: "YOUR_API_KEY_HERE")
 ```
 You can use this class by instantiating its instance every time you need this or as a singleton.
 
+## Legacy support
+Use the library's 'setAudioburstUserID' function to keep a pre-existing Audioburst API User ID.
+```swift
+audioburstLibrary.setAudioburstUserID(userId: "EXISTING_AUDIOBURST_API_USER_ID") { isSucces in
+    // If isSuccess is true, then you are ready to use existing Audioburst API User ID
+} onError: { error in
+    // Handle error 
+}
+```
+
 ### Step 3. Request Audioburst content
 
 All the functions below lets you pass a closure that contains a requested data or error information.   
@@ -279,7 +300,7 @@ audioburstLibrary.getAdUrl(burst: burst) { adUrl in
 ```
 
 ## Manage user preferences
-Library also offers an ability to manage (get and update) user preference.
+The library also includes the capability to manage (get and update) user preferences.
 ```swift
 audioburstLibrary.getUserPreferences { userPreferences in
     // Use user preferences
@@ -296,9 +317,8 @@ audioburstLibrary.postUserPreferences(userPreferences: userPreferences) { userPr
 }
 ```
 
-## Get Personal Playlist in an async way
-Library offers an ability to get personal playlist. This is a special type of playlist that is built with user preferences in mind.
-Sometimes it takes more time to prepare a personal playlist that is why in this case, `onData` callback will be called every time there are new `Burst`'s. You can also check if playlist is ready.
+## Get Personalized Playlist using async
+The library includes the capability to get a personalized playlist constructed according to a user’s preferences. In order to shorten the loading time of the personalized playlist, the library exposes the ability to "subscribe" to ongoing changes in the playlist. Subscribing enables notifications every time new `Burst`s are added to the playlist and the ability to check if the playlist is ready.
 ```swift
 audioburstLibrary.getPersonalPlaylist { pendingPlaylist in
     if (pendingPlaylist.isReady) {
