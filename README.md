@@ -1,7 +1,9 @@
 # Audioburst Mobile Library
 
 ## Introduction
-AudioburstMobileLibrary is a multi platform library that allows convenient access to the Audioburst’s Content APIs. Playlists can be accessed, selected by users and additional information can be requested about the playlist. 
+AudioburstMobileLibrary is a multi platform library that allows convenient access to the Audioburst’s Content APIs. Playlists can be accessed, selected by users and additional information can be requested about the playlist.
+
+For further information about the flow and objects used by the library please refer to our [wiki page](https://github.com/audioburst-labs/AudioburstMobileLibrary/wiki)
 
 ## Features
 AudioburstMobileLibrary offers a simple API that lets you:
