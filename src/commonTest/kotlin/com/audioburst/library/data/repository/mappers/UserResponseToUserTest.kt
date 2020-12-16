@@ -1,12 +1,12 @@
 package com.audioburst.library.data.repository.mappers
 
-import com.audioburst.library.data.repository.models.RegisterResponse
+import com.audioburst.library.data.repository.models.UserResponse
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-class RegisterResponseToUserTest {
+class UserResponseToUserTest {
 
-    private val mapper = RegisterResponseToUserMapper()
+    private val mapper = UserResponseToUserMapper()
 
     @Test
     fun testMapper() {
@@ -27,8 +27,8 @@ internal fun registerResponseOf(
     EntryDate: String = "",
     IP: String = "",
     ExternalUserId: String = "",
-) : RegisterResponse =
-    RegisterResponse(
+) : UserResponse =
+    UserResponse(
         ABUserID = ABUserID,
         AppName = AppName,
         EntryDate = EntryDate,

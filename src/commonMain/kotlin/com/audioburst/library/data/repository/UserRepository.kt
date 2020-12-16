@@ -10,8 +10,8 @@ import com.audioburst.library.data.remote.AudioburstV2Api
 import com.audioburst.library.data.repository.mappers.*
 import com.audioburst.library.data.repository.models.AdvertisementResponse
 import com.audioburst.library.data.repository.models.PlaylistsResponse
-import com.audioburst.library.data.repository.models.RegisterResponse
 import com.audioburst.library.data.repository.models.TopStoryResponse
+import com.audioburst.library.data.repository.models.UserResponse
 import com.audioburst.library.data.storage.PlaylistStorage
 import com.audioburst.library.models.*
 import com.audioburst.library.utils.LibraryConfiguration
@@ -41,7 +41,7 @@ internal class HttpUserRepository(
     private val audioburstApi: AudioburstApi,
     private val abAiRouterApi: AbAiRouterApi,
     private val libraryConfiguration: LibraryConfiguration,
-    private val registerResponseToUserMapper: RegisterResponseToUserMapper,
+    private val userResponseToUserMapper: UserResponseToUserMapper,
     private val playlistResponseToPlaylistInfoMapper: PlaylistResponseToPlaylistInfoMapper,
     private val topStoryResponseToPlaylist: TopStoryResponseToPlaylist,
     private val advertisementResponseToAdvertisementMapper: AdvertisementResponseToAdvertisementMapper,
@@ -50,10 +50,10 @@ internal class HttpUserRepository(
 ) : UserRepository {
 
     override suspend fun registerUser(userId: String): Resource<User> =
-        httpClient.execute<RegisterResponse>(audioburstV2Api.registerUser(userId)).map(registerResponseToUserMapper::map)
+        httpClient.execute<UserResponse>(audioburstV2Api.registerUser(userId)).map(userResponseToUserMapper::map)
 
     override suspend fun verifyUserId(userId: String): Resource<User> =
-        httpClient.execute<RegisterResponse>(audioburstV2Api.verify(userId)).map(registerResponseToUserMapper::map)
+        httpClient.execute<UserResponse>(audioburstV2Api.verify(userId)).map(userResponseToUserMapper::map)
 
     override suspend fun getPlaylists(userId: String): Resource<List<PlaylistInfo>> =
         httpClient.execute<List<PlaylistsResponse>>(audioburstV2Api.getAllPlaylists()).map { playlistResponses ->

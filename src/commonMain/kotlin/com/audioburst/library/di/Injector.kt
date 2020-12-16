@@ -37,7 +37,7 @@ internal object Injector {
     )
     private val audioburstV2ApiProvider: Provider<AudioburstV2Api> = provider { AudioburstV2Api(jsonProvider.get()) }
     private val audioburstApiProvider: Provider<AudioburstApi> = provider { AudioburstApi() }
-    private val registerResponseToUserProvider: Provider<RegisterResponseToUserMapper> = provider { RegisterResponseToUserMapper() }
+    private val userResponseToUserProvider: Provider<UserResponseToUserMapper> = provider { UserResponseToUserMapper() }
     private val settingsProvider: Provider<Settings> = singleton { settings() }
     private val userStorageProvider: Provider<UserStorage> = provider {
         SettingsUserStorage(
@@ -81,7 +81,7 @@ internal object Injector {
             abAiRouterApi = abAiRouterApiProvider.get(),
             audioburstApi = audioburstApiProvider.get(),
             libraryConfiguration = libraryConfigurationProvider.get(),
-            registerResponseToUserMapper = registerResponseToUserProvider.get(),
+            userResponseToUserMapper = userResponseToUserProvider.get(),
             playlistResponseToPlaylistInfoMapper = playlistResponseToPlaylistInfoProvider.get(),
             topStoryResponseToPlaylist = topStoryResponseToPlaylistProvider.get(),
             advertisementResponseToAdvertisementMapper = advertisementResponseToAdvertisementMapperProvider.get(),
