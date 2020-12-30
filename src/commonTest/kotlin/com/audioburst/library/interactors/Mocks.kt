@@ -155,6 +155,7 @@ internal fun eventPayloadOf(
     occurrenceTime: Long = 0,
     currentPlayBackPosition: Duration = 0.0.toDuration(DurationUnit.Seconds),
     playerSessionId: PlayerSessionId = PlayerSessionId(value = ""),
+    advertisement: Advertisement? = null,
 ): EventPayload = EventPayload(
     playerAction = playerAction,
     playlistId = playlistId,
@@ -164,6 +165,7 @@ internal fun eventPayloadOf(
     occurrenceTime = occurrenceTime,
     currentPlayBackPosition = currentPlayBackPosition,
     playerSessionId = playerSessionId,
+    advertisement = advertisement,
 )
 
 internal fun getUserOf(resource: Resource<User>): GetUser =
@@ -180,11 +182,18 @@ internal fun playlistStorageOf(currentPlaylist: Playlist? = null, currentAds: Li
     }
 
 internal fun userRepositoryOf(
-    returns: MockUserRepository.Returns = MockUserRepository.Returns()
+    returns: MockUserRepository.Returns = MockUserRepository.Returns(),
+    sentEvents: MutableList<MockUserRepository.SentEvent> = mutableListOf()
 ): UserRepository =
-    MockUserRepository(returns = returns)
+    MockUserRepository(
+        returns = returns,
+        sentEvents = sentEvents
+    )
 
-internal class MockUserRepository(private val returns: Returns) : UserRepository {
+internal class MockUserRepository(
+    private val returns: Returns,
+    private val sentEvents: MutableList<SentEvent>,
+) : UserRepository {
 
     override suspend fun registerUser(userId: String): Resource<User> = returns.registerUser
 
@@ -194,7 +203,9 @@ internal class MockUserRepository(private val returns: Returns) : UserRepository
 
     override suspend fun getPlaylist(userId: String, playlistInfo: PlaylistInfo): Resource<Playlist> = returns.getPlaylist
 
-    override suspend fun postEvent(playerEvent: PlayerEvent, name: String): Resource<Unit> = returns.postPlayerEvent
+    override suspend fun postEvent(playerEvent: PlayerEvent, name: String): Resource<Unit> = returns.postPlayerEvent.apply {
+        sentEvents.add(SentEvent(name, playerEvent))
+    }
 
     override suspend fun postReportingData(reportingData: ReportingData): Resource<Unit> = returns.postReportingData
 
@@ -211,6 +222,11 @@ internal class MockUserRepository(private val returns: Returns) : UserRepository
         val postReportingData: Resource<Unit> = Resource.Data(Unit),
         val postBurstPlayback: Resource<Unit> = Resource.Data(Unit),
         val getAdData: Resource<Advertisement> = Resource.Data(advertisementOf()),
+    )
+
+    data class SentEvent(
+        val name: String,
+        val playerEvent: PlayerEvent,
     )
 }
 

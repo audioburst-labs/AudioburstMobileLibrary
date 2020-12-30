@@ -7,6 +7,6 @@ data class PlaybackState(
 
 internal data class InternalPlaybackState(
     val url: String,
-    val position: Double,
+    val position: Duration,
     val occurrenceTime: Long,
 )

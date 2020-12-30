@@ -8,5 +8,6 @@ internal data class EventPayload(
     val isPlaying: Boolean,
     val occurrenceTime: Long,
     val currentPlayBackPosition: Duration,
-    val playerSessionId: PlayerSessionId
+    val playerSessionId: PlayerSessionId,
+    val advertisement: Advertisement?,
 )

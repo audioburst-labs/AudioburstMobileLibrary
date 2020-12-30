@@ -1,6 +1,8 @@
 package com.audioburst.library.utils
 
+import com.audioburst.library.models.DurationUnit
 import com.audioburst.library.models.InternalPlaybackState
+import com.audioburst.library.models.toDuration
 
 internal fun playbackStateOf(
     url: String = "",
@@ -9,6 +11,6 @@ internal fun playbackStateOf(
 ) : InternalPlaybackState =
     InternalPlaybackState(
         url = url,
-        position = position,
+        position = position.toDuration(DurationUnit.Seconds),
         occurrenceTime = occurrenceTime,
     )

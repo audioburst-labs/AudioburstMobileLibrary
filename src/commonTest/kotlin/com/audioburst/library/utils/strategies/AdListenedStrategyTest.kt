@@ -1,6 +1,7 @@
 package com.audioburst.library.utils.strategies
 
 import com.audioburst.library.interactors.*
+import com.audioburst.library.models.AnalysisInput
 import com.audioburst.library.models.PlaybackEvent
 import com.audioburst.library.models.Url
 import com.audioburst.library.models.InternalPlaybackState
@@ -42,7 +43,7 @@ class AdListenedStrategyTest {
 
         // WHEN
         val playbackEvent = strategy.check(
-            PlaybackEventStrategy.Input(
+            AnalysisInput(
                 playlist = playlist,
                 currentState = currentState,
                 previousStates = previousStates,
@@ -125,7 +126,7 @@ class AdListenedStrategyTest {
 
         // WHEN
         val playbackEvent = strategy.check(
-            PlaybackEventStrategy.Input(
+            AnalysisInput(
                 playlist = playlist,
                 currentState = currentState,
                 previousStates = previousStates,

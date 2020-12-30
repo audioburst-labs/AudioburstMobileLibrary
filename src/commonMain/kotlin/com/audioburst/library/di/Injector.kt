@@ -13,6 +13,8 @@ import com.audioburst.library.data.storage.*
 import com.audioburst.library.di.providers.*
 import com.audioburst.library.interactors.*
 import com.audioburst.library.models.AppDispatchers
+import com.audioburst.library.models.DurationUnit
+import com.audioburst.library.models.toDuration
 import com.audioburst.library.utils.*
 import com.audioburst.library.utils.strategies.*
 import com.russhwolf.settings.Settings
@@ -23,6 +25,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.serialization.json.Json
 
 internal object Injector {
+
+    private val playbackStateCheckInterval = 2.0.toDuration(DurationUnit.Seconds)
 
     private val jsonProvider: Provider<Json> = JsonProvider()
     private val serializerProvider: Provider<JsonSerializer> = provider { KotlinxSerializer(json = jsonProvider.get()) }
@@ -109,11 +113,23 @@ internal object Injector {
         )
     }
     private val timestampProviderProvider: Provider<TimestampProvider> = provider { PlatformTimestampProvider }
+    private val listenedMediaStrategyFactoryProvider: Provider<ListenedMediaStrategy.Factory> = provider {
+        ListenedMediaStrategy.Factory(
+            refreshInterval = playbackStateCheckInterval
+        )
+    }
+    private val playbackPeriodsCreatorProvider: Provider<PlaybackPeriodsCreator> = provider { InputBasedPlaybackPeriodsCreator() }
+    private val listenedStrategyProvider: Provider<ListenedStrategy> = provider {
+        ListenedStrategy(
+            factory = listenedMediaStrategyFactoryProvider.get(),
+            creator = playbackPeriodsCreatorProvider.get(),
+        )
+    }
     private val strategiesProvider: Provider<List<PlaybackEventStrategy<*>>> = provider {
         listOf(
             AdListenedStrategy(), Back30SecStrategy(), BackStrategy(), BackToBurstStrategy(), EndOfPlayStrategy(),
             EndOfPlaylistStrategy(), ForwardStrategy(), KeepListeningStrategy(), RepeatStrategy(), RewindStrategy(),
-            Skip30SecStrategy(), SkipStrategy(), StartOfPlayStrategy()
+            Skip30SecStrategy(), SkipStrategy(), StartOfPlayStrategy(),
         )
     }
     private val subscriptionKeySetterProvider: Provider<SubscriptionKeySetter> = provider { libraryConfigurationProvider.get() as SubscriptionKeySetter }
@@ -163,6 +179,8 @@ internal object Injector {
             strategies = strategiesProvider.get(),
             timestampProvider = timestampProviderProvider.get(),
             appDispatchers = appDispatchersProvider.get(),
+            checkInterval = playbackStateCheckInterval,
+            listenedStrategy = listenedStrategyProvider.get(),
         )
     }
 

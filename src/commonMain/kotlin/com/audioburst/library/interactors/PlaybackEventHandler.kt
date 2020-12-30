@@ -52,7 +52,7 @@ internal class PlaybackEventHandlerInteractor(
 
     private suspend fun postPlayerEvent(playbackEvent: PlaybackEvent, advertisementEvent: AdvertisementEvent? = null) {
         val userId = userStorage.userId ?: return
-        val playerEvent = playbackEvent.eventPayload.toPlayerEvent(
+        val playerEvent = playbackEvent.toPlayerEvent(
             userId = userId,
             advertisementEvent = advertisementEvent
         )
@@ -69,15 +69,15 @@ internal class PlaybackEventHandlerInteractor(
         }
     }
 
-    private fun EventPayload.toPlayerEvent(userId: String, advertisementEvent: AdvertisementEvent? = null): PlayerEvent =
+    private fun PlaybackEvent.toPlayerEvent(userId: String, advertisementEvent: AdvertisementEvent? = null): PlayerEvent = with(eventPayload) {
         PlayerEvent(
-            burstLength = burst.duration.seconds,
+            burstLength = length(),
             playerInstanceId = playerSessionId.value,
             playerStatus = playerStatus(isPlaying),
             playlistQueryId = burst.playlistId,
-            positionInBurst = currentPlayBackPosition.seconds,
+            positionInBurst = positionInBurst(),
             stream = burst.streamUrl != null,
-            totalPlayTime = currentPlayBackPosition.seconds,
+            totalPlayTime = totalPlayTime(),
             burstId = burst.id,
             playlistId = playlistId,
             userId = userId,
@@ -88,6 +88,38 @@ internal class PlaybackEventHandlerInteractor(
             advertisementEvent = advertisementEvent,
             action = playerAction,
         )
+    }
+
+    private fun PlaybackEvent.totalPlayTime(): Double = positionInBurst()
+
+    private fun PlaybackEvent.positionInBurst(): Double = with(eventPayload) {
+        if (this@positionInBurst is PlaybackEvent.StartOfPlay) {
+            0.0
+        } else {
+            if (isInAd()) {
+                currentPlayBackPosition.seconds
+            } else {
+                advertisement?.let { currentPlayBackPosition.seconds - it.duration.seconds } ?: currentPlayBackPosition.seconds
+            }
+        }
+    }
+
+    private fun PlaybackEvent.length(): Double = with(eventPayload) {
+        if (this@length is PlaybackEvent.StartOfPlay) {
+            burst.duration.seconds
+        } else {
+            if (isInAd()) {
+                advertisement?.duration?.seconds ?: 0.0
+            } else {
+                burst.duration.seconds
+            }
+        }
+    }
+
+    private fun EventPayload.isInAd(): Boolean =
+        advertisement?.let {
+            currentPlayBackPosition.milliseconds <= it.duration.milliseconds
+        } ?: false
 
     private fun playerStatus(isPlaying: Boolean): PlayerEvent.Status =
         if (isPlaying) PlayerEvent.Status.Playing else PlayerEvent.Status.Stopped

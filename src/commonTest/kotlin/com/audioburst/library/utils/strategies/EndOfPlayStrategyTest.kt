@@ -2,6 +2,7 @@ package com.audioburst.library.utils.strategies
 
 import com.audioburst.library.interactors.burstOf
 import com.audioburst.library.interactors.playlistOf
+import com.audioburst.library.models.AnalysisInput
 import com.audioburst.library.models.DurationUnit
 import com.audioburst.library.models.InternalPlaybackState
 import com.audioburst.library.models.toDuration
@@ -49,7 +50,7 @@ internal class EndOfPlayStrategyTest {
 
         // WHEN
         val playbackEvent = strategy.check(
-            PlaybackEventStrategy.Input(
+            AnalysisInput(
                 playlist = playlist,
                 currentState = currentState,
                 previousStates = previousStates,
@@ -104,7 +105,7 @@ internal class EndOfPlayStrategyTest {
 
         // WHEN
         val playbackEvent = strategy.check(
-            PlaybackEventStrategy.Input(
+            AnalysisInput(
                 playlist = playlist,
                 currentState = currentState,
                 previousStates = previousStates,

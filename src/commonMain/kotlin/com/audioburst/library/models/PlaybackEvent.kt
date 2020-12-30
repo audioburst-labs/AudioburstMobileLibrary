@@ -17,6 +17,8 @@ internal sealed class PlaybackEvent(val actionName: String, val eventPayload: Ev
     class Forward(eventPayload: EventPayload) : PlaybackEvent("forward", eventPayload)
     class Rewind(eventPayload: EventPayload) : PlaybackEvent("rewind", eventPayload)
     class EndOfPlaylist(eventPayload: EventPayload) : PlaybackEvent("endOfPlaylist", eventPayload)
+    class TwoSecPlaying(eventPayload: EventPayload) : PlaybackEvent("2secPlaying", eventPayload)
+    class TwoSecADPlaying(eventPayload: EventPayload) : PlaybackEvent("2secADPlaying", eventPayload)
     class AdListened(
         val advertisement: Advertisement,
         val reportingData: ReportingData,

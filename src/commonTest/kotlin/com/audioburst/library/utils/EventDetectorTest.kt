@@ -2,6 +2,8 @@ package com.audioburst.library.utils
 
 import com.audioburst.library.interactors.*
 import com.audioburst.library.models.*
+import com.audioburst.library.utils.strategies.ListenedMediaStrategy
+import com.audioburst.library.utils.strategies.ListenedStrategy
 import com.audioburst.library.utils.strategies.PlaybackEventStrategy
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
@@ -106,6 +108,8 @@ internal fun eventDetectorOf(
     playbackEventHandler: (PlaybackEvent) -> Unit = {},
     playbackEvent: PlaybackEvent = PlaybackEvent.Skip(eventPayloadOf()),
     timestamp: Long = 0,
+    checkInterval: Duration = 1.0.toDuration(DurationUnit.Seconds),
+    listenedStrategy: ListenedStrategy = listenedStrategyOf()
 ): StrategyBasedEventDetector =
     StrategyBasedEventDetector(
         currentPlaylist = currentPlaylistOf(playlist),
@@ -118,7 +122,28 @@ internal fun eventDetectorOf(
         strategies = listOf(strategyOf(playbackEvent)),
         timestampProvider = timestampProviderOf(timestamp),
         appDispatchers = appDispatchersOf(),
+        checkInterval = checkInterval,
+        listenedStrategy = listenedStrategy,
     )
+
+internal fun playbackPeriodsCreatorOf(
+    results: List<PlaybackPeriodsCreator.Result> = emptyList(),
+): PlaybackPeriodsCreator =
+    PlaybackPeriodsCreator { results }
+
+internal fun listenedStrategyOf(
+    factory: ListenedMediaStrategy.Factory = listenedMediaStrategyFactoryOf(),
+    creator: PlaybackPeriodsCreator = playbackPeriodsCreatorOf(),
+): ListenedStrategy =
+    ListenedStrategy(
+        factory = factory,
+        creator = creator,
+    )
+
+internal fun listenedMediaStrategyFactoryOf(
+    refreshInterval: Duration = 1.0.toDuration(DurationUnit.Seconds)
+): ListenedMediaStrategy.Factory =
+    ListenedMediaStrategy.Factory(refreshInterval = refreshInterval)
 
 internal fun currentPlaylistOf(playlist: Playlist? = null): CurrentPlaylist =
     CurrentPlaylist { playlist }

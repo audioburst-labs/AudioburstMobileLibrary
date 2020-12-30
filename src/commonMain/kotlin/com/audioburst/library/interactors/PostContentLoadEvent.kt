@@ -39,5 +39,6 @@ private fun Playlist.toEventPayload(
         occurrenceTime = occurrenceTime,
         currentPlayBackPosition = currentPlayBackPosition,
         playerSessionId = playerSessionId,
+        advertisement = null,
     )
 }
