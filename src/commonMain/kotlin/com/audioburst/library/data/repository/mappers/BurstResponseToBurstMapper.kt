@@ -41,6 +41,7 @@ internal class BurstResponseToBurstMapper constructor(
             URLBuilder(BASE_AD_URL).apply {
                 encodedPath += "/$burstId"
                 parameters.append(USER_ID_QUERY_PARAM, userId)
+                category?.let { parameters.append(CATEGORY_QUERY_PARAM, it) }
             }.buildString()
         } else {
             null
@@ -50,5 +51,6 @@ internal class BurstResponseToBurstMapper constructor(
         private const val UTM_SOURCE_QUERY_NAME = "utm_source"
         private const val BASE_AD_URL = "https://sapi.audioburst.com/audio/get/streamwithad"
         private const val USER_ID_QUERY_PARAM = "userId"
+        private const val CATEGORY_QUERY_PARAM = "category"
     }
 }

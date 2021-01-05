@@ -103,20 +103,48 @@ class BurstResponseToBurstTest {
     }
 
     @Test
-    fun testIfAdUrlIsGettingParsedProperly() {
+    fun testIfAdUrlIsGettingParsedProperlyWhenPromoteResponseIsNull() {
         // GIVEN
         val nullPromoteResponse = burstsResponseOf(promote = null)
+
+        // WHEN
+        val mappedNullPromoteResponse = mapper.map(nullPromoteResponse, userId, queryId = 0L)
+
+        // THEN
+        assertTrue(mappedNullPromoteResponse.adUrl == null)
+        assertTrue(!mappedNullPromoteResponse.isAdAvailable)
+    }
+
+    @Test
+    fun testIfAdUrlIsGettingParsedProperlyWhenPromoteResponseIsNotNull() {
+        // GIVEN
         val burstId = "burstId"
         val notNullPromoteResponse = burstsResponseOf(burstId = burstId, promote = promoteResponseOf())
         val expectedUrl = "https://sapi.audioburst.com/audio/get/streamwithad/$burstId?userId=$userId"
 
         // WHEN
-        val mappedNullPromoteResponse = mapper.map(nullPromoteResponse, userId, queryId = 0L)
         val mappedNotNullKeywordsResponse = mapper.map(notNullPromoteResponse, userId, queryId = 0L)
 
         // THEN
-        assertTrue(mappedNullPromoteResponse.adUrl == null)
-        assertTrue(!mappedNullPromoteResponse.isAdAvailable)
+        assertEquals(expectedUrl, mappedNotNullKeywordsResponse.adUrl)
+    }
+
+    @Test
+    fun testIfAdUrlIsGettingParsedProperlyWhenPromoteResponseIsNotNullAndCategoryIsAvailable() {
+        // GIVEN
+        val burstId = "burstId"
+        val category = "category"
+        val notNullPromoteResponse = burstsResponseOf(
+                burstId = burstId,
+                category = category,
+                promote = promoteResponseOf()
+        )
+        val expectedUrl = "https://sapi.audioburst.com/audio/get/streamwithad/$burstId?userId=$userId&category=$category"
+
+        // WHEN
+        val mappedNotNullKeywordsResponse = mapper.map(notNullPromoteResponse, userId, queryId = 0L)
+
+        // THEN
         assertEquals(expectedUrl, mappedNotNullKeywordsResponse.adUrl)
     }
 }
