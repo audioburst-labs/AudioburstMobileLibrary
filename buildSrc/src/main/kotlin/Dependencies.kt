@@ -53,7 +53,6 @@ object Dependencies {
         const val jvmMain = "io.ktor:ktor-client-apache:$version"
         const val androidMain = "io.ktor:ktor-client-android:$version"
         const val iOSMain = "io.ktor:ktor-client-ios:$version"
-        const val jsMain = "io.ktor:ktor-client-js:$version"
     }
 
     object SqlDelight {
@@ -94,10 +93,6 @@ object Dependencies {
 
         object Jvm {
             val junit = kotlin("kotlin-test-junit")
-        }
-
-        object Js {
-            val js = kotlin("kotlin-test-js")
         }
     }
 }

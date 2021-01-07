@@ -32,10 +32,6 @@ kotlin {
             }
         }
     }
-    js("browser") {
-        browser {
-        }
-    }
     sourceSets {
         val commonMain by getting {
             dependencies {
@@ -90,17 +86,6 @@ kotlin {
             }
         }
         val iosTest by getting
-        val browserMain by getting {
-            dependencies {
-                implementation(Dependencies.Ktor.jsMain)
-                implementation(npm("uuid", "8.3.1"))
-            }
-        }
-        val browserTest by getting {
-            dependencies {
-                implementation(Dependencies.Test.Js.js)
-            }
-        }
         all {
             languageSettings.enableLanguageFeature("InlineClasses")
         }
