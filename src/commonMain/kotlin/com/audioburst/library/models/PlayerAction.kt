@@ -6,6 +6,6 @@ data class PlayerAction(
 ) {
 
     enum class Type(val id: String) {
-        Personalized("p_playlist"), Channel("channel");
+        Personalized("p_playlist"), Channel("channel"), Voice("Voice");
     }
 }

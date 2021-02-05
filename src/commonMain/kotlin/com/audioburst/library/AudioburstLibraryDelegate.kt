@@ -84,11 +84,33 @@ internal class AudioburstLibraryDelegate(applicationKey: String) : CoroutineAudi
     override suspend fun getPlaylist(playlistInfo: PlaylistInfo): Result<Playlist> = getPlaylist.invoke(playlistInfo)
 
     /**
+     * You can use this function to pass previously recorded and converted to ByteArray search query.
+     *
+     * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it
+     * [Result.Error] will be returned with a proper error ([LibraryError]).
+     */
+    override suspend fun getPlaylist(byteArray: ByteArray): Result<Playlist> = getPlaylist.invoke(byteArray)
+
+    /**
      * Use this function to get information about chosen [Playlist].
      */
     override fun getPlaylist(playlistInfo: PlaylistInfo, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
         scope.launch {
             getPlaylist.invoke(playlistInfo)
+                .onData { onData(it) }
+                .onError { onError(it) }
+        }
+    }
+
+    /**
+     * You can use this function to pass previously recorded and converted to ByteArray search query.
+     *
+     * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it
+     * [Result.Error] will be returned with a proper error ([LibraryError]).
+     */
+    override fun getPlaylist(byteArray: ByteArray, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
+        scope.launch {
+            getPlaylist.invoke(byteArray)
                 .onData { onData(it) }
                 .onError { onError(it) }
         }

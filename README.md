@@ -150,6 +150,21 @@ audioburstLibrary
     }
 ```  
 
+## Pass recorded PCM file
+`AudioburstLibrary` is able to process raw audio files that contain a recorded request of what should be played. You can record a voice command stating what you would like to listen to and then upload it to your device and use AudioburstLibrary to get bursts on this topic.
+
+```kotlin
+audioburstLibrary.getPlaylist(byteArray)
+    .onData { playlist ->
+        // Build your playback queue by using list of Bursts
+    }
+    .onError { error ->
+        // Handle error
+    }
+```
+
+The `getPlaylist` function accepts `ByteArray` as an argument. A request included in the PCM file will be processed and a playlist of the bursts will be returned.
+
 ### Step 4. Inform library about current playback state
 Audioburst is obligated to provide content owners comprehensive information about content playback, therefore all play events need to be reported. This library implements that functionality, and the only event required is to inform when playback starts and stops, and return the current playback state every time the library requests that information. 
 
@@ -331,7 +346,20 @@ audioburstLibrary.getPersonalPlaylist { pendingPlaylist in
 } onError: { error in
     // Handle error
 }
-```  
+```
+
+## Pass recorded PCM file
+`AudioburstLibrary` is able to process raw audio files that contain a recorded request of what should be played. You can record a voice command stating what you would like to listen to and then upload it to your device and use AudioburstLibrary to get bursts on this topic.
+
+```swift
+audioburstLibrary.getPlaylist(data: data) { playlist in
+    // Build your playback queue by using list of Bursts
+} onError: { errorType in
+    // Handle error
+}
+```
+
+The `getPlaylist` function accepts `Data` as an argument. A request included in the PCM file will be processed and a playlist of the bursts will be returned.
 
 ### Step 4. Inform library about current playback state
 Audioburst is obligated to provide content owners comprehensive information about content playback, therefore all play events need to be reported. This library implements that functionality, and the only event required is to inform when playback starts and stops, and return the current playback state every time the library requests that information. 

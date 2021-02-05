@@ -26,6 +26,8 @@ internal interface UserRepository {
 
     suspend fun getPlaylist(userId: String, playlistInfo: PlaylistInfo): Resource<Playlist>
 
+    suspend fun getPlaylist(userId: String, byteArray: ByteArray): Resource<Playlist>
+
     suspend fun postEvent(playerEvent: PlayerEvent, name: String): Resource<Unit>
 
     suspend fun postReportingData(reportingData: ReportingData): Resource<Unit>
@@ -75,6 +77,26 @@ internal class HttpUserRepository(
                 )
             }
             .onData(playlistStorage::setPlaylist)
+
+    override suspend fun getPlaylist(userId: String, byteArray: ByteArray): Resource<Playlist> =
+        httpClient.execute<TopStoryResponse>(
+            audioburstV2Api.getPlaylist(
+                byteArray = byteArray,
+                userId = userId,
+                libraryKey = libraryConfiguration.libraryKey,
+            )
+        ).map { topStoryResponse ->
+            topStoryResponseToPlaylist.map(
+                from = topStoryResponse,
+                userId = userId,
+                playlistId = "",
+                playlistName = "",
+                playerAction = PlayerAction(
+                    type = PlayerAction.Type.Voice,
+                    value = topStoryResponse.actualQuery ?: "",
+                )
+            )
+        }
 
     override suspend fun postEvent(playerEvent: PlayerEvent, name: String): Resource<Unit> =
         httpClient.execute(

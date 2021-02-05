@@ -25,6 +25,8 @@ internal interface CoroutineAudioburstLibrary : EventDetector {
 
     suspend fun getPlaylist(playlistInfo: PlaylistInfo): Result<Playlist>
 
+    suspend fun getPlaylist(byteArray: ByteArray): Result<Playlist>
+
     suspend fun getAdUrl(burst: Burst): Result<String>
 
     suspend fun getPersonalPlaylist(): Flow<Result<PendingPlaylist>>
@@ -41,6 +43,8 @@ internal interface CallbackAudioburstLibrary : EventDetector {
     fun getPlaylists(onData: (List<PlaylistInfo>) -> Unit, onError: (LibraryError) -> Unit)
 
     fun getPlaylist(playlistInfo: PlaylistInfo, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit)
+
+    fun getPlaylist(byteArray: ByteArray, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit)
 
     fun getAdUrl(burst: Burst, onData: (String) -> Unit, onError: (LibraryError) -> Unit)
 

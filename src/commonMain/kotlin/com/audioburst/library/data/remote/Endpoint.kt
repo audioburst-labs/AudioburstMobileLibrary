@@ -24,6 +24,7 @@ internal data class Endpoint(
     sealed class Body {
         data class Json(val body: Any): Body()
         data class Plain(val text: String): Body()
+        class Bytes(val byteArray: ByteArray): Body()
     }
 }
 
@@ -51,6 +52,7 @@ internal inline fun Endpoint.toHttpRequest(): HttpRequestBuilder =
                     text = it.text,
                     contentType = ContentType.Text.Plain
                 )
+                is Endpoint.Body.Bytes -> ByteArrayContent(bytes = it.byteArray)
             }
         }
     }
