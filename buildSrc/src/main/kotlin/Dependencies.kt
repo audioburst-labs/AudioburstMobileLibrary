@@ -50,7 +50,6 @@ object Dependencies {
         const val serialization = "io.ktor:ktor-client-serialization:$version"
         const val test = "io.ktor:ktor-client-tests:$version"
 
-        const val jvmMain = "io.ktor:ktor-client-apache:$version"
         const val androidMain = "io.ktor:ktor-client-android:$version"
         const val iOSMain = "io.ktor:ktor-client-ios:$version"
     }

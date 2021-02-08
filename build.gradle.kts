@@ -17,11 +17,6 @@ repositories {
     mavenCentral()
 }
 kotlin {
-    jvm {
-        compilations.all {
-            kotlinOptions.jvmTarget = "1.8"
-        }
-    }
     android {
         publishLibraryVariants("release", "debug")
     }
@@ -57,16 +52,6 @@ kotlin {
                 implementation(Dependencies.Test.Common.testAnnotationsCommon)
                 implementation(Dependencies.Ktor.test)
                 implementation(Dependencies.Settings.commonTest)
-            }
-        }
-        val jvmMain by getting {
-            dependencies {
-                implementation(Dependencies.Ktor.jvmMain)
-            }
-        }
-        val jvmTest by getting {
-            dependencies {
-                implementation(Dependencies.Test.Jvm.junit)
             }
         }
         val androidMain by getting {
