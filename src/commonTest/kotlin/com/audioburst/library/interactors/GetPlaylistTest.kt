@@ -124,7 +124,7 @@ class GetPlaylistTest {
     }
 
     @Test
-    fun testIfContentLoadEventIsGettingSentWhenGetPlaylistWithPlaylistTypeIsSuccessful()= runTest {
+    fun testIfContentLoadEventIsGettingSentWhenGetPlaylistWithPlaylistTypeIsSuccessful() = runTest {
         // GIVEN
         val getPlaylistReturn = Resource.Data(playlistOf(bursts = listOf(burstOf())))
         val userResource = Resource.Data(userOf())
@@ -144,7 +144,7 @@ class GetPlaylistTest {
     }
 
     @Test
-    fun testIfContentLoadEventIsGettingSentWhenGetPlaylistWithByteArrayIsSuccessful()= runTest {
+    fun testIfContentLoadEventIsGettingSentWhenGetPlaylistWithByteArrayIsSuccessful() = runTest {
         // GIVEN
         val getPlaylistReturn = Resource.Data(playlistOf(bursts = listOf(burstOf())))
         val userResource = Resource.Data(userOf())
