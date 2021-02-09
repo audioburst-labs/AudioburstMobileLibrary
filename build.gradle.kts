@@ -39,8 +39,6 @@ kotlin {
                 implementation(Dependencies.Ktor.logging)
                 implementation(Dependencies.Ktor.serialization)
 
-                implementation(Dependencies.Settings.commonMain)
-
                 implementation(Dependencies.Stately.concurrency)
                 implementation(Dependencies.Stately.isoCollections)
                 implementation(Dependencies.Stately.isolate)
@@ -51,7 +49,6 @@ kotlin {
                 implementation(Dependencies.Test.Common.testCommon)
                 implementation(Dependencies.Test.Common.testAnnotationsCommon)
                 implementation(Dependencies.Ktor.test)
-                implementation(Dependencies.Settings.commonTest)
             }
         }
         val androidMain by getting {

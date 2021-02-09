@@ -1,6 +1,6 @@
 package com.audioburst.library.data.storage
 
-import com.russhwolf.settings.MockSettings
+import com.audioburst.library.utils.Settings
 import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -9,6 +9,7 @@ class SettingsUserStorageTest {
 
     private val settings = MockSettings()
     private val storage = SettingsUserStorage(
+        settingsName = "",
         settings = settings
     )
 
@@ -44,5 +45,20 @@ class SettingsUserStorageTest {
 
         // THEN
         assertEquals(userId, storage.userId)
+    }
+}
+
+private class MockSettings: Settings {
+
+    private val map = mutableMapOf<String, String?>()
+
+    override fun getStringOrNull(key: String): String? = map[key]
+
+    override fun putString(key: String, value: String?) {
+        map[key] = value
+    }
+
+    fun clear() {
+        map.clear()
     }
 }

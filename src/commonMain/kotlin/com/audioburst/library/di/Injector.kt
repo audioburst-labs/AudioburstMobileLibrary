@@ -17,7 +17,6 @@ import com.audioburst.library.models.DurationUnit
 import com.audioburst.library.models.toDuration
 import com.audioburst.library.utils.*
 import com.audioburst.library.utils.strategies.*
-import com.russhwolf.settings.Settings
 import io.ktor.client.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
@@ -27,6 +26,7 @@ import kotlinx.serialization.json.Json
 internal object Injector {
 
     private val playbackStateCheckInterval = 2.0.toDuration(DurationUnit.Seconds)
+    private const val SETTINGS_NAME = "com.audioburst.library"
 
     private val jsonProvider: Provider<Json> = JsonProvider()
     private val serializerProvider: Provider<JsonSerializer> = provider { KotlinxSerializer(json = jsonProvider.get()) }
@@ -42,10 +42,11 @@ internal object Injector {
     private val audioburstV2ApiProvider: Provider<AudioburstV2Api> = provider { AudioburstV2Api(jsonProvider.get()) }
     private val audioburstApiProvider: Provider<AudioburstApi> = provider { AudioburstApi() }
     private val userResponseToUserProvider: Provider<UserResponseToUserMapper> = provider { UserResponseToUserMapper() }
-    private val settingsProvider: Provider<Settings> = singleton { settings() }
+    private val settingsProvider: Provider<Settings> = singleton { createSettings(SETTINGS_NAME) }
     private val userStorageProvider: Provider<UserStorage> = provider {
         SettingsUserStorage(
-            settings = settingsProvider.get()
+            settings = settingsProvider.get(),
+            settingsName = SETTINGS_NAME,
         )
     }
     private val playlistResponseToPlaylistInfoProvider: Provider<PlaylistResponseToPlaylistInfoMapper> = provider { PlaylistResponseToPlaylistInfoMapper() }
