@@ -35,6 +35,7 @@ object Dependencies {
     object Coroutines {
         private const val version = "1.4.1-native-mt"
         const val commonMain = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
+        const val androidMain = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version"
     }
 
     object Serialization {
@@ -78,7 +79,7 @@ object Dependencies {
 
     object Android {
         object Startup {
-            private const val version = "1.0.0-rc01"
+            private const val version = "1.0.0"
             const val runtime = "androidx.startup:startup-runtime:$version"
         }
     }

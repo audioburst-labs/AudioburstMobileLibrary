@@ -54,6 +54,7 @@ kotlin {
         val androidMain by getting {
             dependencies {
                 implementation(Dependencies.Ktor.androidMain)
+                implementation(Dependencies.Coroutines.androidMain)
                 implementation(Dependencies.Android.Startup.runtime)
             }
         }
