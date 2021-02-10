@@ -14,6 +14,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 internal interface EventDetector {
 
@@ -34,7 +35,7 @@ internal class StrategyBasedEventDetector(
     private val strategies: List<PlaybackEventStrategy<*>>,
     private val listenedStrategy: ListenedStrategy,
     private val timestampProvider: TimestampProvider,
-    appDispatchers: AppDispatchers,
+    private val appDispatchers: AppDispatchers,
 ) : EventDetector {
 
     private val scope = CoroutineScope(appDispatchers.main + SupervisorJob())
@@ -62,9 +63,13 @@ internal class StrategyBasedEventDetector(
 
     private fun setCurrentState(playbackState: PlaybackState) {
         val input = input(playbackState) ?: return
-        (listenedStrategy.check(input) + strategies.mapNotNull { it.check(input) })
-            .forEach(this@StrategyBasedEventDetector::handle)
-        previousStates.add(input.currentState)
+        scope.launch {
+            withContext(appDispatchers.computation) {
+                (listenedStrategy.check(input) + strategies.mapNotNull { it.check(input) })
+                    .forEach(this@StrategyBasedEventDetector::handle)
+                previousStates.add(input.currentState)
+            }
+        }
     }
 
     private fun input(playbackState: PlaybackState): AnalysisInput? {
