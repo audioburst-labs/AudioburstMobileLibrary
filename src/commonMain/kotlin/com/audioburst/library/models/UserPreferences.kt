@@ -52,6 +52,7 @@ class Preference(
     val take: Int,
     val offer: Int,
     val keys: List<Key>,
+    val iconUrl: String?,
 ) {
 
     fun updateKeys(keys: List<Key>): Preference =
@@ -61,6 +62,7 @@ class Preference(
             take = take,
             offer = offer,
             keys = keys,
+            iconUrl = iconUrl,
         )
 
     override fun equals(other: Any?): Boolean {
@@ -74,6 +76,7 @@ class Preference(
         if (take != other.take) return false
         if (offer != other.offer) return false
         if (keys != other.keys) return false
+        if (iconUrl != other.iconUrl) return false
 
         return true
     }
@@ -84,11 +87,12 @@ class Preference(
         result = 31 * result + take
         result = 31 * result + offer
         result = 31 * result + keys.hashCode()
+        result = 31 * result + (iconUrl?.hashCode() ?: 0)
         return result
     }
 
     override fun toString(): String {
-        return "Preference(name='$name', source='$source', take=$take, offer=$offer, keys=$keys)"
+        return "Preference(name='$name', source='$source', take=$take, offer=$offer, keys=$keys, iconUrl=$iconUrl)"
     }
 }
 

@@ -3,11 +3,10 @@ package com.audioburst.library.di
 import com.audioburst.library.AudioburstLibraryDelegate
 import com.audioburst.library.data.remote.AbAiRouterApi
 import com.audioburst.library.data.remote.AudioburstApi
+import com.audioburst.library.data.remote.AudioburstStorageApi
 import com.audioburst.library.data.remote.AudioburstV2Api
-import com.audioburst.library.data.repository.HttpPersonalPlaylistRepository
-import com.audioburst.library.data.repository.HttpUserRepository
-import com.audioburst.library.data.repository.PersonalPlaylistRepository
-import com.audioburst.library.data.repository.UserRepository
+import com.audioburst.library.data.repository.*
+import com.audioburst.library.data.repository.cache.AppSettingsCache
 import com.audioburst.library.data.repository.mappers.*
 import com.audioburst.library.data.storage.*
 import com.audioburst.library.di.providers.*
@@ -202,6 +201,7 @@ internal object Injector {
             userPreferenceResponseToPreferenceMapper = userPreferenceResponseToPreferenceMapperProvider.get(),
             preferenceToUserPreferenceResponseMapper = preferenceToUserPreferenceResponseMapperProvider.get(),
             topStoryResponseToPendingPlaylist = topStoryResponseToPendingPlaylistProvider.get(),
+            appSettingsRepository = appSettingsRepositoryProvider.get(),
         )
     }
 
@@ -231,6 +231,23 @@ internal object Injector {
         UpdateUserId(
             userStorage = userStorageProvider.get(),
             userRepository = userRepositoryProvider.get()
+        )
+    }
+
+    private val audioburstStorageApiProvider: Provider<AudioburstStorageApi> = provider { AudioburstStorageApi() }
+
+    private val appSettingsCacheProvider: Provider<AppSettingsCache> = singleton { AppSettingsCache() }
+
+    private val appSettingsResponseToAppSettingsMapperProvider: Provider<AppSettingsResponseToAppSettingsMapper> = provider {
+        AppSettingsResponseToAppSettingsMapper()
+    }
+
+    private val appSettingsRepositoryProvider: Provider<AppSettingsRepository> = provider {
+        CachedAppSettingsRepository(
+            httpClient = httpClientProvider.get(),
+            audioburstStorageApi = audioburstStorageApiProvider.get(),
+            appSettingsCache = appSettingsCacheProvider.get(),
+            appSettingsResponseToAppSettingsMapper = appSettingsResponseToAppSettingsMapperProvider.get(),
         )
     }
 

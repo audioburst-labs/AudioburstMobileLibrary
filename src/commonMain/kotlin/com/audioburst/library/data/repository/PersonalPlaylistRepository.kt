@@ -11,6 +11,7 @@ import com.audioburst.library.data.repository.models.AsyncQueryIdResponse
 import com.audioburst.library.data.repository.models.PostUserPreferenceResponse
 import com.audioburst.library.data.repository.models.TopStoryResponse
 import com.audioburst.library.data.repository.models.UserPreferenceResponse
+import com.audioburst.library.data.result
 import com.audioburst.library.models.PendingPlaylist
 import com.audioburst.library.models.PersonalPlaylistQueryId
 import com.audioburst.library.models.User
@@ -34,11 +35,12 @@ internal class HttpPersonalPlaylistRepository(
     private val userPreferenceResponseToPreferenceMapper: UserPreferenceResponseToPreferenceMapper,
     private val preferenceToUserPreferenceResponseMapper: PreferenceToUserPreferenceResponseMapper,
     private val topStoryResponseToPendingPlaylist: TopStoryResponseToPendingPlaylist,
+    private val appSettingsRepository: AppSettingsRepository,
 ) : PersonalPlaylistRepository {
 
     override suspend fun getUserPreferences(user: User): Resource<UserPreferences> =
         httpClient.execute<UserPreferenceResponse>(audioburstV2Api.getUserPreferences(userId = user.userId))
-            .map(userPreferenceResponseToPreferenceMapper::map)
+            .supplyIconUrls()
 
     override suspend fun postUserPreferences(user: User, userPreferences: UserPreferences): Resource<UserPreferences> =
         httpClient.execute<PostUserPreferenceResponse>(
@@ -46,7 +48,13 @@ internal class HttpPersonalPlaylistRepository(
                 userId = user.userId,
                 userPreferences = preferenceToUserPreferenceResponseMapper.map(userPreferences)
             )
-        ).map { userPreferenceResponseToPreferenceMapper.map(it.preferences) }
+        ).map(PostUserPreferenceResponse::preferences).supplyIconUrls()
+
+    private suspend fun Resource<UserPreferenceResponse>.supplyIconUrls(): Resource<UserPreferences> =
+        map {
+            val preferenceImages = appSettingsRepository.getAppSettings().result()?.preferenceImages ?: emptyList()
+            userPreferenceResponseToPreferenceMapper.map(it, preferenceImages)
+        }
 
     override suspend fun getPersonalPlaylistQueryId(user: User): Resource<PersonalPlaylistQueryId> =
         httpClient.execute<AsyncQueryIdResponse>(audioburstV2Api.getPersonalPlaylistQueryId(userId = user.userId))

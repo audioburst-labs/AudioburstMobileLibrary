@@ -1,5 +1,7 @@
 package com.audioburst.library.data.repository.mappers
 
+import com.audioburst.library.utils.LibraryConfiguration
+import com.audioburst.library.utils.PlayerSessionIdGetter
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -9,13 +11,11 @@ class TopStoryResponseToPendingPlaylistTest {
     private val playerSessionId: String = ""
     private val userId = ""
 
-    private val mapper = TopStoryResponseToPendingPlaylist(
-        topStoryResponseToPlaylist = TopStoryResponseToPlaylist(
-            burstResponseToBurstMapper = BurstResponseToBurstMapper(
-                libraryConfiguration = libraryConfigurationOf(),
-                sourceResponseToBurstSourceMapper = SourceResponseToBurstSourceMapper(),
-            ),
-            playerSessionIdGetter = playerSessionIdGetterOf(playerSessionId = playerSessionId),
+    private val mapper = topStoryResponseToPendingPlaylistOf(
+        topStoryResponseToPlaylist = topStoryResponseToPlaylistOf(
+            playerSessionIdGetter = playerSessionIdGetterOf(
+                playerSessionId = playerSessionId,
+            )
         )
     )
 
@@ -117,3 +117,28 @@ class TopStoryResponseToPendingPlaylistTest {
         assertTrue(!mapped.isReady)
     }
 }
+
+internal fun topStoryResponseToPendingPlaylistOf(
+    topStoryResponseToPlaylist: TopStoryResponseToPlaylist = topStoryResponseToPlaylistOf()
+): TopStoryResponseToPendingPlaylist =
+    TopStoryResponseToPendingPlaylist(topStoryResponseToPlaylist = topStoryResponseToPlaylist,)
+
+internal fun topStoryResponseToPlaylistOf(
+    burstResponseToBurstMapper: BurstResponseToBurstMapper = burstResponseToBurstMapperOf(),
+    playerSessionIdGetter: PlayerSessionIdGetter = playerSessionIdGetterOf(),
+): TopStoryResponseToPlaylist =
+    TopStoryResponseToPlaylist(
+        burstResponseToBurstMapper = burstResponseToBurstMapper,
+        playerSessionIdGetter = playerSessionIdGetter,
+    )
+
+internal fun burstResponseToBurstMapperOf(
+    libraryConfiguration: LibraryConfiguration = libraryConfigurationOf(),
+    sourceResponseToBurstSourceMapper: SourceResponseToBurstSourceMapper = sourceResponseToBurstSourceMapperOf(),
+): BurstResponseToBurstMapper =
+    BurstResponseToBurstMapper(
+        libraryConfiguration = libraryConfiguration,
+        sourceResponseToBurstSourceMapper = sourceResponseToBurstSourceMapper,
+    )
+
+internal fun sourceResponseToBurstSourceMapperOf(): SourceResponseToBurstSourceMapper = SourceResponseToBurstSourceMapper()

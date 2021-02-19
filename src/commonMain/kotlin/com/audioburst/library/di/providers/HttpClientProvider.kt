@@ -4,6 +4,7 @@ import com.audioburst.library.utils.LibraryConfiguration
 import io.ktor.client.*
 import io.ktor.client.features.*
 import io.ktor.client.features.json.*
+import io.ktor.http.*
 
 internal class HttpClientProvider(
     private val serializerProvider: Provider<JsonSerializer>,
@@ -14,6 +15,7 @@ internal class HttpClientProvider(
         HttpClient {
             install(JsonFeature) {
                 serializer = serializerProvider.get()
+                accept(ContentType.Application.Json, ContentType.Application.OctetStream)
             }
             defaultRequest {
                 headers.append(SUBSCRIPTION_KEY_NAME, libraryConfigurationProvider.get().subscriptionKey.value)

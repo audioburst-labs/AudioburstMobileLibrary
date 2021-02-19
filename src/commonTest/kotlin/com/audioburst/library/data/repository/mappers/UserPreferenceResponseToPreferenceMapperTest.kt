@@ -3,8 +3,10 @@ package com.audioburst.library.data.repository.mappers
 import com.audioburst.library.data.repository.models.KeyResponse
 import com.audioburst.library.data.repository.models.PreferenceResponse
 import com.audioburst.library.data.repository.models.UserPreferenceResponse
+import com.audioburst.library.data.repository.preferenceImageOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 class UserPreferenceResponseToPreferenceMapperTest {
 
@@ -28,17 +30,45 @@ class UserPreferenceResponseToPreferenceMapperTest {
         )
 
         // WHEN
-        val mapped = mapper.map(response)
+        val mapped = mapper.map(response, emptyList())
 
         // THEN
-        assertEquals(response.id, mapped.id)
-        assertEquals(response.userId, mapped.userId)
-        assertEquals(response.location, mapped.location)
-        assertEquals(response.sourceType, mapped.sourceType)
-        assertEquals(response.preferences.size, innerListsSize)
-        response.preferences.forEach {
+        assertEquals(mapped.id, response.id)
+        assertEquals(mapped.userId, response.userId)
+        assertEquals(mapped.location, response.location)
+        assertEquals(mapped.sourceType, response.sourceType)
+        assertEquals(innerListsSize, response.preferences.size)
+        assertTrue(mapped.preferences.all { it.iconUrl == null })
+        mapped.preferences.forEach {
             assertEquals(it.keys.size, innerListsSize)
         }
+    }
+
+    @Test
+    fun testIfImagePreferencesAreConnectedToPreferencesCorrectly() {
+        // GIVEN
+        val numberOfFirstPreferencesThatHasImage = 2
+        val names = (0..5).map { "name$it" }
+        val preferenceImages = names.mapIndexed { index, name ->
+            preferenceImageOf(
+                name = name,
+                imageUrl = "image$index"
+            )
+        }.take(numberOfFirstPreferencesThatHasImage)
+
+        val response = userPreferenceResponseOf(
+            preferences = names.map {
+                preferenceResponseOf(name = it)
+            }
+        )
+
+        // WHEN
+        val mapped = mapper.map(response, preferenceImages)
+
+        // THEN
+        assertEquals(numberOfFirstPreferencesThatHasImage, mapped.preferences.filter { it.iconUrl != null }.size)
+        assertTrue(mapped.preferences.take(numberOfFirstPreferencesThatHasImage).all { it.iconUrl != null })
+        assertTrue(mapped.preferences.drop(numberOfFirstPreferencesThatHasImage).all { it.iconUrl == null })
     }
 }
 

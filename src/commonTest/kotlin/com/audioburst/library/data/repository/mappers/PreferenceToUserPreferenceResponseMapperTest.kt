@@ -63,6 +63,7 @@ internal fun preferenceOf(
     take: Int = 0,
     offer: Int = 0,
     keys: List<Key> = listOf(),
+    iconUrl: String? = null,
 ): Preference =
     Preference(
         name = name,
@@ -70,6 +71,7 @@ internal fun preferenceOf(
         take = take,
         offer = offer,
         keys = keys,
+        iconUrl = iconUrl,
     )
 
 internal fun keyOf(
