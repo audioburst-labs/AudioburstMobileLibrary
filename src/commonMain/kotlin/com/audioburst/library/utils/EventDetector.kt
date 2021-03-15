@@ -5,10 +5,8 @@ import com.audioburst.library.interactors.CurrentAdsProvider
 import com.audioburst.library.interactors.CurrentPlaylist
 import com.audioburst.library.interactors.PlaybackEventHandler
 import com.audioburst.library.models.*
-import com.audioburst.library.models.AnalysisInput
 import com.audioburst.library.utils.strategies.ListenedStrategy
 import com.audioburst.library.utils.strategies.PlaybackEventStrategy
-import com.audioburst.library.models.currentEventPayload
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.launchIn
@@ -58,11 +56,13 @@ internal class StrategyBasedEventDetector(
     }
 
     private fun requestNewState() {
+        Logger.i("Requesting new playback state")
         playbackStateListener.get()?.getPlaybackState()?.let(::setCurrentState)
     }
 
     private fun setCurrentState(playbackState: PlaybackState) {
         val input = input(playbackState) ?: return
+        Logger.i("PlaybackState: [${input.currentState.url}, ${input.currentState.position.milliseconds}]")
         scope.launch {
             withContext(appDispatchers.computation) {
                 (listenedStrategy.check(input) + strategies.mapNotNull { it.check(input) })

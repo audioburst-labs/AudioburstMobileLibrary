@@ -3,6 +3,7 @@ package com.audioburst.library
 import com.audioburst.library.di.Injector
 import com.audioburst.library.interactors.*
 import com.audioburst.library.models.*
+import com.audioburst.library.utils.Logger
 import com.audioburst.library.utils.PlaybackStateListener
 import com.audioburst.library.utils.StrategyBasedEventDetector
 import com.audioburst.library.utils.SubscriptionKeySetter
@@ -33,9 +34,13 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
         subscriptionKeySetter.set(SubscriptionKey(applicationKey))
     }
 
-    suspend fun setAudioburstUserID(userId: String): Result<Boolean> = updateUserId(userId)
+    suspend fun setAudioburstUserID(userId: String): Result<Boolean> {
+        Logger.i("setAudioburstUserID")
+        return updateUserId(userId)
+    }
 
     fun setAudioburstUserID(userId: String, onData: (Boolean) -> Unit, onError: (LibraryError) -> Unit) {
+        Logger.i("setAudioburstUserID")
         scope.launch {
             updateUserId(userId)
                 .onData { onData(it) }
@@ -43,9 +48,13 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
         }
     }
 
-    suspend fun getPlaylists(): Result<List<PlaylistInfo>> = getPlaylistsInfo()
+    suspend fun getPlaylists(): Result<List<PlaylistInfo>> {
+        Logger.i("getPlaylists")
+        return getPlaylistsInfo()
+    }
 
     fun getPlaylists(onData: (List<PlaylistInfo>) -> Unit, onError: (LibraryError) -> Unit) {
+        Logger.i("getPlaylists")
         scope.launch {
             getPlaylistsInfo()
                 .onData { onData(it) }
@@ -53,11 +62,18 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
         }
     }
 
-    suspend fun getPlaylist(playlistInfo: PlaylistInfo): Result<Playlist> = getPlaylist.invoke(playlistInfo)
+    suspend fun getPlaylist(playlistInfo: PlaylistInfo): Result<Playlist> {
+        Logger.i("getPlaylist")
+        return getPlaylist.invoke(playlistInfo)
+    }
 
-    suspend fun getPlaylist(byteArray: ByteArray): Result<Playlist> = getPlaylist.invoke(byteArray)
+    suspend fun getPlaylist(byteArray: ByteArray): Result<Playlist> {
+        Logger.i("getPlaylist")
+        return getPlaylist.invoke(byteArray)
+    }
 
     fun getPlaylist(playlistInfo: PlaylistInfo, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
+        Logger.i("getPlaylist")
         scope.launch {
             getPlaylist.invoke(playlistInfo)
                 .onData { onData(it) }
@@ -66,6 +82,7 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
     }
 
     fun getPlaylist(byteArray: ByteArray, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
+        Logger.i("getPlaylist")
         scope.launch {
             getPlaylist.invoke(byteArray)
                 .onData { onData(it) }
@@ -73,9 +90,13 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
         }
     }
 
-    suspend fun getAdUrl(burst: Burst): Result<String> = getAdUrl.invoke(burst)
+    suspend fun getAdUrl(burst: Burst): Result<String> {
+        Logger.i("getAdUrl")
+        return getAdUrl.invoke(burst)
+    }
 
     fun getAdUrl(burst: Burst, onData: (String) -> Unit, onError: (LibraryError) -> Unit) {
+        Logger.i("getAdUrl")
         scope.launch {
             getAdUrl.invoke(burst)
                 .onData { onData(it) }
@@ -83,9 +104,13 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
         }
     }
 
-    fun getPersonalPlaylist(): Flow<Result<PendingPlaylist>> = observePersonalPlaylist()
+    fun getPersonalPlaylist(): Flow<Result<PendingPlaylist>> {
+        Logger.i("getPersonalPlaylist")
+        return observePersonalPlaylist()
+    }
 
     fun getPersonalPlaylist(onData: (PendingPlaylist) -> Unit, onError: (LibraryError) -> Unit) {
+        Logger.i("getPersonalPlaylist")
         observePersonalPlaylist()
             .onEach { result ->
                 result
@@ -95,9 +120,13 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
             .launchIn(scope)
     }
 
-    suspend fun getUserPreferences(): Result<UserPreferences> = getUserPreferences.invoke()
+    suspend fun getUserPreferences(): Result<UserPreferences> {
+        Logger.i("getUserPreferences")
+        return getUserPreferences.invoke()
+    }
 
     fun getUserPreferences(onData: (UserPreferences) -> Unit, onError: (LibraryError) -> Unit) {
+        Logger.i("getUserPreferences")
         scope.launch {
             getUserPreferences.invoke()
                 .onData { onData(it) }
@@ -105,9 +134,13 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
         }
     }
 
-    suspend fun setUserPreferences(userPreferences: UserPreferences): Result<UserPreferences> = postUserPreferences(userPreferences)
+    suspend fun setUserPreferences(userPreferences: UserPreferences): Result<UserPreferences> {
+        Logger.i("setUserPreferences")
+        return postUserPreferences(userPreferences)
+    }
 
     fun setUserPreferences(userPreferences: UserPreferences, onData: (UserPreferences) -> Unit, onError: (LibraryError) -> Unit) {
+        Logger.i("setUserPreferences")
         scope.launch {
             postUserPreferences(userPreferences)
                 .onData { onData(it) }
@@ -116,18 +149,22 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
     }
 
     fun start() {
+        Logger.i("start")
         eventDetector.start()
     }
 
     fun stop() {
+        Logger.i("stop")
         eventDetector.stop()
     }
 
     fun setPlaybackStateListener(listener: PlaybackStateListener) {
+        Logger.i("setPlaybackStateListener")
         eventDetector.setPlaybackStateListener(listener)
     }
 
     fun removePlaybackStateListener(listener: PlaybackStateListener) {
+        Logger.i("removePlaybackStateListener")
         eventDetector.removePlaybackStateListener(listener)
     }
 }

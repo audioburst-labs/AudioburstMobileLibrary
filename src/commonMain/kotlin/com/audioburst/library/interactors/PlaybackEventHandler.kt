@@ -9,6 +9,7 @@ import com.audioburst.library.models.EventPayload
 import com.audioburst.library.models.PlaybackEvent
 import com.audioburst.library.models.PlayerEvent
 import com.audioburst.library.utils.LibraryConfiguration
+import com.audioburst.library.utils.Logger
 
 internal interface PlaybackEventHandler {
     suspend fun handle(playbackEvent: PlaybackEvent)
@@ -22,6 +23,7 @@ internal class PlaybackEventHandlerInteractor(
 ) : PlaybackEventHandler {
 
     override suspend fun handle(playbackEvent: PlaybackEvent) {
+        Logger.i("Event detected: ${playbackEvent.actionName}")
         when (playbackEvent) {
             is PlaybackEvent.AdListened -> postAdvertisementEvent(playbackEvent)
             else -> postPlayerEvent(playbackEvent)

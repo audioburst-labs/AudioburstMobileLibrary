@@ -8,6 +8,7 @@ import com.audioburst.library.data.storage.UserStorage
 import com.audioburst.library.models.LibraryError
 import com.audioburst.library.models.PendingPlaylist
 import com.audioburst.library.models.Result
+import com.audioburst.library.utils.Logger
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.FlowCollector
@@ -23,6 +24,7 @@ internal class ObservePersonalPlaylist(
 
     operator fun invoke(): Flow<Result<PendingPlaylist>> = flow {
         if (userStorage.selectedKeysCount == 0) {
+            Logger.w("NoKeysSelected")
             emit(Result.Error(LibraryError.NoKeysSelected))
             return@flow
         }
@@ -44,6 +46,7 @@ internal class ObservePersonalPlaylist(
         loop@ while (true) {
             when (val pendingPlaylist = personalPlaylistRepository.getPersonalPlaylist(user, personalPlaylistQueryId)) {
                 is Resource.Data -> {
+                    Logger.i("Requesting Personal Playlist, id: $personalPlaylistQueryId, status: success")
                     emit(resource = pendingPlaylist)
                     if (pendingPlaylist.result.isReady) {
                         postContentLoadEvent(pendingPlaylist.result.playlist)
@@ -53,6 +56,7 @@ internal class ObservePersonalPlaylist(
                     }
                 }
                 is Resource.Error -> {
+                    Logger.i("Requesting Personal Playlist, id: $personalPlaylistQueryId, status: error")
                     emit(resource = pendingPlaylist)
                     break@loop
                 }
