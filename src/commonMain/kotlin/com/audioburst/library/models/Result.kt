@@ -4,8 +4,49 @@ import com.audioburst.library.utils.Strings
 
 sealed class Result<out T> {
 
-    data class Data<out T>(val value: T) : Result<T>()
-    data class Error(val error: LibraryError) : Result<Nothing>()
+    class Data<out T>(val value: T) : Result<T>() {
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+
+            other as Data<*>
+
+            if (value != other.value) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return value?.hashCode() ?: 0
+        }
+
+        override fun toString(): String {
+            return "Data(value=$value)"
+        }
+    }
+
+    class Error(val error: LibraryError) : Result<Nothing>() {
+
+        override fun equals(other: Any?): Boolean {
+            if (this === other) return true
+            if (other == null || this::class != other::class) return false
+
+            other as Error
+
+            if (error != other.error) return false
+
+            return true
+        }
+
+        override fun hashCode(): Int {
+            return error.hashCode()
+        }
+
+        override fun toString(): String {
+            return "Error(error=$error)"
+        }
+    }
 }
 
 enum class LibraryError(val message: String) {
@@ -14,6 +55,7 @@ enum class LibraryError(val message: String) {
     Unexpected(Strings.errorUnexpected),
     WrongApplicationKey(Strings.errorWrongApplicationKey),
     AdUrlNotFound(Strings.errorAdUrlNotFound),
+    NoKeysSelected(Strings.errorNoKeysSelected)
 }
 
 inline fun <T, U> Result<T>.map(f: (T) -> U): Result<U> = when (this) {

@@ -24,6 +24,11 @@ class SettingsUserStorageTest {
     }
 
     @Test
+    fun testIfSelectedKeysCountIsEqualZeroAfterInitialization() {
+        assertEquals(expected = 0, storage.selectedKeysCount)
+    }
+
+    @Test
     fun testIfUserIdIsSavedProperly() {
         // GIVEN
         val userId = "userId"
@@ -46,15 +51,33 @@ class SettingsUserStorageTest {
         // THEN
         assertEquals(userId, storage.userId)
     }
+
+    @Test
+    fun testIfSelectedKeysCountIsSavedProperly() {
+        // GIVEN
+        val selectedKeysCount = 5
+
+        // WHEN
+        storage.selectedKeysCount = selectedKeysCount
+
+        // THEN
+        assertEquals(selectedKeysCount, storage.selectedKeysCount)
+    }
 }
 
 private class MockSettings: Settings {
 
-    private val map = mutableMapOf<String, String?>()
+    private val map = mutableMapOf<String, Any?>()
 
-    override fun getStringOrNull(key: String): String? = map[key]
+    override fun getStringOrNull(key: String): String? = map[key] as? String
 
     override fun putString(key: String, value: String?) {
+        map[key] = value
+    }
+
+    override fun getIntOrDefault(key: String, default: Int): Int = map[key] as? Int ?: default
+
+    override fun putInt(key: String, value: Int) {
         map[key] = value
     }
 

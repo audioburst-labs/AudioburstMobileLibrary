@@ -13,4 +13,10 @@ class AndroidSettings constructor(private val delegate: SharedPreferences): Sett
     override fun putString(key: String, value: String?) {
         delegate.edit().putString(key, value).apply()
     }
+
+    override fun getIntOrDefault(key: String, default: Int): Int = delegate.getInt(key, default)
+
+    override fun putInt(key: String, value: Int) {
+        delegate.edit().putInt(key, value).apply()
+    }
 }

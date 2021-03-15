@@ -206,10 +206,17 @@ internal object Injector {
         )
     }
 
+    private val updateSelectedKeysCountProvider: Provider<UpdateSelectedKeysCount> = provider {
+        UpdateSelectedKeysCount(
+            userStorage = userStorageProvider.get(),
+        )
+    }
+
     private val getUserPreferencesProvider: Provider<GetUserPreferences> = provider {
         GetUserPreferences(
             getUser = getUserProvider.get(),
             personalPlaylistRepository = personalPlaylistRepositoryProvider.get(),
+            updateSelectedKeysCount = updateSelectedKeysCountProvider.get(),
         )
     }
 
@@ -217,6 +224,7 @@ internal object Injector {
         PostUserPreferences(
             getUser = getUserProvider.get(),
             personalPlaylistRepository = personalPlaylistRepositoryProvider.get(),
+            updateSelectedKeysCount = updateSelectedKeysCountProvider.get(),
         )
     }
 
@@ -225,6 +233,7 @@ internal object Injector {
             getUser = getUserProvider.get(),
             personalPlaylistRepository = personalPlaylistRepositoryProvider.get(),
             postContentLoadEvent = postContentLoadEventProvider.get(),
+            userStorage = userStorageProvider.get(),
         )
     }
 

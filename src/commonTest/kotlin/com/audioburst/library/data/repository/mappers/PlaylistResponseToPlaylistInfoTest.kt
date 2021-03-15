@@ -71,11 +71,13 @@ internal fun imageResponseOf(
         svg = svg,
     )
 
-internal fun userStorageOf(userId: String? = null): UserStorage =
+internal fun userStorageOf(userId: String? = null, selectedKeysCount: Int = 0): UserStorage =
     object : UserStorage {
         override var userId: String? = userId
+        override var selectedKeysCount: Int = selectedKeysCount
     }
 
 internal class InMemoryUserStorage : UserStorage {
     override var userId: String? = null
+    override var selectedKeysCount: Int = 0
 }

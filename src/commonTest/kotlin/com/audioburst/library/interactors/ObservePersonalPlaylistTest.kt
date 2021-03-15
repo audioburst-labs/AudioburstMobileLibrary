@@ -1,14 +1,14 @@
 package com.audioburst.library.interactors
 
 import com.audioburst.library.data.Resource
-import com.audioburst.library.models.PendingPlaylist
-import com.audioburst.library.models.PersonalPlaylistQueryId
-import com.audioburst.library.models.Result
-import com.audioburst.library.models.User
+import com.audioburst.library.data.repository.mappers.userStorageOf
+import com.audioburst.library.data.storage.UserStorage
+import com.audioburst.library.models.*
 import com.audioburst.library.runTest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.toList
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class ObservePersonalPlaylistTest {
@@ -17,7 +17,8 @@ class ObservePersonalPlaylistTest {
         getPersonalPlaylistQueryId: Resource<PersonalPlaylistQueryId>,
         getPersonalPlaylist: List<Resource<PendingPlaylist>>,
         getUserReturns: Resource<User>,
-        postContentLoadEvent: PostContentLoadEvent = postContentLoadEventOf()
+        postContentLoadEvent: PostContentLoadEvent = postContentLoadEventOf(),
+        userStorage: UserStorage = userStorageOf(),
     ): ObservePersonalPlaylist =
         ObservePersonalPlaylist(
             getUser = getUserOf(getUserReturns),
@@ -27,7 +28,8 @@ class ObservePersonalPlaylistTest {
                     getPersonalPlaylist = getPersonalPlaylist,
                 )
             ),
-            postContentLoadEvent = postContentLoadEvent
+            postContentLoadEvent = postContentLoadEvent,
+            userStorage = userStorage,
         )
 
     @Test
@@ -67,18 +69,42 @@ class ObservePersonalPlaylistTest {
     }
 
     @Test
+    fun testWhenUserStorageReturnsZeroSelectedKeysCount()= runTest {
+        // GIVEN
+        val getUserReturns = Resource.Data(userOf())
+        val getPersonalPlaylistQueryId = Resource.Data(personalPlaylistQueryIdOf())
+        val playlist = pendingPlaylistOf(isReady = true)
+        val getPersonalPlaylist = listOf(Resource.Data(playlist))
+        val selectedKeysCount = 0
+
+        // WHEN
+        val result = interactor(
+            getUserReturns = getUserReturns,
+            getPersonalPlaylist = getPersonalPlaylist,
+            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
+            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
+        )()
+
+        // THEN
+        require(result.first() is Result.Error)
+        assertEquals(LibraryError.NoKeysSelected, result.first().errorType)
+    }
+
+    @Test
     fun testWhenGetPersonalPlaylistReturnsReadyPlaylist()= runTest {
         // GIVEN
         val getUserReturns = Resource.Data(userOf())
         val getPersonalPlaylistQueryId = Resource.Data(personalPlaylistQueryIdOf())
         val playlist = pendingPlaylistOf(isReady = true)
         val getPersonalPlaylist = listOf(Resource.Data(playlist))
+        val selectedKeysCount = 1
 
         // WHEN
         val result = interactor(
             getUserReturns = getUserReturns,
             getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId
+            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
+            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
         )()
 
         // THEN
@@ -97,12 +123,14 @@ class ObservePersonalPlaylistTest {
             Resource.Data(pendingPlaylistOf(isReady = false)),
             Resource.Data(pendingPlaylistOf(isReady = true)),
         )
+        val selectedKeysCount = 1
 
         // WHEN
         val result = interactor(
             getUserReturns = getUserReturns,
             getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId
+            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
+            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
         )()
 
         // THEN
@@ -122,12 +150,14 @@ class ObservePersonalPlaylistTest {
             Resource.Data(pendingPlaylistOf(isReady = false)),
             Resource.Data(pendingPlaylistOf(isReady = false)),
         )
+        val selectedKeysCount = 1
 
         // WHEN
         val result = interactor(
             getUserReturns = getUserReturns,
             getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId
+            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
+            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
         )()
 
         // THEN
@@ -146,12 +176,14 @@ class ObservePersonalPlaylistTest {
             Resource.Data(pendingPlaylistOf(isReady = false)),
             Resource.Data(pendingPlaylistOf(isReady = true)),
         )
+        val selectedKeysCount = 1
 
         // WHEN
         val result = interactor(
             getUserReturns = getUserReturns,
             getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId
+            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
+            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
         )()
 
         // THEN
@@ -168,12 +200,14 @@ class ObservePersonalPlaylistTest {
             Resource.Data(pendingPlaylistOf(isReady = false, playlistOf(bursts = listOf(burstOf(id = "id1"))))),
             Resource.Data(pendingPlaylistOf(isReady = true, playlistOf(bursts = listOf(burstOf(id = "id1"), burstOf(id = "id2"))))),
         )
+        val selectedKeysCount = 1
 
         // WHEN
         val result = interactor(
             getUserReturns = getUserReturns,
             getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId
+            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
+            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
         )()
 
         // THEN
@@ -189,6 +223,7 @@ class ObservePersonalPlaylistTest {
             Resource.Data(pendingPlaylistOf(isReady = true, playlistOf(bursts = listOf(burstOf())))),
         )
         val playbackEventHandler = MemorablePlaybackEventHandler()
+        val selectedKeysCount = 1
 
         // WHEN
         interactor(
@@ -197,7 +232,8 @@ class ObservePersonalPlaylistTest {
             getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
             postContentLoadEvent = postContentLoadEventOf(
                 playbackEventHandler = playbackEventHandler
-            )
+            ),
+            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
         )().toList()
 
         // THEN

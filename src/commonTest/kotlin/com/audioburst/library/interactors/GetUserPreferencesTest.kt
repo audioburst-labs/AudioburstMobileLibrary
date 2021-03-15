@@ -2,6 +2,7 @@ package com.audioburst.library.interactors
 
 import com.audioburst.library.data.Resource
 import com.audioburst.library.data.repository.mappers.userPreferenceOf
+import com.audioburst.library.data.repository.mappers.userStorageOf
 import com.audioburst.library.models.Result
 import com.audioburst.library.models.User
 import com.audioburst.library.models.UserPreferences
@@ -22,7 +23,8 @@ class GetUserPreferencesTest {
                 MockPersonalPlaylistRepository.Returns(
                     getUserPreferences = getUserPreferencesReturns
                 )
-            )
+            ),
+            updateSelectedKeysCount = UpdateSelectedKeysCount(userStorageOf())
         )
 
     @Test
