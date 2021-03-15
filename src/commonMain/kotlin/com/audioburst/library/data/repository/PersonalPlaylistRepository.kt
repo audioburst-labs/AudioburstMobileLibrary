@@ -1,8 +1,6 @@
 package com.audioburst.library.data.repository
 
-import com.audioburst.library.data.Resource
-import com.audioburst.library.data.execute
-import com.audioburst.library.data.map
+import com.audioburst.library.data.*
 import com.audioburst.library.data.remote.AudioburstV2Api
 import com.audioburst.library.data.repository.mappers.PreferenceToUserPreferenceResponseMapper
 import com.audioburst.library.data.repository.mappers.TopStoryResponseToPendingPlaylist
@@ -11,7 +9,7 @@ import com.audioburst.library.data.repository.models.AsyncQueryIdResponse
 import com.audioburst.library.data.repository.models.PostUserPreferenceResponse
 import com.audioburst.library.data.repository.models.TopStoryResponse
 import com.audioburst.library.data.repository.models.UserPreferenceResponse
-import com.audioburst.library.data.result
+import com.audioburst.library.data.storage.PlaylistStorage
 import com.audioburst.library.models.PendingPlaylist
 import com.audioburst.library.models.PersonalPlaylistQueryId
 import com.audioburst.library.models.User
@@ -36,6 +34,7 @@ internal class HttpPersonalPlaylistRepository(
     private val preferenceToUserPreferenceResponseMapper: PreferenceToUserPreferenceResponseMapper,
     private val topStoryResponseToPendingPlaylist: TopStoryResponseToPendingPlaylist,
     private val appSettingsRepository: AppSettingsRepository,
+    private val playlistStorage: PlaylistStorage,
 ) : PersonalPlaylistRepository {
 
     override suspend fun getUserPreferences(user: User): Resource<UserPreferences> =
@@ -67,5 +66,5 @@ internal class HttpPersonalPlaylistRepository(
                     from = it,
                     userId = user.userId
                 )
-            }
+            }.onData { playlistStorage.setPlaylist(it.playlist) }
 }

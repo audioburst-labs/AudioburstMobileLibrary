@@ -202,6 +202,7 @@ internal object Injector {
             preferenceToUserPreferenceResponseMapper = preferenceToUserPreferenceResponseMapperProvider.get(),
             topStoryResponseToPendingPlaylist = topStoryResponseToPendingPlaylistProvider.get(),
             appSettingsRepository = appSettingsRepositoryProvider.get(),
+            playlistStorage = playlistStorageProvider.get(),
         )
     }
 

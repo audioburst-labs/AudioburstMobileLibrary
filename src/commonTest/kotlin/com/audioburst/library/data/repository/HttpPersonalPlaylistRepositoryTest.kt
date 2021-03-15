@@ -7,6 +7,7 @@ import com.audioburst.library.data.repository.mappers.*
 import com.audioburst.library.data.repository.models.AsyncQueryIdResponse
 import com.audioburst.library.data.repository.models.PostUserPreferenceResponse
 import com.audioburst.library.data.repository.models.UserPreferenceResponse
+import com.audioburst.library.interactors.playlistStorageOf
 import com.audioburst.library.interactors.resourceErrorOf
 import com.audioburst.library.interactors.userOf
 import com.audioburst.library.models.AppSettings
@@ -32,7 +33,8 @@ class HttpPersonalPlaylistRepositoryTest {
             userPreferenceResponseToPreferenceMapper = userPreferenceResponseToPreferenceMapper,
             preferenceToUserPreferenceResponseMapper = preferenceToUserPreferenceResponseMapper,
             topStoryResponseToPendingPlaylist = topStoryResponseToPendingPlaylist,
-            appSettingsRepository = appSettingsRepositoryOf(appSettingsRepositoryReturns)
+            appSettingsRepository = appSettingsRepositoryOf(appSettingsRepositoryReturns),
+            playlistStorage = playlistStorageOf(),
         )
 
     @Test
