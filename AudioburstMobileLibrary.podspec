@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
     spec.name                     = 'AudioburstMobileLibrary'
-    spec.version                  = '0.0.12'
+    spec.version                  = '0.0.13'
     spec.homepage                 = 'https://github.com/audioburst-labs/AudioburstMobileLibrary'
     spec.source                   = { :git => "https://github.com/audioburst-labs/AudioburstMobileLibrary.git", :tag => spec.version.to_s }
     spec.author                   = { 'Audioburst' => 'kamil@audioburst.com' }

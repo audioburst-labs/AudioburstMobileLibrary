@@ -6,7 +6,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class AMLBurst, AMLLibraryError, AMLPendingPlaylist, AMLPlaylistInfo, AMLPlaylist, NSData, AMLUserPreferences, NSUserDefaults, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLDurationUnit, AMLKotlinEnum<E>, AMLKey, AMLPlayerActionType, AMLPlayerAction, AMLPreference, AMLResult<__covariant T>, AMLResultData<__covariant T>, AMLResultError, AMLKotlinNothing;
+@class AMLBurst, AMLLibraryError, AMLPendingPlaylist, AMLPlaylistInfo, AMLPlaylist, NSData, AMLUserPreferences, NSUserDefaults, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLDurationUnit, AMLKotlinEnum<E>, AMLKey, AMLPlayerActionType, AMLPlayerAction, AMLPreference, AMLResult<__covariant T>, AMLKotlinNothing;
 
 @protocol AMLPlaybackStateListener, AMLSettings, AMLKotlinComparable;
 
@@ -159,7 +159,9 @@ __attribute__((swift_name("AudioburstLibrary")))
 __attribute__((swift_name("Settings")))
 @protocol AMLSettings
 @required
+- (int32_t)getIntOrDefaultKey:(NSString *)key default:(int32_t)default_ __attribute__((swift_name("getIntOrDefault(key:default:)")));
 - (NSString * _Nullable)getStringOrNullKey:(NSString *)key __attribute__((swift_name("getStringOrNull(key:)")));
+- (void)putIntKey:(NSString *)key value:(int32_t)value __attribute__((swift_name("putInt(key:value:)")));
 - (void)putStringKey:(NSString *)key value:(NSString * _Nullable)value __attribute__((swift_name("putString(key:value:)")));
 @end;
 
@@ -167,7 +169,9 @@ __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("AppleSettings")))
 @interface AMLAppleSettings : AMLBase <AMLSettings>
 - (instancetype)initWithDelegate:(NSUserDefaults *)delegate __attribute__((swift_name("init(delegate:)"))) __attribute__((objc_designated_initializer));
+- (int32_t)getIntOrDefaultKey:(NSString *)key default:(int32_t)default_ __attribute__((swift_name("getIntOrDefault(key:default:)")));
 - (NSString * _Nullable)getStringOrNullKey:(NSString *)key __attribute__((swift_name("getStringOrNull(key:)")));
+- (void)putIntKey:(NSString *)key value:(int32_t)value __attribute__((swift_name("putInt(key:value:)")));
 - (void)putStringKey:(NSString *)key value:(NSString * _Nullable)value __attribute__((swift_name("putString(key:value:)")));
 @end;
 
@@ -185,6 +189,7 @@ __attribute__((swift_name("Strings")))
 + (instancetype)strings __attribute__((swift_name("init()")));
 @property (readonly) NSString *errorAdUrlNotFound __attribute__((swift_name("errorAdUrlNotFound")));
 @property (readonly) NSString *errorNetwork __attribute__((swift_name("errorNetwork")));
+@property (readonly) NSString *errorNoKeysSelected __attribute__((swift_name("errorNoKeysSelected")));
 @property (readonly) NSString *errorServer __attribute__((swift_name("errorServer")));
 @property (readonly) NSString *errorUnexpected __attribute__((swift_name("errorUnexpected")));
 @property (readonly) NSString *errorWrongApplicationKey __attribute__((swift_name("errorWrongApplicationKey")));
@@ -313,6 +318,7 @@ __attribute__((swift_name("LibraryError")))
 @property (class, readonly) AMLLibraryError *unexpected __attribute__((swift_name("unexpected")));
 @property (class, readonly) AMLLibraryError *wrongapplicationkey __attribute__((swift_name("wrongapplicationkey")));
 @property (class, readonly) AMLLibraryError *adurlnotfound __attribute__((swift_name("adurlnotfound")));
+@property (class, readonly) AMLLibraryError *nokeysselected __attribute__((swift_name("nokeysselected")));
 @property (readonly) NSString *message __attribute__((swift_name("message")));
 @end;
 
@@ -331,9 +337,6 @@ __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("PlaybackState")))
 @interface AMLPlaybackState : AMLBase
 - (instancetype)initWithUrl:(NSString *)url positionMillis:(int64_t)positionMillis __attribute__((swift_name("init(url:positionMillis:)"))) __attribute__((objc_designated_initializer));
-- (NSString *)component1 __attribute__((swift_name("component1()")));
-- (int64_t)component2 __attribute__((swift_name("component2()")));
-- (AMLPlaybackState *)doCopyUrl:(NSString *)url positionMillis:(int64_t)positionMillis __attribute__((swift_name("doCopy(url:positionMillis:)")));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
@@ -420,8 +423,6 @@ __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("ResultData")))
 @interface AMLResultData<__covariant T> : AMLResult<T>
 - (instancetype)initWithValue:(T _Nullable)value __attribute__((swift_name("init(value:)"))) __attribute__((objc_designated_initializer));
-- (T _Nullable)component1 __attribute__((swift_name("component1()")));
-- (AMLResultData<T> *)doCopyValue:(T _Nullable)value __attribute__((swift_name("doCopy(value:)")));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
@@ -432,8 +433,6 @@ __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("ResultError")))
 @interface AMLResultError : AMLResult<AMLKotlinNothing *>
 - (instancetype)initWithError:(AMLLibraryError *)error __attribute__((swift_name("init(error:)"))) __attribute__((objc_designated_initializer));
-- (AMLLibraryError *)component1 __attribute__((swift_name("component1()")));
-- (AMLResultError *)doCopyError:(AMLLibraryError *)error __attribute__((swift_name("doCopy(error:)")));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));

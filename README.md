@@ -132,6 +132,8 @@ audioburstLibrary.setUserPreferences(userPreferences)
 
 ## Get Personalized Playlist using async
 The library includes the capability to get a personalized playlist constructed according to a user’s preferences. In order to shorten the loading time of the personalized playlist, the library exposes the ability to "subscribe" to ongoing changes in the playlist. Subscribing enables notifications every time new `Burst`s are added to the playlist and the ability to check if the playlist is ready.
+
+Please remember that your user needs to have at least one [Key](https://github.com/audioburst-labs/AudioburstMobileLibrary/blob/master/src/commonMain/kotlin/com/audioburst/library/models/UserPreferences.kt#L99) selected, otherwise `LibraryError.NoKeysSelected` will be returned.  
 ```kotlin
 audioburstLibrary
     .getPersonalPlaylist()
@@ -336,6 +338,8 @@ audioburstLibrary.postUserPreferences(userPreferences: userPreferences) { userPr
 
 ## Get Personalized Playlist using async
 The library includes the capability to get a personalized playlist constructed according to a user’s preferences. In order to shorten the loading time of the personalized playlist, the library exposes the ability to "subscribe" to ongoing changes in the playlist. Subscribing enables notifications every time new `Burst`s are added to the playlist and the ability to check if the playlist is ready.
+
+Please remember that your user needs to have at least one [Key](https://github.com/audioburst-labs/AudioburstMobileLibrary/blob/master/src/commonMain/kotlin/com/audioburst/library/models/UserPreferences.kt#L99) selected, otherwise `LibraryError.NoKeysSelected` will be returned.
 ```swift
 audioburstLibrary.getPersonalPlaylist { pendingPlaylist in
     if (pendingPlaylist.isReady) {
