@@ -1,6 +1,8 @@
 package com.audioburst.library.di
 
+import com.audioburst.Database
 import com.audioburst.library.AudioburstLibraryDelegate
+import com.audioburst.library.data.ListenedBurstModelQueries
 import com.audioburst.library.data.remote.AbAiRouterApi
 import com.audioburst.library.data.remote.AudioburstApi
 import com.audioburst.library.data.remote.AudioburstStorageApi
@@ -9,6 +11,9 @@ import com.audioburst.library.data.repository.*
 import com.audioburst.library.data.repository.cache.AppSettingsCache
 import com.audioburst.library.data.repository.mappers.*
 import com.audioburst.library.data.storage.*
+import com.audioburst.library.data.storage.commons.DateTimeStringAdapter
+import com.audioburst.library.data.storage.commons.QueryRunner
+import com.audioburst.library.data.storage.commons.TransacterQueryRunner
 import com.audioburst.library.di.providers.*
 import com.audioburst.library.interactors.*
 import com.audioburst.library.models.AppDispatchers
@@ -16,6 +21,7 @@ import com.audioburst.library.models.DurationUnit
 import com.audioburst.library.models.toDuration
 import com.audioburst.library.utils.*
 import com.audioburst.library.utils.strategies.*
+import com.squareup.sqldelight.db.SqlDriver
 import io.ktor.client.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
@@ -26,6 +32,7 @@ internal object Injector {
 
     private val playbackStateCheckInterval = 2.0.toDuration(DurationUnit.Seconds)
     private const val SETTINGS_NAME = "com.audioburst.library"
+    private const val DATABASE_NAME = "com_audioburst_library.db"
 
     private val jsonProvider: Provider<Json> = JsonProvider()
     private val serializerProvider: Provider<JsonSerializer> = provider { KotlinxSerializer(json = jsonProvider.get()) }
@@ -90,7 +97,6 @@ internal object Injector {
             topStoryResponseToPlaylist = topStoryResponseToPlaylistProvider.get(),
             advertisementResponseToAdvertisementMapper = advertisementResponseToAdvertisementMapperProvider.get(),
             playerEventToEventRequestMapper = playerEventToEventRequestProvider.get(),
-            playlistStorage = playlistStorageProvider.get(),
         )
     }
     private val currentAdsProvider: Provider<CurrentAdsProvider> = provider {
@@ -104,12 +110,36 @@ internal object Injector {
         )
     }
     private val unsentEventStorageProvider: Provider<UnsentEventStorage> = provider { NoOpUnsentEventStorage() }
+    private val driverProvider: Provider<SqlDriver> = singleton { driver(DATABASE_NAME) }
+    private val dateTimeStringAdapterProvider: Provider<DateTimeStringAdapter> = provider { DateTimeStringAdapter() }
+    private val databaseProvider: Provider<Database> = singleton {
+        Database(
+            driver = driverProvider.get(),
+            listenedBurstModelAdapter = com.audioburst.library.data.ListenedBurstModel.Adapter(
+                date_textAdapter = dateTimeStringAdapterProvider.get(),
+            )
+        )
+    }
+    private val queryRunnerProvider: Provider<QueryRunner> = singleton {
+        TransacterQueryRunner(
+            transacter = databaseProvider.get(),
+            appDispatchers = appDispatchersProvider.get(),
+        )
+    }
+    private val listenedBurstQueriesProvider: Provider<ListenedBurstModelQueries> = singleton { databaseProvider.get().listenedBurstModelQueries }
+    private val listenedBurstStorageProvider: Provider<ListenedBurstStorage> = provider {
+        SqlListenedBurstStorage(
+            queryRunner = queryRunnerProvider.get(),
+            listenedBurstQueries = listenedBurstQueriesProvider.get(),
+        )
+    }
     private val playbackEventHandlerProvider: Provider<PlaybackEventHandler> = provider {
         PlaybackEventHandlerInteractor(
             userStorage = userStorageProvider.get(),
             userRepository = userRepositoryProvider.get(),
             unsentEventStorage = unsentEventStorageProvider.get(),
             libraryConfiguration = libraryConfigurationProvider.get(),
+            listenedBurstStorage = listenedBurstStorageProvider.get(),
         )
     }
     private val timestampProviderProvider: Provider<TimestampProvider> = provider { PlatformTimestampProvider }
@@ -157,11 +187,15 @@ internal object Injector {
             getUser = getUserProvider.get(),
             userRepository = userRepositoryProvider.get(),
             postContentLoadEvent = postContentLoadEventProvider.get(),
+            playlistStorage = playlistStorageProvider.get(),
+            listenedBurstStorage = listenedBurstStorageProvider.get(),
+            userStorage = userStorageProvider.get(),
         )
     }
     private val getAdDataProvider: Provider<GetAdUrl> = provider {
         GetAdUrl(
             userRepository = userRepositoryProvider.get(),
+            playlistStorage = playlistStorageProvider.get(),
         )
     }
     private val appDispatchersProvider: Provider<AppDispatchers> = provider {
@@ -261,9 +295,23 @@ internal object Injector {
         )
     }
 
+    private val removeOldListenedBurstsProvider: Provider<RemoveOldListenedBursts> = provider {
+        RemoveOldListenedBursts(
+            listenedBurstStorage = listenedBurstStorageProvider.get(),
+        )
+    }
+
+    private val setFilterListenedBurstsProvider: Provider<SetFilterListenedBursts> = provider {
+        SetFilterListenedBursts(
+            userStorage = userStorageProvider.get(),
+        )
+    }
+
     fun inject(audioburstLibrary: AudioburstLibraryDelegate) {
         with(audioburstLibrary) {
+            removeOldListenedBursts = removeOldListenedBurstsProvider.get()
             observePersonalPlaylist = observePersonalPlaylistProvider.get()
+            setFilterListenedBursts = setFilterListenedBurstsProvider.get()
             subscriptionKeySetter = subscriptionKeySetterProvider.get()
             postUserPreferences = postUserPreferencesProvider.get()
             getUserPreferences = getUserPreferencesProvider.get()

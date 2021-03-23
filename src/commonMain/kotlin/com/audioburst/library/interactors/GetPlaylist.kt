@@ -1,10 +1,10 @@
 package com.audioburst.library.interactors
 
-import com.audioburst.library.data.Resource
-import com.audioburst.library.data.asResult
-import com.audioburst.library.data.onData
+import com.audioburst.library.data.*
 import com.audioburst.library.data.repository.UserRepository
-import com.audioburst.library.data.then
+import com.audioburst.library.data.storage.ListenedBurstStorage
+import com.audioburst.library.data.storage.PlaylistStorage
+import com.audioburst.library.data.storage.UserStorage
 import com.audioburst.library.models.Playlist
 import com.audioburst.library.models.PlaylistInfo
 import com.audioburst.library.models.Result
@@ -14,6 +14,9 @@ internal class GetPlaylist(
     private val getUser: GetUser,
     private val userRepository: UserRepository,
     private val postContentLoadEvent: PostContentLoadEvent,
+    private val playlistStorage: PlaylistStorage,
+    private val listenedBurstStorage: ListenedBurstStorage,
+    private val userStorage: UserStorage,
 ) {
 
     suspend operator fun invoke(playlistInfo: PlaylistInfo): Result<Playlist> =
@@ -27,5 +30,19 @@ internal class GetPlaylist(
             getPlaylistCall(user).onData {
                 postContentLoadEvent(it)
             }
-        }.asResult()
+        }.filterListenedBursts().onData(playlistStorage::setPlaylist).asResult()
+
+    private suspend fun Resource<Playlist>.filterListenedBursts(): Resource<Playlist> =
+        if (userStorage.filterListenedBursts) {
+            map { playlist ->
+                val listenedBursts = listenedBurstStorage.getRecentlyListened().map { it.id }
+                if (listenedBursts.isEmpty()) {
+                    playlist
+                } else {
+                    playlist.copy(playlist.bursts.filter { !listenedBursts.contains(it.id) })
+                }
+            }
+        } else {
+            this
+        }
 }

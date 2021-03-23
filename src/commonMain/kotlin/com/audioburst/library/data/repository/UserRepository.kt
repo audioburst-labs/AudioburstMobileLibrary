@@ -3,7 +3,6 @@ package com.audioburst.library.data.repository
 import com.audioburst.library.data.Resource
 import com.audioburst.library.data.execute
 import com.audioburst.library.data.map
-import com.audioburst.library.data.onData
 import com.audioburst.library.data.remote.AbAiRouterApi
 import com.audioburst.library.data.remote.AudioburstApi
 import com.audioburst.library.data.remote.AudioburstV2Api
@@ -12,7 +11,6 @@ import com.audioburst.library.data.repository.models.AdvertisementResponse
 import com.audioburst.library.data.repository.models.PlaylistsResponse
 import com.audioburst.library.data.repository.models.TopStoryResponse
 import com.audioburst.library.data.repository.models.UserResponse
-import com.audioburst.library.data.storage.PlaylistStorage
 import com.audioburst.library.models.*
 import com.audioburst.library.utils.LibraryConfiguration
 import io.ktor.client.*
@@ -48,7 +46,6 @@ internal class HttpUserRepository(
     private val topStoryResponseToPlaylist: TopStoryResponseToPlaylist,
     private val advertisementResponseToAdvertisementMapper: AdvertisementResponseToAdvertisementMapper,
     private val playerEventToEventRequestMapper: PlayerEventToEventRequestMapper,
-    private val playlistStorage: PlaylistStorage,
 ) : UserRepository {
 
     override suspend fun registerUser(userId: String): Resource<User> =
@@ -76,7 +73,6 @@ internal class HttpUserRepository(
                     )
                 )
             }
-            .onData(playlistStorage::setPlaylist)
 
     override suspend fun getPlaylist(userId: String, byteArray: ByteArray): Resource<Playlist> =
         httpClient.execute<TopStoryResponse>(
@@ -124,12 +120,6 @@ internal class HttpUserRepository(
     override suspend fun getAdData(adUrl: Url): Resource<Advertisement> =
         httpClient.execute<AdvertisementResponse>(adUrl)
             .map(advertisementResponseToAdvertisementMapper::map)
-            .onData {
-                playlistStorage.setAdvertisement(
-                    url = adUrl,
-                    advertisement = it
-                )
-        }
 
     companion object {
         private const val LOG_ONLY_DOWNLOAD_TYPE = 2

@@ -6,6 +6,7 @@ plugins {
     kotlin(Dependencies.Plugins.serialization) version Dependencies.kotlinVersion
     id(Dependencies.Plugins.swiftPackage) version Dependencies.Plugins.swiftPackageVersion
     id(Dependencies.Plugins.mavenPublish)
+    id(Dependencies.Plugins.sqlDelight) version Dependencies.sqlDelightVersion
 }
 group = Constants.Library.packageName
 version = Constants.Library.version
@@ -42,6 +43,8 @@ kotlin {
                 implementation(Dependencies.Stately.concurrency)
                 implementation(Dependencies.Stately.isoCollections)
                 implementation(Dependencies.Stately.isolate)
+
+                implementation(Dependencies.SqlDelight.runtime)
             }
         }
         val commonTest by getting {
@@ -56,22 +59,37 @@ kotlin {
                 implementation(Dependencies.Ktor.androidMain)
                 implementation(Dependencies.Coroutines.androidMain)
                 implementation(Dependencies.Android.Startup.runtime)
+                implementation(Dependencies.SqlDelight.androidMain)
             }
         }
         val androidTest by getting {
             dependencies {
                 implementation(Dependencies.Test.Jvm.junit)
+                implementation(Dependencies.SqlDelight.jvm)
             }
         }
         val iosMain by getting {
             dependencies {
                 implementation(Dependencies.Ktor.iOSMain)
+                implementation(Dependencies.SqlDelight.iOSMain)
             }
         }
-        val iosTest by getting
+        val iosTest by getting {
+            dependencies {
+                implementation(Dependencies.SqlDelight.iOSMain)
+            }
+        }
         all {
             languageSettings.enableLanguageFeature("InlineClasses")
         }
+        dependencies {
+            coreLibraryDesugaring(Dependencies.Android.JdkDesugar.desugar)
+        }
+    }
+}
+sqldelight {
+    database(name = "Database") {
+        packageName = Constants.Library.packageName
     }
 }
 android {
@@ -83,10 +101,16 @@ android {
         versionName = Constants.Android.versionName
         consumerProguardFile("proguard-rules.pro")
     }
+    compileOptions {
+        coreLibraryDesugaringEnabled = true
+        sourceCompatibility = JavaVersion.VERSION_1_8
+        targetCompatibility = JavaVersion.VERSION_1_8
+    }
 }
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     kotlinOptions.freeCompilerArgs += "-Xinline-classes"
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
 }
 
 // PUBLISHING ANDROID

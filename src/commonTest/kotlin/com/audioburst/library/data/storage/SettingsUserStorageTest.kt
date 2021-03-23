@@ -63,6 +63,29 @@ class SettingsUserStorageTest {
         // THEN
         assertEquals(selectedKeysCount, storage.selectedKeysCount)
     }
+
+    @Test
+    fun testIfFilterListenedBurstsInitialValueIsTrue() {
+        // GIVEN
+        val expectedInitialValue = true
+
+        // WHEN
+
+        // THEN
+        assertEquals(expectedInitialValue, storage.filterListenedBursts)
+    }
+
+    @Test
+    fun testIfFilterListenedBurstsIsSavedProperly() {
+        // GIVEN
+        val filterListenedBursts = false
+
+        // WHEN
+        storage.filterListenedBursts = filterListenedBursts
+
+        // THEN
+        assertEquals(filterListenedBursts, storage.filterListenedBursts)
+    }
 }
 
 private class MockSettings: Settings {
@@ -78,6 +101,12 @@ private class MockSettings: Settings {
     override fun getIntOrDefault(key: String, default: Int): Int = map[key] as? Int ?: default
 
     override fun putInt(key: String, value: Int) {
+        map[key] = value
+    }
+
+    override fun getBooleanOrDefault(key: String, default: Boolean): Boolean = map[key] as? Boolean ?: default
+
+    override fun putBoolean(key: String, value: Boolean) {
         map[key] = value
     }
 

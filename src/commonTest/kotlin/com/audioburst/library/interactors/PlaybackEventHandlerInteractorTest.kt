@@ -15,10 +15,12 @@ import kotlin.test.assertTrue
 
 class PlaybackEventHandlerInteractorTest {
 
+    private val listenedBurstStorage = InMemoryListenedBurstStorage()
     private val sentEvents = mutableListOf<MockUserRepository.SentEvent>()
     private val interactor = playbackEventHandlerInteractorOf(
         userRepository = userRepositoryOf(sentEvents = sentEvents),
-        userStorage = userStorageOf(userId = "")
+        userStorage = userStorageOf(userId = ""),
+        listenedBurstStorage = listenedBurstStorage,
     )
 
     @AfterTest
@@ -247,5 +249,18 @@ class PlaybackEventHandlerInteractorTest {
 
         // THEN
         assertEquals(duration.seconds, sentEvents.last().playerEvent.burstLength)
+    }
+
+    @Test
+    fun testWhenListenedBurstEventHappenedThenSentEventsAreEmptyAndListenedBurstStorageGetAllIsNotEmpty() = runTest {
+        // GIVEN
+        val playbackEvent = PlaybackEvent.BurstListened(eventPayloadOf())
+
+        // WHEN
+        interactor.handle(playbackEvent)
+
+        // THEN
+        assertTrue(sentEvents.isEmpty())
+        assertTrue(listenedBurstStorage.getRecentlyListened().isNotEmpty())
     }
 }

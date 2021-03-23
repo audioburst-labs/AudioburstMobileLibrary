@@ -1,0 +1,28 @@
+import com.audioburst.library.models.DateTime;
+
+CREATE TABLE listenedBurstModel (
+    id TEXT PRIMARY KEY,
+    date_text TEXT as DateTime NOT NULL
+);
+
+insertListenedBurst:
+REPLACE INTO listenedBurstModel (id, date_text)
+VALUES (?, ?);
+
+deleteListenedBurst:
+DELETE FROM listenedBurstModel
+WHERE id = ?;
+
+deleteExpiredListenedBurst:
+DELETE FROM listenedBurstModel
+WHERE date_text <= date('now','-30 day');
+
+selectAllFromLast30Days:
+SELECT id, date_text
+FROM listenedBurstModel
+WHERE date_text BETWEEN datetime('now', '-30 days') AND datetime('now', '+1 days')
+ORDER BY listenedBurstModel.date_text DESC;
+
+selectAll:
+SELECT id, date_text
+FROM listenedBurstModel;

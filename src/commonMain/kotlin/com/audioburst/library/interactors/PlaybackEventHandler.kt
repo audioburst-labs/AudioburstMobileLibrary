@@ -1,13 +1,11 @@
 package com.audioburst.library.interactors
 
+import com.audioburst.library.data.storage.ListenedBurstStorage
 import com.audioburst.library.data.Resource
 import com.audioburst.library.data.repository.UserRepository
 import com.audioburst.library.data.storage.UnsentEventStorage
 import com.audioburst.library.data.storage.UserStorage
-import com.audioburst.library.models.AdvertisementEvent
-import com.audioburst.library.models.EventPayload
-import com.audioburst.library.models.PlaybackEvent
-import com.audioburst.library.models.PlayerEvent
+import com.audioburst.library.models.*
 import com.audioburst.library.utils.LibraryConfiguration
 import com.audioburst.library.utils.Logger
 
@@ -20,14 +18,25 @@ internal class PlaybackEventHandlerInteractor(
     private val userRepository: UserRepository,
     private val unsentEventStorage: UnsentEventStorage,
     private val libraryConfiguration: LibraryConfiguration,
+    private val listenedBurstStorage: ListenedBurstStorage,
 ) : PlaybackEventHandler {
 
     override suspend fun handle(playbackEvent: PlaybackEvent) {
         Logger.i("Event detected: ${playbackEvent.actionName}")
         when (playbackEvent) {
+            is PlaybackEvent.BurstListened -> markBurstAsListened(playbackEvent.eventPayload.burst)
             is PlaybackEvent.AdListened -> postAdvertisementEvent(playbackEvent)
             else -> postPlayerEvent(playbackEvent)
         }
+    }
+
+    private suspend fun markBurstAsListened(burst: Burst) {
+        listenedBurstStorage.addOrUpdate(
+            ListenedBurst(
+                id = burst.id,
+                dateTime = DateTime.now(),
+            )
+        )
     }
 
     private suspend fun postAdvertisementEvent(adListened: PlaybackEvent.AdListened) {

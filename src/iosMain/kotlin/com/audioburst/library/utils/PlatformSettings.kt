@@ -20,4 +20,11 @@ class AppleSettings constructor(private val delegate: NSUserDefaults): Settings 
     override fun putInt(key: String, value: Int) {
         delegate.setInteger(value.toLong(), key)
     }
+
+    override fun getBooleanOrDefault(key: String, default: Boolean): Boolean =
+        if (hasKey(key)) delegate.boolForKey(key) else default
+
+    override fun putBoolean(key: String, value: Boolean) {
+        delegate.setBool(value, key)
+    }
 }

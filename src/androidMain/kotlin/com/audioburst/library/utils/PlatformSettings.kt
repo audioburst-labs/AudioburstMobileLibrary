@@ -19,4 +19,10 @@ class AndroidSettings constructor(private val delegate: SharedPreferences): Sett
     override fun putInt(key: String, value: Int) {
         delegate.edit().putInt(key, value).apply()
     }
+
+    override fun getBooleanOrDefault(key: String, default: Boolean): Boolean = delegate.getBoolean(key, default)
+
+    override fun putBoolean(key: String, value: Boolean) {
+        delegate.edit().putBoolean(key, value).apply()
+    }
 }

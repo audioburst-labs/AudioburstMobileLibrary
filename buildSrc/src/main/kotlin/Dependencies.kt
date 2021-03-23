@@ -19,6 +19,7 @@ object Constants {
 
 object Dependencies {
     const val kotlinVersion = "1.4.20"
+    const val sqlDelightVersion = "1.4.4"
 
     private fun kotlin(dependency: String): String = "org.jetbrains.kotlin:$dependency:$kotlinVersion"
 
@@ -30,6 +31,7 @@ object Dependencies {
         const val serialization = "plugin.serialization"
         const val swiftPackageVersion = "1.0.2"
         const val swiftPackage = "com.chromaticnoise.multiplatform-swiftpackage"
+        const val sqlDelight = "com.squareup.sqldelight"
     }
 
     object Coroutines {
@@ -56,19 +58,12 @@ object Dependencies {
     }
 
     object SqlDelight {
-        private const val version = "1.4.2"
+        private const val version = sqlDelightVersion
         const val runtime = "com.squareup.sqldelight:runtime:$version"
-        const val coroutinesExtensions = "com.squareup.sqldelight:coroutines-extensions:$version"
 
-        const val jvmMain = "com.squareup.sqldelight:sqlite-driver:$version"
         const val androidMain = "com.squareup.sqldelight:android-driver:$version"
+        const val jvm = "com.squareup.sqldelight:sqlite-driver:$version"
         const val iOSMain = "com.squareup.sqldelight:native-driver:$version"
-    }
-
-    object Settings {
-        private const val version = "0.6.2"
-        const val commonMain = "com.russhwolf:multiplatform-settings:$version"
-        const val commonTest = "com.russhwolf:multiplatform-settings-test:$version"
     }
 
     object Stately {
@@ -81,6 +76,10 @@ object Dependencies {
         object Startup {
             private const val version = "1.0.0"
             const val runtime = "androidx.startup:startup-runtime:$version"
+        }
+        object JdkDesugar {
+            private const val version = "1.1.5"
+            const val desugar = "com.android.tools:desugar_jdk_libs:$version"
         }
     }
 

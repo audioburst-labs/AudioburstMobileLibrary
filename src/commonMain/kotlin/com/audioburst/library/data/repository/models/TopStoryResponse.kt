@@ -78,8 +78,8 @@ internal data class AudioData(
 
 @Serializable
 internal data class PromoteResponse(
-    val adData: AdDataResponse,
-    val type: String,
+    val adData: AdDataResponse?,
+    val type: String?,
     val url: String?,
 )
 

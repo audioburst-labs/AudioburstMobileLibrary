@@ -8,6 +8,7 @@ import com.audioburst.library.data.repository.mappers.libraryConfigurationOf
 import com.audioburst.library.data.repository.mappers.playerActionOf
 import com.audioburst.library.data.repository.mappers.userPreferenceOf
 import com.audioburst.library.data.repository.mappers.userStorageOf
+import com.audioburst.library.data.storage.ListenedBurstStorage
 import com.audioburst.library.data.storage.PlaylistStorage
 import com.audioburst.library.data.storage.UnsentEventStorage
 import com.audioburst.library.data.storage.UserStorage
@@ -238,13 +239,37 @@ internal fun playbackEventHandlerInteractorOf(
     userRepository: UserRepository = userRepositoryOf(),
     unsentEventStorage: UnsentEventStorage = InMemoryUnsentEventStorage(),
     libraryConfiguration: LibraryConfiguration = libraryConfigurationOf(),
+    listenedBurstStorage: ListenedBurstStorage = InMemoryListenedBurstStorage(),
 ): PlaybackEventHandlerInteractor =
     PlaybackEventHandlerInteractor(
         userStorage = userStorage,
         userRepository = userRepository,
         unsentEventStorage = unsentEventStorage,
         libraryConfiguration = libraryConfiguration,
+        listenedBurstStorage = listenedBurstStorage,
     )
+
+internal class InMemoryListenedBurstStorage(private val listenedBurstsExpireDays: Long = 30) : ListenedBurstStorage {
+    private val list = mutableListOf<ListenedBurst>()
+
+    override suspend fun getRecentlyListened(): List<ListenedBurst> = list.toList()
+
+    override suspend fun addOrUpdate(listenedBurst: ListenedBurst) {
+        list.add(listenedBurst)
+    }
+
+    override suspend fun removeExpiredListenedBursts() {
+        val expiredDate = DateTime.now().minusDays(listenedBurstsExpireDays)
+        list.filter { it.isExpired(expiredDate) }
+            .forEach(list::remove)
+    }
+
+    private fun ListenedBurst.isExpired(expirationDate: DateTime): Boolean = dateTime.isBefore(expirationDate)
+
+    fun clear() {
+        list.clear()
+    }
+}
 
 internal class MemorablePlaybackEventHandler : PlaybackEventHandler {
     val sentEvents: MutableList<PlaybackEvent> = mutableListOf()
@@ -307,3 +332,15 @@ internal fun postContentLoadEventOf(
         playbackEventHandler = playbackEventHandler,
         timestampProvider = timestampProvider,
     )
+
+internal fun listenedBurstOf(id: String = "", dateTime: DateTime = DateTime.now()): ListenedBurst =
+    ListenedBurst(id = id, dateTime = dateTime)
+
+internal fun listenedBurstsStorageOf(
+    getAll: List<ListenedBurst> = emptyList(),
+): ListenedBurstStorage =
+    object : ListenedBurstStorage {
+        override suspend fun getRecentlyListened(): List<ListenedBurst> = getAll
+        override suspend fun addOrUpdate(listenedBurst: ListenedBurst) = Unit
+        override suspend fun removeExpiredListenedBursts() = Unit
+    }

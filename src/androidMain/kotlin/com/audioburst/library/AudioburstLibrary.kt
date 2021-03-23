@@ -123,4 +123,11 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
     fun removePlaybackStateListener(listener: PlaybackStateListener) {
         delegate.removePlaybackStateListener(listener)
     }
+
+    /**
+     * By default Library will filter-out all already listened by the user Bursts. Use this function to change this behaviour.
+     */
+    fun filterListenedBursts(enabled: Boolean) {
+        delegate.filterListenedBursts(enabled)
+    }
 }

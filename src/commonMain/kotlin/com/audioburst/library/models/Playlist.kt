@@ -9,6 +9,8 @@ class Playlist(
     internal val playerAction: PlayerAction,
 ) {
 
+    internal fun copy(bursts: List<Burst>): Playlist = Playlist(id, name, query, bursts, playerSessionId, playerAction)
+
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other == null || this::class != other::class) return false

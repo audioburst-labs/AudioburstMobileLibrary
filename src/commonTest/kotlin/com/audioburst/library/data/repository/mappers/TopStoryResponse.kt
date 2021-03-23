@@ -113,8 +113,8 @@ internal fun contentURLsResponseOf(
     )
 
 internal fun promoteResponseOf(
-    adData: AdDataResponse = adDataResponseOf(),
-    type: String = "",
+    adData: AdDataResponse? = null,
+    type: String? = null,
     url: String? = null,
 ): PromoteResponse =
     PromoteResponse(

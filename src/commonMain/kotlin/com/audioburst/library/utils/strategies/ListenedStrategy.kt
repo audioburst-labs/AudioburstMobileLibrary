@@ -1,9 +1,6 @@
 package com.audioburst.library.utils.strategies
 
 import com.audioburst.library.models.*
-import com.audioburst.library.models.AnalysisInput
-import com.audioburst.library.models.EventPayload
-import com.audioburst.library.models.PlaybackEvent
 import com.audioburst.library.utils.PlaybackPeriodsCreator
 import com.audioburst.library.utils.strategies.ListenedMediaStrategy.Configuration
 
@@ -36,7 +33,15 @@ internal class ListenedStrategy(
                 minimumListenTime = 2.0.toDuration(DurationUnit.Seconds)
             ),
             creator = { PlaybackEvent.TwoSecADPlaying(it) }
-        )
+        ),
+        EventCreator(
+            configuration = Configuration(
+                type = Configuration.Type.OneOff,
+                timeOf = Configuration.TimeOf.Burst,
+                minimumListenTime = 10.0.toDuration(DurationUnit.Seconds)
+            ),
+            creator = { PlaybackEvent.BurstListened(it) }
+        ),
     )
 
     fun check(input: AnalysisInput): List<PlaybackEvent> {

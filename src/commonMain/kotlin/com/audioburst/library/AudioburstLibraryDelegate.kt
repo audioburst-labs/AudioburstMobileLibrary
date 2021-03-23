@@ -16,7 +16,9 @@ import kotlinx.coroutines.launch
 
 internal class AudioburstLibraryDelegate(applicationKey: String) {
 
+    internal lateinit var removeOldListenedBursts: RemoveOldListenedBursts
     internal lateinit var observePersonalPlaylist: ObservePersonalPlaylist
+    internal lateinit var setFilterListenedBursts: SetFilterListenedBursts
     internal lateinit var subscriptionKeySetter: SubscriptionKeySetter
     internal lateinit var postUserPreferences: PostUserPreferences
     internal lateinit var getUserPreferences: GetUserPreferences
@@ -32,6 +34,7 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
     init {
         Injector.inject(this)
         subscriptionKeySetter.set(SubscriptionKey(applicationKey))
+        scope.launch(appDispatchers.computation) { removeOldListenedBursts() }
     }
 
     suspend fun setAudioburstUserID(userId: String): Result<Boolean> {
@@ -166,5 +169,10 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
     fun removePlaybackStateListener(listener: PlaybackStateListener) {
         Logger.i("removePlaybackStateListener")
         eventDetector.removePlaybackStateListener(listener)
+    }
+
+    fun filterListenedBursts(enabled: Boolean) {
+        Logger.i("filterListenedBursts")
+        setFilterListenedBursts(enabled)
     }
 }

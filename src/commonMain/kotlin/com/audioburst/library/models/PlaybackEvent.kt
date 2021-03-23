@@ -25,4 +25,5 @@ internal sealed class PlaybackEvent(val actionName: String, val eventPayload: Ev
         eventPayload: EventPayload,
     ) : PlaybackEvent("AD", eventPayload)
     class ContentLoaded(eventPayload: EventPayload) : PlaybackEvent("contentLoad", eventPayload)
+    class BurstListened(eventPayload: EventPayload) : PlaybackEvent("BurstListened", eventPayload)
 }
