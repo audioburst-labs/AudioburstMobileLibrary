@@ -1,6 +1,6 @@
 package com.audioburst.library.utils
 
-interface Settings {
+internal interface Settings {
     fun getStringOrNull(key: String): String?
 
     fun putString(key: String, value: String?)
@@ -14,4 +14,4 @@ interface Settings {
     fun putBoolean(key: String, value: Boolean)
 }
 
-expect fun createSettings(name: String): Settings
+internal expect fun createSettings(name: String): Settings

@@ -4,9 +4,9 @@ import android.content.Context.MODE_PRIVATE
 import android.content.SharedPreferences
 import com.audioburst.library.applicationContext
 
-actual fun createSettings(name: String): Settings = AndroidSettings(applicationContext.getSharedPreferences(name, MODE_PRIVATE))
+internal actual fun createSettings(name: String): Settings = AndroidSettings(applicationContext.getSharedPreferences(name, MODE_PRIVATE))
 
-class AndroidSettings constructor(private val delegate: SharedPreferences): Settings {
+internal class AndroidSettings constructor(private val delegate: SharedPreferences): Settings {
 
     override fun getStringOrNull(key: String): String? = delegate.getString(key, null)
 

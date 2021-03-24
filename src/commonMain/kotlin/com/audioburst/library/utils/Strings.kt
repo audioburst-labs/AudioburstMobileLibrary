@@ -1,6 +1,6 @@
 package com.audioburst.library.utils
 
-object Strings {
+internal object Strings {
     const val errorNetwork = "Internet connection error while communicating with the Audioburst API"
 
     const val errorServer = "Server side error while communicating with the Audioburst API"
