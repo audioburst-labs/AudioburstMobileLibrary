@@ -6,9 +6,9 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class AMLBurst, AMLLibraryError, AMLPendingPlaylist, AMLPlaylistInfo, AMLPlaylist, NSData, AMLUserPreferences, NSUserDefaults, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLDurationUnit, AMLKotlinEnum<E>, AMLKey, AMLPlayerActionType, AMLPlayerAction, AMLPreference, AMLResult<__covariant T>, AMLKotlinNothing;
+@class AMLListenedBurstModelAdapter, AMLBurst, AMLLibraryError, AMLPendingPlaylist, AMLPlaylistInfo, AMLPlaylist, NSData, AMLUserPreferences, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLDateTime, AMLDurationUnit, AMLKotlinEnum<E>, AMLKey, AMLPlayerActionType, AMLPlayerAction, AMLPreference, AMLResult<__covariant T>, AMLKotlinNothing, AMLListenedBurstModel, AMLRuntimeQuery<__covariant RowType>, AMLRuntimeTransacterTransaction, AMLKotlinByteArray, AMLKotlinByteIterator;
 
-@protocol AMLPlaybackStateListener, AMLSettings, AMLKotlinComparable;
+@protocol AMLListenedBurstModelQueries, AMLRuntimeTransactionWithoutReturn, AMLRuntimeTransactionWithReturn, AMLRuntimeTransacter, AMLDatabase, AMLRuntimeSqlDriver, AMLRuntimeSqlDriverSchema, AMLPlaybackStateListener, AMLKotlinComparable, AMLRuntimeColumnAdapter, AMLRuntimeTransactionCallbacks, AMLRuntimeSqlPreparedStatement, AMLRuntimeSqlCursor, AMLRuntimeCloseable, AMLRuntimeQueryListener, AMLKotlinIterator;
 
 NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic push
@@ -138,10 +138,34 @@ __attribute__((swift_name("KotlinBoolean")))
 + (instancetype)numberWithBool:(BOOL)value;
 @end;
 
+__attribute__((swift_name("RuntimeTransacter")))
+@protocol AMLRuntimeTransacter
+@required
+- (void)transactionNoEnclosing:(BOOL)noEnclosing body:(void (^)(id<AMLRuntimeTransactionWithoutReturn>))body __attribute__((swift_name("transaction(noEnclosing:body:)")));
+- (id _Nullable)transactionWithResultNoEnclosing:(BOOL)noEnclosing bodyWithReturn:(id _Nullable (^)(id<AMLRuntimeTransactionWithReturn>))bodyWithReturn __attribute__((swift_name("transactionWithResult(noEnclosing:bodyWithReturn:)")));
+@end;
+
+__attribute__((swift_name("Database")))
+@protocol AMLDatabase <AMLRuntimeTransacter>
+@required
+@property (readonly) id<AMLListenedBurstModelQueries> listenedBurstModelQueries __attribute__((swift_name("listenedBurstModelQueries")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("DatabaseCompanion")))
+@interface AMLDatabaseCompanion : AMLBase
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)companion __attribute__((swift_name("init()")));
+- (id<AMLDatabase>)invokeDriver:(id<AMLRuntimeSqlDriver>)driver listenedBurstModelAdapter:(AMLListenedBurstModelAdapter *)listenedBurstModelAdapter __attribute__((swift_name("invoke(driver:listenedBurstModelAdapter:)")));
+@property (readonly) id<AMLRuntimeSqlDriverSchema> Schema __attribute__((swift_name("Schema")));
+@end;
+
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("AudioburstLibrary")))
 @interface AMLAudioburstLibrary : AMLBase
 - (instancetype)initWithApplicationKey:(NSString *)applicationKey __attribute__((swift_name("init(applicationKey:)"))) __attribute__((objc_designated_initializer));
+- (void)filterListenedBurstsEnabled:(BOOL)enabled __attribute__((swift_name("filterListenedBursts(enabled:)")));
 - (void)getAdUrlBurst:(AMLBurst *)burst onData:(void (^)(NSString *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getAdUrl(burst:onData:onError:)")));
 - (void)getPersonalPlaylistOnData:(void (^)(AMLPendingPlaylist *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPersonalPlaylist(onData:onError:)")));
 - (void)getPlaylistPlaylistInfo:(AMLPlaylistInfo *)playlistInfo onData:(void (^)(AMLPlaylist *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPlaylist(playlistInfo:onData:onError:)")));
@@ -156,43 +180,10 @@ __attribute__((swift_name("AudioburstLibrary")))
 - (void)stop __attribute__((swift_name("stop()")));
 @end;
 
-__attribute__((swift_name("Settings")))
-@protocol AMLSettings
-@required
-- (int32_t)getIntOrDefaultKey:(NSString *)key default:(int32_t)default_ __attribute__((swift_name("getIntOrDefault(key:default:)")));
-- (NSString * _Nullable)getStringOrNullKey:(NSString *)key __attribute__((swift_name("getStringOrNull(key:)")));
-- (void)putIntKey:(NSString *)key value:(int32_t)value __attribute__((swift_name("putInt(key:value:)")));
-- (void)putStringKey:(NSString *)key value:(NSString * _Nullable)value __attribute__((swift_name("putString(key:value:)")));
-@end;
-
-__attribute__((objc_subclassing_restricted))
-__attribute__((swift_name("AppleSettings")))
-@interface AMLAppleSettings : AMLBase <AMLSettings>
-- (instancetype)initWithDelegate:(NSUserDefaults *)delegate __attribute__((swift_name("init(delegate:)"))) __attribute__((objc_designated_initializer));
-- (int32_t)getIntOrDefaultKey:(NSString *)key default:(int32_t)default_ __attribute__((swift_name("getIntOrDefault(key:default:)")));
-- (NSString * _Nullable)getStringOrNullKey:(NSString *)key __attribute__((swift_name("getStringOrNull(key:)")));
-- (void)putIntKey:(NSString *)key value:(int32_t)value __attribute__((swift_name("putInt(key:value:)")));
-- (void)putStringKey:(NSString *)key value:(NSString * _Nullable)value __attribute__((swift_name("putString(key:value:)")));
-@end;
-
 __attribute__((swift_name("PlaybackStateListener")))
 @protocol AMLPlaybackStateListener
 @required
 - (AMLPlaybackState * _Nullable)getPlaybackState __attribute__((swift_name("getPlaybackState()")));
-@end;
-
-__attribute__((objc_subclassing_restricted))
-__attribute__((swift_name("Strings")))
-@interface AMLStrings : AMLBase
-+ (instancetype)alloc __attribute__((unavailable));
-+ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
-+ (instancetype)strings __attribute__((swift_name("init()")));
-@property (readonly) NSString *errorAdUrlNotFound __attribute__((swift_name("errorAdUrlNotFound")));
-@property (readonly) NSString *errorNetwork __attribute__((swift_name("errorNetwork")));
-@property (readonly) NSString *errorNoKeysSelected __attribute__((swift_name("errorNoKeysSelected")));
-@property (readonly) NSString *errorServer __attribute__((swift_name("errorServer")));
-@property (readonly) NSString *errorUnexpected __attribute__((swift_name("errorUnexpected")));
-@property (readonly) NSString *errorWrongApplicationKey __attribute__((swift_name("errorWrongApplicationKey")));
 @end;
 
 __attribute__((objc_subclassing_restricted))
@@ -246,6 +237,29 @@ __attribute__((swift_name("BurstSource")))
 @property (readonly) NSString *showName __attribute__((swift_name("showName")));
 @property (readonly) NSString *sourceName __attribute__((swift_name("sourceName")));
 @property (readonly) NSString * _Nullable sourceType __attribute__((swift_name("sourceType")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("DateTime")))
+@interface AMLDateTime : AMLBase
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (BOOL)isAfterDateTime:(AMLDateTime *)dateTime __attribute__((swift_name("isAfter(dateTime:)")));
+- (BOOL)isBeforeDateTime:(AMLDateTime *)dateTime __attribute__((swift_name("isBefore(dateTime:)")));
+- (AMLDateTime *)minusDaysDays:(int64_t)days __attribute__((swift_name("minusDays(days:)")));
+- (AMLDateTime *)plusDaysDays:(int64_t)days __attribute__((swift_name("plusDays(days:)")));
+- (NSString *)toIsoDateString __attribute__((swift_name("toIsoDateString()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("DateTime.Companion")))
+@interface AMLDateTimeCompanion : AMLBase
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)companion __attribute__((swift_name("init()")));
+- (AMLDateTime * _Nullable)fromIsoDateString:(NSString *)isoDateString __attribute__((swift_name("from(isoDateString:)")));
+- (AMLDateTime *)now __attribute__((swift_name("now()")));
 @end;
 
 __attribute__((objc_subclassing_restricted))
@@ -454,6 +468,39 @@ __attribute__((swift_name("UserPreferences")))
 @property (readonly) NSString *userId __attribute__((swift_name("userId")));
 @end;
 
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("ListenedBurstModel")))
+@interface AMLListenedBurstModel : AMLBase
+- (instancetype)initWithId:(NSString *)id date_text:(AMLDateTime *)date_text __attribute__((swift_name("init(id:date_text:)"))) __attribute__((objc_designated_initializer));
+- (NSString *)component1 __attribute__((swift_name("component1()")));
+- (AMLDateTime *)component2 __attribute__((swift_name("component2()")));
+- (AMLListenedBurstModel *)doCopyId:(NSString *)id date_text:(AMLDateTime *)date_text __attribute__((swift_name("doCopy(id:date_text:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@property (readonly) AMLDateTime *date_text __attribute__((swift_name("date_text")));
+@property (readonly) NSString *id __attribute__((swift_name("id")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("ListenedBurstModel.Adapter")))
+@interface AMLListenedBurstModelAdapter : AMLBase
+- (instancetype)initWithDate_textAdapter:(id<AMLRuntimeColumnAdapter>)date_textAdapter __attribute__((swift_name("init(date_textAdapter:)"))) __attribute__((objc_designated_initializer));
+@property (readonly) id<AMLRuntimeColumnAdapter> date_textAdapter __attribute__((swift_name("date_textAdapter")));
+@end;
+
+__attribute__((swift_name("ListenedBurstModelQueries")))
+@protocol AMLListenedBurstModelQueries <AMLRuntimeTransacter>
+@required
+- (void)deleteExpiredListenedBurst __attribute__((swift_name("deleteExpiredListenedBurst()")));
+- (void)deleteListenedBurstId:(NSString *)id __attribute__((swift_name("deleteListenedBurst(id:)")));
+- (void)insertListenedBurstId:(NSString *)id date_text:(AMLDateTime *)date_text __attribute__((swift_name("insertListenedBurst(id:date_text:)")));
+- (AMLRuntimeQuery<AMLListenedBurstModel *> *)selectAll __attribute__((swift_name("selectAll()")));
+- (AMLRuntimeQuery<id> *)selectAllMapper:(id (^)(NSString *, AMLDateTime *))mapper __attribute__((swift_name("selectAll(mapper:)")));
+- (AMLRuntimeQuery<AMLListenedBurstModel *> *)selectAllFromLast30Days __attribute__((swift_name("selectAllFromLast30Days()")));
+- (AMLRuntimeQuery<id> *)selectAllFromLast30DaysMapper:(id (^)(NSString *, AMLDateTime *))mapper __attribute__((swift_name("selectAllFromLast30Days(mapper:)")));
+@end;
+
 @interface AMLResult (Extensions)
 - (AMLResult<id> *)mapF:(id _Nullable (^)(id _Nullable))f __attribute__((swift_name("map(f:)")));
 - (AMLResult<id> *)onDataF:(void (^)(id _Nullable))f __attribute__((swift_name("onData(f:)")));
@@ -463,20 +510,141 @@ __attribute__((swift_name("UserPreferences")))
 @end;
 
 __attribute__((objc_subclassing_restricted))
-__attribute__((swift_name("PlatformSettingsKt")))
-@interface AMLPlatformSettingsKt : AMLBase
-+ (id<AMLSettings>)createSettingsName:(NSString *)name __attribute__((swift_name("createSettings(name:)")));
-@end;
-
-__attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("DurationKt")))
 @interface AMLDurationKt : AMLBase
 + (AMLDuration *)toDuration:(double)receiver unit:(AMLDurationUnit *)unit __attribute__((swift_name("toDuration(_:unit:)")));
 @end;
 
+__attribute__((swift_name("RuntimeTransactionCallbacks")))
+@protocol AMLRuntimeTransactionCallbacks
+@required
+- (void)afterCommitFunction:(void (^)(void))function __attribute__((swift_name("afterCommit(function:)")));
+- (void)afterRollbackFunction:(void (^)(void))function __attribute__((swift_name("afterRollback(function:)")));
+@end;
+
+__attribute__((swift_name("RuntimeTransactionWithoutReturn")))
+@protocol AMLRuntimeTransactionWithoutReturn <AMLRuntimeTransactionCallbacks>
+@required
+- (void)rollback __attribute__((swift_name("rollback()")));
+- (void)transactionBody:(void (^)(id<AMLRuntimeTransactionWithoutReturn>))body __attribute__((swift_name("transaction(body:)")));
+@end;
+
+__attribute__((swift_name("RuntimeTransactionWithReturn")))
+@protocol AMLRuntimeTransactionWithReturn <AMLRuntimeTransactionCallbacks>
+@required
+- (void)rollbackReturnValue:(id _Nullable)returnValue __attribute__((swift_name("rollback(returnValue:)")));
+- (id _Nullable)transactionBody_:(id _Nullable (^)(id<AMLRuntimeTransactionWithReturn>))body __attribute__((swift_name("transaction(body_:)")));
+@end;
+
+__attribute__((swift_name("RuntimeCloseable")))
+@protocol AMLRuntimeCloseable
+@required
+- (void)close __attribute__((swift_name("close()")));
+@end;
+
+__attribute__((swift_name("RuntimeSqlDriver")))
+@protocol AMLRuntimeSqlDriver <AMLRuntimeCloseable>
+@required
+- (AMLRuntimeTransacterTransaction * _Nullable)currentTransaction __attribute__((swift_name("currentTransaction()")));
+- (void)executeIdentifier:(AMLInt * _Nullable)identifier sql:(NSString *)sql parameters:(int32_t)parameters binders:(void (^ _Nullable)(id<AMLRuntimeSqlPreparedStatement>))binders __attribute__((swift_name("execute(identifier:sql:parameters:binders:)")));
+- (id<AMLRuntimeSqlCursor>)executeQueryIdentifier:(AMLInt * _Nullable)identifier sql:(NSString *)sql parameters:(int32_t)parameters binders:(void (^ _Nullable)(id<AMLRuntimeSqlPreparedStatement>))binders __attribute__((swift_name("executeQuery(identifier:sql:parameters:binders:)")));
+- (AMLRuntimeTransacterTransaction *)doNewTransaction __attribute__((swift_name("doNewTransaction()")));
+@end;
+
+__attribute__((swift_name("RuntimeSqlDriverSchema")))
+@protocol AMLRuntimeSqlDriverSchema
+@required
+- (void)createDriver:(id<AMLRuntimeSqlDriver>)driver __attribute__((swift_name("create(driver:)")));
+- (void)migrateDriver:(id<AMLRuntimeSqlDriver>)driver oldVersion:(int32_t)oldVersion newVersion:(int32_t)newVersion __attribute__((swift_name("migrate(driver:oldVersion:newVersion:)")));
+@property (readonly) int32_t version __attribute__((swift_name("version")));
+@end;
+
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("KotlinNothing")))
 @interface AMLKotlinNothing : AMLBase
+@end;
+
+__attribute__((swift_name("RuntimeColumnAdapter")))
+@protocol AMLRuntimeColumnAdapter
+@required
+- (id)decodeDatabaseValue:(id _Nullable)databaseValue __attribute__((swift_name("decode(databaseValue:)")));
+- (id _Nullable)encodeValue:(id)value __attribute__((swift_name("encode(value:)")));
+@end;
+
+__attribute__((swift_name("RuntimeQuery")))
+@interface AMLRuntimeQuery<__covariant RowType> : AMLBase
+- (instancetype)initWithQueries:(NSMutableArray<AMLRuntimeQuery<id> *> *)queries mapper:(RowType (^)(id<AMLRuntimeSqlCursor>))mapper __attribute__((swift_name("init(queries:mapper:)"))) __attribute__((objc_designated_initializer));
+- (void)addListenerListener:(id<AMLRuntimeQueryListener>)listener __attribute__((swift_name("addListener(listener:)")));
+- (id<AMLRuntimeSqlCursor>)execute __attribute__((swift_name("execute()")));
+- (NSArray<RowType> *)executeAsList __attribute__((swift_name("executeAsList()")));
+- (RowType)executeAsOne __attribute__((swift_name("executeAsOne()")));
+- (RowType _Nullable)executeAsOneOrNull __attribute__((swift_name("executeAsOneOrNull()")));
+- (void)notifyDataChanged __attribute__((swift_name("notifyDataChanged()")));
+- (void)removeListenerListener:(id<AMLRuntimeQueryListener>)listener __attribute__((swift_name("removeListener(listener:)")));
+@property (readonly) RowType (^mapper)(id<AMLRuntimeSqlCursor>) __attribute__((swift_name("mapper")));
+@end;
+
+__attribute__((swift_name("RuntimeTransacterTransaction")))
+@interface AMLRuntimeTransacterTransaction : AMLBase <AMLRuntimeTransactionCallbacks>
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
++ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
+- (void)afterCommitFunction:(void (^)(void))function __attribute__((swift_name("afterCommit(function:)")));
+- (void)afterRollbackFunction:(void (^)(void))function __attribute__((swift_name("afterRollback(function:)")));
+- (void)endTransactionSuccessful:(BOOL)successful __attribute__((swift_name("endTransaction(successful:)")));
+@property (readonly) AMLRuntimeTransacterTransaction * _Nullable enclosingTransaction __attribute__((swift_name("enclosingTransaction")));
+@end;
+
+__attribute__((swift_name("RuntimeSqlPreparedStatement")))
+@protocol AMLRuntimeSqlPreparedStatement
+@required
+- (void)bindBytesIndex:(int32_t)index bytes:(AMLKotlinByteArray * _Nullable)bytes __attribute__((swift_name("bindBytes(index:bytes:)")));
+- (void)bindDoubleIndex:(int32_t)index double:(AMLDouble * _Nullable)double_ __attribute__((swift_name("bindDouble(index:double:)")));
+- (void)bindLongIndex:(int32_t)index long:(AMLLong * _Nullable)long_ __attribute__((swift_name("bindLong(index:long:)")));
+- (void)bindStringIndex:(int32_t)index string:(NSString * _Nullable)string __attribute__((swift_name("bindString(index:string:)")));
+@end;
+
+__attribute__((swift_name("RuntimeSqlCursor")))
+@protocol AMLRuntimeSqlCursor <AMLRuntimeCloseable>
+@required
+- (AMLKotlinByteArray * _Nullable)getBytesIndex:(int32_t)index __attribute__((swift_name("getBytes(index:)")));
+- (AMLDouble * _Nullable)getDoubleIndex:(int32_t)index __attribute__((swift_name("getDouble(index:)")));
+- (AMLLong * _Nullable)getLongIndex:(int32_t)index __attribute__((swift_name("getLong(index:)")));
+- (NSString * _Nullable)getStringIndex:(int32_t)index __attribute__((swift_name("getString(index:)")));
+- (BOOL)next __attribute__((swift_name("next()")));
+@end;
+
+__attribute__((swift_name("RuntimeQueryListener")))
+@protocol AMLRuntimeQueryListener
+@required
+- (void)queryResultsChanged __attribute__((swift_name("queryResultsChanged()")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("KotlinByteArray")))
+@interface AMLKotlinByteArray : AMLBase
++ (instancetype)arrayWithSize:(int32_t)size __attribute__((swift_name("init(size:)")));
++ (instancetype)arrayWithSize:(int32_t)size init:(AMLByte *(^)(AMLInt *))init __attribute__((swift_name("init(size:init:)")));
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (int8_t)getIndex:(int32_t)index __attribute__((swift_name("get(index:)")));
+- (AMLKotlinByteIterator *)iterator __attribute__((swift_name("iterator()")));
+- (void)setIndex:(int32_t)index value:(int8_t)value __attribute__((swift_name("set(index:value:)")));
+@property (readonly) int32_t size __attribute__((swift_name("size")));
+@end;
+
+__attribute__((swift_name("KotlinIterator")))
+@protocol AMLKotlinIterator
+@required
+- (BOOL)hasNext __attribute__((swift_name("hasNext()")));
+- (id _Nullable)next_ __attribute__((swift_name("next_()")));
+@end;
+
+__attribute__((swift_name("KotlinByteIterator")))
+@interface AMLKotlinByteIterator : AMLBase <AMLKotlinIterator>
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
++ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
+- (AMLByte *)next_ __attribute__((swift_name("next_()")));
+- (int8_t)nextByte __attribute__((swift_name("nextByte()")));
 @end;
 
 #pragma clang diagnostic pop
