@@ -167,6 +167,12 @@ audioburstLibrary.getPlaylist(byteArray)
 
 The `getPlaylist` function accepts `ByteArray` as an argument. A request included in the PCM file will be processed and a playlist of the bursts will be returned.
 
+## Filter out listened Bursts
+By default, Library will filter-out all Bursts that user already listened to. Use `filterListenedBursts` function to change this behaviour.
+```kotlin
+audioburstLibrary.filterListenedBursts(isEnabled)
+```
+
 ### Step 4. Inform library about current playback state
 Audioburst is obligated to provide content owners comprehensive information about content playback, therefore all play events need to be reported. This library implements that functionality, and the only event required is to inform when playback starts and stops, and return the current playback state every time the library requests that information. 
 
@@ -361,6 +367,12 @@ audioburstLibrary.getPlaylist(data: data) { playlist in
 } onError: { errorType in
     // Handle error
 }
+```
+
+## Filter out listened Bursts
+By default, Library will filter-out all Bursts that user already listened to. Use `filterListenedBursts` function to change this behaviour.
+```kotlin
+audioburstLibrary.filterListenedBursts(isEnabled)
 ```
 
 The `getPlaylist` function accepts `Data` as an argument. A request included in the PCM file will be processed and a playlist of the bursts will be returned.
