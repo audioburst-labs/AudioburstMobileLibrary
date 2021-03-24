@@ -38,13 +38,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-}
-```
-
-In the event you are getting a "Duplicate class" on Kotlin Coroutines dependencies, you need to exclude those from the AudioburstPlayer library in the following way:
-```gradle
-implementation ("com.audioburst:mobile-library:{latest-version}") {
-    exclude group: "org.jetbrains.kotlinx", module: "kotlinx-coroutines-core-jvm"
+    
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
 ```
 
