@@ -267,7 +267,7 @@ platform :ios, '12.0'
 use_frameworks!
 
 target 'MyApp' do
-    pod 'AudioburstMobileLibrary', '~> 0.0.7'
+    pod 'AudioburstMobileLibrary', '~> 0.0.15'
 end
 ```
 

@@ -308,6 +308,7 @@ __attribute__((swift_name("DurationUnit")))
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("Key")))
 @interface AMLKey : AMLBase
+- (instancetype)initWithKey:(NSString *)key selected:(BOOL)selected __attribute__((swift_name("init(key:selected:)"))) __attribute__((objc_designated_initializer));
 - (instancetype)initWithKey:(NSString *)key segCategory:(NSString *)segCategory source:(NSString *)source sourceId:(int32_t)sourceId position:(int32_t)position selected:(BOOL)selected __attribute__((swift_name("init(key:segCategory:source:sourceId:position:selected:)"))) __attribute__((objc_designated_initializer));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
