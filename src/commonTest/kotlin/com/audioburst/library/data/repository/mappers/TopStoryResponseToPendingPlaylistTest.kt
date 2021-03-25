@@ -64,15 +64,16 @@ class TopStoryResponseToPendingPlaylistTest {
     }
 
     @Test
-    fun testIfPlaylistIsIsEqualToUserId() {
+    fun testIfPlaylistIdIsIsEqualToQueryId() {
         // GIVEN
-        val response = topStoryResponseOf()
+        val queryId = 1L
+        val response = topStoryResponseOf(queryID = queryId)
 
         // WHEN
         val mapped = mapper.map(response, userId)
 
         // THEN
-        assertEquals(mapped.playlist.id, userId)
+        assertEquals(mapped.playlist.id, queryId.toString())
     }
 
     @Test

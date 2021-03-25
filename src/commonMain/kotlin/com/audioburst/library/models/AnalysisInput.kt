@@ -24,6 +24,7 @@ internal fun AnalysisInput.eventPayload(playbackState: InternalPlaybackState, is
         currentPlayBackPosition = playbackState.position,
         playerSessionId = playlist.playerSessionId,
         advertisement = burst.advertisement(advertisements),
+        currentPlaybackUrl = playbackState.url,
     )
 }
 
@@ -52,4 +53,4 @@ private fun Burst.containsUrl(playbackState: InternalPlaybackState, advertisemen
     audioUrl == playbackState.url ||
         streamUrl == playbackState.url ||
         source.audioUrl == playbackState.url ||
-        advertisement(advertisements)?.audioURL == playbackState.url
+        advertisement(advertisements)?.burstUrl == playbackState.url

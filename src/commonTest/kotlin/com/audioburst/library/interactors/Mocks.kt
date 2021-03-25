@@ -58,6 +58,7 @@ internal fun playlistInfoOf(
     )
 
 internal fun advertisementOf(
+    burstUrl: String? = null,
     id: String = "",
     type: String = "",
     audioURL: String = "",
@@ -68,6 +69,7 @@ internal fun advertisementOf(
     reportingData: List<ReportingData> = emptyList(),
 ): Advertisement =
     Advertisement(
+        burstUrl = burstUrl,
         id = id,
         type = type,
         audioURL = audioURL,
@@ -157,6 +159,7 @@ internal fun eventPayloadOf(
     currentPlayBackPosition: Duration = 0.0.toDuration(DurationUnit.Seconds),
     playerSessionId: PlayerSessionId = PlayerSessionId(value = ""),
     advertisement: Advertisement? = null,
+    currentPlaybackUrl: String? = null,
 ): EventPayload = EventPayload(
     playerAction = playerAction,
     playlistId = playlistId,
@@ -167,6 +170,7 @@ internal fun eventPayloadOf(
     currentPlayBackPosition = currentPlayBackPosition,
     playerSessionId = playerSessionId,
     advertisement = advertisement,
+    currentPlaybackUrl = currentPlaybackUrl,
 )
 
 internal fun getUserOf(resource: Resource<User>): GetUser =

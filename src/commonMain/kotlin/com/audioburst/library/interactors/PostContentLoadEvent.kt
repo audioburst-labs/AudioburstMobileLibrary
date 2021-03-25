@@ -40,5 +40,6 @@ private fun Playlist.toEventPayload(
         currentPlayBackPosition = currentPlayBackPosition,
         playerSessionId = playerSessionId,
         advertisement = null,
+        currentPlaybackUrl = null,
     )
 }

@@ -1,6 +1,7 @@
 package com.audioburst.library.models
 
 internal data class Advertisement(
+    val burstUrl: String?,
     val id: String,
     val type: String,
     val audioURL: String,

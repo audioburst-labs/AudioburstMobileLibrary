@@ -76,7 +76,8 @@ internal class AudioburstV2Api(private val json: Json) {
             queryParams = mapOf(
                 "userId" to userId,
                 "async" to true,
-                "nocache" to false
+                "nocache" to false,
+                "prefix" to false,
             ),
         )
 

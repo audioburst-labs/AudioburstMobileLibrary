@@ -11,6 +11,7 @@ internal class AdvertisementResponseToAdvertisementMapper {
 
     fun map(from: AdvertisementResponse): Advertisement =
         Advertisement(
+            burstUrl = from.url,
             type = from.type,
             id = from.adData.id,
             audioURL = from.adData.audioURL,

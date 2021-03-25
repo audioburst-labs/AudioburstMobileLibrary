@@ -1,8 +1,8 @@
 package com.audioburst.library.interactors
 
-import com.audioburst.library.data.storage.ListenedBurstStorage
 import com.audioburst.library.data.Resource
 import com.audioburst.library.data.repository.UserRepository
+import com.audioburst.library.data.storage.ListenedBurstStorage
 import com.audioburst.library.data.storage.UnsentEventStorage
 import com.audioburst.library.data.storage.UserStorage
 import com.audioburst.library.models.*
@@ -87,7 +87,7 @@ internal class PlaybackEventHandlerInteractor(
             playerStatus = playerStatus(isPlaying),
             playlistQueryId = burst.playlistId,
             positionInBurst = positionInBurst(),
-            stream = burst.streamUrl != null,
+            stream = stream(),
             totalPlayTime = totalPlayTime(),
             burstId = burst.id,
             playlistId = playlistId,
@@ -99,6 +99,15 @@ internal class PlaybackEventHandlerInteractor(
             advertisementEvent = advertisementEvent,
             action = playerAction,
         )
+    }
+
+    private fun PlaybackEvent.stream(): Boolean {
+        val currentPlaybackUrl = eventPayload.currentPlaybackUrl ?: return false
+        return when {
+            currentPlaybackUrl.contains("mp3") -> false
+            currentPlaybackUrl.contains("m3u8") -> true
+            else -> false
+        }
     }
 
     private fun PlaybackEvent.totalPlayTime(): Double = positionInBurst()

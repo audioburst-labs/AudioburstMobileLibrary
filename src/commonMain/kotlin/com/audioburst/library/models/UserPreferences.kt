@@ -105,6 +105,15 @@ class Key(
     val selected: Boolean,
 ) {
 
+    constructor(key: String, selected: Boolean = true) : this(
+        key = key,
+        segCategory = "NA",
+        source = "trending",
+        sourceId = 0,
+        position = 1,
+        selected = selected,
+    )
+
     fun updateSelected(selected: Boolean): Key =
         Key(
             key = key,

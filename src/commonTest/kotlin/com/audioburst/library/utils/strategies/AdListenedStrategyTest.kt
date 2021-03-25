@@ -2,9 +2,9 @@ package com.audioburst.library.utils.strategies
 
 import com.audioburst.library.interactors.*
 import com.audioburst.library.models.AnalysisInput
+import com.audioburst.library.models.InternalPlaybackState
 import com.audioburst.library.models.PlaybackEvent
 import com.audioburst.library.models.Url
-import com.audioburst.library.models.InternalPlaybackState
 import com.audioburst.library.utils.fixedQueueOf
 import com.audioburst.library.utils.playbackStateOf
 import kotlin.test.Test
@@ -51,7 +51,7 @@ class AdListenedStrategyTest {
                     downloadedAdvertisementOf(
                         downloadUrl = Url(adUrl),
                         advertisement = advertisementOf(
-                            audioURL = adAudioUrl,
+                            burstUrl = adAudioUrl,
                             reportingData = listOf(
                                 reportingData
                             )
@@ -64,7 +64,7 @@ class AdListenedStrategyTest {
         // THEN
         if (isValid) {
             require(playbackEvent is PlaybackEvent.AdListened)
-            require(playbackEvent.advertisement.audioURL == adAudioUrl)
+            require(playbackEvent.advertisement.burstUrl == adAudioUrl)
             require(playbackEvent.reportingData == reportingData)
         } else {
             assertEquals(null, playbackEvent)
@@ -91,17 +91,27 @@ class AdListenedStrategyTest {
         testWithPositions(
             reportingDataPosition = 10.0,
             currentStatePosition = 9.0,
-            isValid = true
+            isValid = false
         )
         testWithPositions(
             reportingDataPosition = 10.0,
             currentStatePosition = 8.0,
-            isValid = true
+            isValid = false
         )
         testWithPositions(
             reportingDataPosition = 10.0,
             currentStatePosition = 7.0,
             isValid = false
+        )
+        testWithPositions(
+            reportingDataPosition = 3.25,
+            currentStatePosition = 1.81,
+            isValid = false
+        )
+        testWithPositions(
+            reportingDataPosition = 3.25,
+            currentStatePosition = 3.813,
+            isValid = true
         )
     }
 

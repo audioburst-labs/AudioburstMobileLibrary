@@ -155,7 +155,7 @@ class PlaybackEventStrategyInputTest {
                 downloadedAdvertisementOf(
                     downloadUrl = Url(adDownloadUrl),
                     advertisement = advertisementOf(
-                        audioURL = previousUrl
+                        burstUrl = previousUrl
                     )
                 )
             )
@@ -293,7 +293,7 @@ class PlaybackEventStrategyInputTest {
                 downloadedAdvertisementOf(
                     downloadUrl = Url(adDownloadUrl),
                     advertisement = advertisementOf(
-                        audioURL = previousUrl
+                        burstUrl = previousUrl
                     )
                 )
             )
@@ -421,7 +421,7 @@ class PlaybackEventStrategyInputTest {
                 downloadedAdvertisementOf(
                     downloadUrl = Url(adDownloadUrl),
                     advertisement = advertisementOf(
-                        audioURL = previousUrl
+                        burstUrl = previousUrl
                     )
                 )
             )

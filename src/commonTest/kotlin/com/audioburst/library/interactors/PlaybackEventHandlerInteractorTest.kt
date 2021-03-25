@@ -263,4 +263,52 @@ class PlaybackEventHandlerInteractorTest {
         assertTrue(sentEvents.isEmpty())
         assertTrue(listenedBurstStorage.getRecentlyListened().isNotEmpty())
     }
+
+    @Test
+    fun testIfStreamIsEqualToFalseWhenCurrentPlaybackUrlIsNull() = runTest {
+        // GIVEN
+        val playbackEvent = PlaybackEvent.StartOfPlay(
+            eventPayloadOf(
+                currentPlaybackUrl = null,
+            )
+        )
+
+        // WHEN
+        interactor.handle(playbackEvent)
+
+        // THEN
+        assertTrue(!sentEvents.last().playerEvent.stream!!)
+    }
+
+    @Test
+    fun testIfStreamIsEqualToFalseWhenCurrentPlaybackUrlIsMp3() = runTest {
+        // GIVEN
+        val playbackEvent = PlaybackEvent.StartOfPlay(
+            eventPayloadOf(
+                currentPlaybackUrl = "https://sapi.audioburst.com/audio/repo/play/mobile/9W7AYBpXJRLn.mp3",
+            )
+        )
+
+        // WHEN
+        interactor.handle(playbackEvent)
+
+        // THEN
+        assertTrue(!sentEvents.last().playerEvent.stream!!)
+    }
+
+    @Test
+    fun testIfStreamIsEqualToTrueWhenCurrentPlaybackUrlIsM3U8() = runTest {
+        // GIVEN
+        val playbackEvent = PlaybackEvent.StartOfPlay(
+            eventPayloadOf(
+                currentPlaybackUrl = "https://storageaudiobursts.azureedge.net/stream/9W7AYBpXJRLn/outputlist.m3u8",
+            )
+        )
+
+        // WHEN
+        interactor.handle(playbackEvent)
+
+        // THEN
+        assertTrue(sentEvents.last().playerEvent.stream!!)
+    }
 }

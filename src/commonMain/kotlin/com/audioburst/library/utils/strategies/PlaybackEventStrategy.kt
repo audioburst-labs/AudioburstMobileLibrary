@@ -10,5 +10,5 @@ internal fun interface PlaybackEventStrategy<T : PlaybackEvent> {
         if (duration.milliseconds == 0.0) 0.0 else playbackState.position.seconds / duration.seconds * 100
 
     fun Burst.isAudioUrl(url: String, advertisements: List<DownloadedAdvertisement>): Boolean =
-        url == audioUrl || url == streamUrl || url == advertisement(advertisements)?.audioURL
+        url == audioUrl || url == streamUrl || url == advertisement(advertisements)?.burstUrl
 }

@@ -14,11 +14,11 @@ internal class TopStoryResponseToPendingPlaylist constructor(
             playlist = topStoryResponseToPlaylist.map(
                 from = from,
                 userId = userId,
-                playlistId = userId,
+                playlistId = from.queryID.toString(),
                 playlistName = from.actualQuery ?: from.query ?: "",
                 playerAction = PlayerAction(
                     type = PlayerAction.Type.Personalized,
-                    value = userId,
+                    value = from.queryID.toString(),
                 )
             )
         )

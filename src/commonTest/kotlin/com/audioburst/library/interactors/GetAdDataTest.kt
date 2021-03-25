@@ -33,10 +33,10 @@ class GetAdDataTest {
     @Test
     fun testIfResourceDataIsReturnedWhenRepositoryReturnsThat() = runTest {
         // GIVEN
-        val audioUrl = "audioUrl"
+        val burstUrl = "audioUrl"
         val userRepositoryReturns = Resource.Data(
             advertisementOf(
-                audioURL = audioUrl
+                burstUrl = burstUrl
             )
         )
         val burst = burstOf(adUrl = "google.com")
@@ -46,7 +46,26 @@ class GetAdDataTest {
 
         // THEN
         require(resource is Result.Data)
-        assertEquals(resource.value, audioUrl)
+        assertEquals(resource.value, burstUrl)
+    }
+
+    @Test
+    fun testIfResourceErrorIsReturnedWhenRepositoryReturnsDataWithNullBurstUrl() = runTest {
+        // GIVEN
+        val burstUrl = null
+        val userRepositoryReturns = Resource.Data(
+            advertisementOf(
+                burstUrl = burstUrl
+            )
+        )
+        val burst = burstOf(adUrl = "google.com")
+
+        // WHEN
+        val resource = interactor(userRepositoryReturns)(burst)
+
+        // THEN
+        require(resource is Result.Error)
+        require(resource.errorType == LibraryError.AdUrlNotFound)
     }
 
     @Test
@@ -79,10 +98,10 @@ class GetAdDataTest {
     @Test
     fun testIfAdIsBeingSavedWhenUserRepositoryReturnsResourceDataAndPlaylistStorageContainsACorrectPlaylist() = runTest {
         // GIVEN
-        val audioUrl = "audioUrl"
+        val burstUrl = "burstUrl"
         val userRepositoryReturns = Resource.Data(
             advertisementOf(
-                audioURL = audioUrl
+                burstUrl = burstUrl
             )
         )
         val burst = burstOf(adUrl = "google.com")

@@ -87,7 +87,7 @@ class ListenedStrategyTest {
             advertisements = listOf(
                 downloadedAdvertisementOf(
                     advertisement = advertisementOf(
-                        audioURL = url,
+                        burstUrl = url,
                         duration = 12.0.toDuration(DurationUnit.Seconds)
                     ),
                     downloadUrl = Url(url)

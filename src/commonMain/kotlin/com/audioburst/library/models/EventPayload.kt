@@ -10,4 +10,5 @@ internal data class EventPayload(
     val currentPlayBackPosition: Duration,
     val playerSessionId: PlayerSessionId,
     val advertisement: Advertisement?,
+    val currentPlaybackUrl: String?,
 )

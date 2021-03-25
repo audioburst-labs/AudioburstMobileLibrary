@@ -25,5 +25,14 @@ internal class GetAdUrl(
                 url = Url(burst.adUrl),
                 advertisement = it
             )
-        }?.map { it.audioURL }?.asResult() ?: Result.Error(LibraryError.AdUrlNotFound)
+        }?.map { it.burstUrl }?.asResult()?.let {
+            when (it) {
+                is Result.Data -> if (it.value == null) {
+                    Result.Error(LibraryError.AdUrlNotFound)
+                } else {
+                    Result.Data(it.value)
+                }
+                is Result.Error -> it
+            }
+        } ?: Result.Error(LibraryError.AdUrlNotFound)
 }
