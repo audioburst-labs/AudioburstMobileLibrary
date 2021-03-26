@@ -6,9 +6,9 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class AMLListenedBurstModelAdapter, AMLBurst, AMLLibraryError, AMLPendingPlaylist, AMLPlaylistInfo, AMLPlaylist, NSData, AMLUserPreferences, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLDateTime, AMLDurationUnit, AMLKotlinEnum<E>, AMLKey, AMLPlayerActionType, AMLPlayerAction, AMLPreference, AMLResult<__covariant T>, AMLKotlinNothing, AMLListenedBurstModel, AMLRuntimeQuery<__covariant RowType>, AMLRuntimeTransacterTransaction, AMLKotlinByteArray, AMLKotlinByteIterator;
+@class AMLListenedBurstModelAdapter, AMLBurst, AMLLibraryError, AMLPendingPlaylist, AMLPlaylistInfo, AMLPlaylist, NSData, AMLUserPreferences, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLDateTime, AMLDurationUnit, AMLKotlinEnum<E>, AMLKotlinArray<T>, AMLKey, AMLPlayerActionType, AMLPlayerAction, AMLPreference, AMLResult<__covariant T>, AMLKotlinNothing, AMLListenedBurstModel, AMLRuntimeQuery<__covariant RowType>, AMLRuntimeTransacterTransaction, AMLKotlinByteArray, AMLKotlinByteIterator;
 
-@protocol AMLListenedBurstModelQueries, AMLRuntimeTransactionWithoutReturn, AMLRuntimeTransactionWithReturn, AMLRuntimeTransacter, AMLDatabase, AMLRuntimeSqlDriver, AMLRuntimeSqlDriverSchema, AMLPlaybackStateListener, AMLKotlinComparable, AMLRuntimeColumnAdapter, AMLRuntimeTransactionCallbacks, AMLRuntimeSqlPreparedStatement, AMLRuntimeSqlCursor, AMLRuntimeCloseable, AMLRuntimeQueryListener, AMLKotlinIterator;
+@protocol AMLListenedBurstModelQueries, AMLRuntimeTransactionWithoutReturn, AMLRuntimeTransactionWithReturn, AMLRuntimeTransacter, AMLDatabase, AMLRuntimeSqlDriver, AMLRuntimeSqlDriverSchema, AMLPlaybackStateListener, AMLKotlinComparable, AMLRuntimeColumnAdapter, AMLRuntimeTransactionCallbacks, AMLRuntimeSqlPreparedStatement, AMLRuntimeSqlCursor, AMLRuntimeCloseable, AMLKotlinIterator, AMLRuntimeQueryListener;
 
 NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic push
@@ -303,6 +303,7 @@ __attribute__((swift_name("DurationUnit")))
 - (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
 @property (class, readonly) AMLDurationUnit *seconds __attribute__((swift_name("seconds")));
 @property (class, readonly) AMLDurationUnit *milliseconds __attribute__((swift_name("milliseconds")));
++ (AMLKotlinArray<AMLDurationUnit *> *)values __attribute__((swift_name("values()")));
 @end;
 
 __attribute__((objc_subclassing_restricted))
@@ -334,6 +335,7 @@ __attribute__((swift_name("LibraryError")))
 @property (class, readonly) AMLLibraryError *wrongapplicationkey __attribute__((swift_name("wrongapplicationkey")));
 @property (class, readonly) AMLLibraryError *adurlnotfound __attribute__((swift_name("adurlnotfound")));
 @property (class, readonly) AMLLibraryError *nokeysselected __attribute__((swift_name("nokeysselected")));
++ (AMLKotlinArray<AMLLibraryError *> *)values __attribute__((swift_name("values()")));
 @property (readonly) NSString *message __attribute__((swift_name("message")));
 @end;
 
@@ -382,6 +384,7 @@ __attribute__((swift_name("PlayerAction.Type_")))
 @property (class, readonly) AMLPlayerActionType *personalized __attribute__((swift_name("personalized")));
 @property (class, readonly) AMLPlayerActionType *channel __attribute__((swift_name("channel")));
 @property (class, readonly) AMLPlayerActionType *voice __attribute__((swift_name("voice")));
++ (AMLKotlinArray<AMLPlayerActionType *> *)values __attribute__((swift_name("values()")));
 @property (readonly) NSString *id __attribute__((swift_name("id")));
 @end;
 
@@ -561,6 +564,18 @@ __attribute__((swift_name("RuntimeSqlDriverSchema")))
 @end;
 
 __attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("KotlinArray")))
+@interface AMLKotlinArray<T> : AMLBase
++ (instancetype)arrayWithSize:(int32_t)size init:(T _Nullable (^)(AMLInt *))init __attribute__((swift_name("init(size:init:)")));
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (T _Nullable)getIndex:(int32_t)index __attribute__((swift_name("get(index:)")));
+- (id<AMLKotlinIterator>)iterator __attribute__((swift_name("iterator()")));
+- (void)setIndex:(int32_t)index value:(T _Nullable)value __attribute__((swift_name("set(index:value:)")));
+@property (readonly) int32_t size __attribute__((swift_name("size")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("KotlinNothing")))
 @interface AMLKotlinNothing : AMLBase
 @end;
@@ -614,6 +629,13 @@ __attribute__((swift_name("RuntimeSqlCursor")))
 - (BOOL)next __attribute__((swift_name("next()")));
 @end;
 
+__attribute__((swift_name("KotlinIterator")))
+@protocol AMLKotlinIterator
+@required
+- (BOOL)hasNext __attribute__((swift_name("hasNext()")));
+- (id _Nullable)next_ __attribute__((swift_name("next_()")));
+@end;
+
 __attribute__((swift_name("RuntimeQueryListener")))
 @protocol AMLRuntimeQueryListener
 @required
@@ -631,13 +653,6 @@ __attribute__((swift_name("KotlinByteArray")))
 - (AMLKotlinByteIterator *)iterator __attribute__((swift_name("iterator()")));
 - (void)setIndex:(int32_t)index value:(int8_t)value __attribute__((swift_name("set(index:value:)")));
 @property (readonly) int32_t size __attribute__((swift_name("size")));
-@end;
-
-__attribute__((swift_name("KotlinIterator")))
-@protocol AMLKotlinIterator
-@required
-- (BOOL)hasNext __attribute__((swift_name("hasNext()")));
-- (id _Nullable)next_ __attribute__((swift_name("next_()")));
 @end;
 
 __attribute__((swift_name("KotlinByteIterator")))

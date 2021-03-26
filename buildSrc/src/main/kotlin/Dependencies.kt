@@ -1,6 +1,6 @@
 object Constants {
     const val projectName = "AudioburstMobileLibrary"
-    const val projectVersion = "0.0.15"
+    const val projectVersion = "0.0.16"
 
     object Library {
         const val packageName = "com.audioburst"
@@ -18,7 +18,7 @@ object Constants {
 }
 
 object Dependencies {
-    const val kotlinVersion = "1.4.20"
+    const val kotlinVersion = "1.4.31"
     const val sqlDelightVersion = "1.4.4"
 
     private fun kotlin(dependency: String): String = "org.jetbrains.kotlin:$dependency:$kotlinVersion"
