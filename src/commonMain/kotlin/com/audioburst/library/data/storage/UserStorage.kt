@@ -18,7 +18,7 @@ internal class SettingsUserStorage(
 
     private val userIdKey = "$settingsName.userId"
     private val selectedKeysCountKey = "$settingsName.selectedKeysCount"
-    private val filterListenedBurstsLey = "$settingsName.filterListenedBursts"
+    private val filterListenedBurstsKey = "$settingsName.filterListenedBursts"
 
     override var userId: String?
         get() = settings.getStringOrNull(userIdKey)
@@ -33,8 +33,8 @@ internal class SettingsUserStorage(
         }
 
     override var filterListenedBursts: Boolean
-        get() = settings.getBooleanOrDefault(filterListenedBurstsLey, true)
+        get() = settings.getBooleanOrDefault(filterListenedBurstsKey, true)
         set(value) {
-            settings.putBoolean(filterListenedBurstsLey, value)
+            settings.putBoolean(filterListenedBurstsKey, value)
         }
 }

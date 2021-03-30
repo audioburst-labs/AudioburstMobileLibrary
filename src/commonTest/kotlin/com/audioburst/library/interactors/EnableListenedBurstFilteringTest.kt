@@ -5,10 +5,10 @@ import kotlin.test.AfterTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
-internal class SetFilterListenedBurstsTest {
+internal class EnableListenedBurstFilteringTest {
 
     private val userStorage = InMemoryUserStorage()
-    private val interactor = SetFilterListenedBursts(userStorage = userStorage)
+    private val interactor = EnableListenedBurstFiltering(userStorage = userStorage)
 
     @AfterTest
     fun clear() {

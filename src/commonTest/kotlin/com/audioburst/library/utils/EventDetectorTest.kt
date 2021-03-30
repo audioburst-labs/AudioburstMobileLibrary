@@ -159,7 +159,6 @@ internal fun timestampProviderOf(timestamp: Long = 0): TimestampProvider =
 
 internal fun appDispatchersOf(dispatcher: CoroutineDispatcher = Dispatchers.Unconfined): AppDispatchers =
     AppDispatchers(
-        io = dispatcher,
         main = dispatcher,
-        computation = dispatcher,
+        background = dispatcher,
     )

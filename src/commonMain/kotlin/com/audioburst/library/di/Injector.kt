@@ -123,7 +123,7 @@ internal object Injector {
     private val queryRunnerProvider: Provider<QueryRunner> = singleton {
         TransacterQueryRunner(
             transacter = databaseProvider.get(),
-            appDispatchers = appDispatchersProvider.get(),
+            dispatcher = appDispatchersProvider.get().background,
         )
     }
     private val listenedBurstQueriesProvider: Provider<ListenedBurstModelQueries> = singleton { databaseProvider.get().listenedBurstModelQueries }
@@ -200,8 +200,7 @@ internal object Injector {
     }
     private val appDispatchersProvider: Provider<AppDispatchers> = provider {
         AppDispatchers(
-            io = Dispatchers.Default,
-            computation = Dispatchers.Default,
+            background = Dispatchers.Default,
             main = Dispatchers.Main
         )
     }
@@ -301,17 +300,17 @@ internal object Injector {
         )
     }
 
-    private val setFilterListenedBurstsProvider: Provider<SetFilterListenedBursts> = provider {
-        SetFilterListenedBursts(
+    private val enableListenedBurstFilteringProvider: Provider<EnableListenedBurstFiltering> = provider {
+        EnableListenedBurstFiltering(
             userStorage = userStorageProvider.get(),
         )
     }
 
     fun inject(audioburstLibrary: AudioburstLibraryDelegate) {
         with(audioburstLibrary) {
+            enableListenedBurstFiltering = enableListenedBurstFilteringProvider.get()
             removeOldListenedBursts = removeOldListenedBurstsProvider.get()
             observePersonalPlaylist = observePersonalPlaylistProvider.get()
-            setFilterListenedBursts = setFilterListenedBurstsProvider.get()
             subscriptionKeySetter = subscriptionKeySetterProvider.get()
             postUserPreferences = postUserPreferencesProvider.get()
             getUserPreferences = getUserPreferencesProvider.get()

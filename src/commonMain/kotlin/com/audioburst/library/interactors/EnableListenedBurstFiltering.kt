@@ -2,7 +2,7 @@ package com.audioburst.library.interactors
 
 import com.audioburst.library.data.storage.UserStorage
 
-internal class SetFilterListenedBursts(
+internal class EnableListenedBurstFiltering(
     private val userStorage: UserStorage,
 ) {
 

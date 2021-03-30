@@ -1,7 +1,7 @@
 package com.audioburst.library.data.storage.commons
 
-import com.audioburst.library.models.AppDispatchers
 import com.squareup.sqldelight.Transacter
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.withContext
 
 internal interface QueryRunner {
@@ -12,16 +12,16 @@ internal interface QueryRunner {
 
 internal class TransacterQueryRunner(
     private val transacter: Transacter,
-    private val appDispatchers: AppDispatchers,
+    private val dispatcher: CoroutineDispatcher,
 ) : QueryRunner {
 
     override suspend fun <T> run(body: () -> T): T =
-        withContext(appDispatchers.computation) {
+        withContext(dispatcher) {
             body()
         }
 
     override suspend fun <T> runTransaction(body: () -> T): T =
-        withContext(appDispatchers.computation) {
+        withContext(dispatcher) {
             transacter.transactionWithResult {
                 body()
             }

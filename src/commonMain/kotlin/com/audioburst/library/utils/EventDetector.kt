@@ -64,7 +64,7 @@ internal class StrategyBasedEventDetector(
         val input = input(playbackState) ?: return
         Logger.i("PlaybackState: [${input.currentState.url}, ${input.currentState.position.milliseconds}]")
         scope.launch {
-            withContext(appDispatchers.computation) {
+            withContext(appDispatchers.background) {
                 (listenedStrategy.check(input) + strategies.mapNotNull { it.check(input) })
                     .forEach(this@StrategyBasedEventDetector::handle)
                 previousStates.add(input.currentState)

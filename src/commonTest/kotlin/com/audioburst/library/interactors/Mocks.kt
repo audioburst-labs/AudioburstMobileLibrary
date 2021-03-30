@@ -265,8 +265,8 @@ internal class InMemoryListenedBurstStorage(private val listenedBurstsExpireDays
     }
 
     override suspend fun removeExpiredListenedBursts() {
-        val expiredDate = DateTime.now().minusDays(listenedBurstsExpireDays)
-        list.filter { it.isExpired(expiredDate) }
+        val expirationDate = DateTime.now().minusDays(listenedBurstsExpireDays)
+        list.filter { it.isExpired(expirationDate) }
             .forEach(list::remove)
     }
 

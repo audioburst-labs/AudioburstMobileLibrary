@@ -13,8 +13,8 @@ internal expect fun driver(schema: SqlDriver.Schema, name: String): SqlDriver
 
 internal abstract class DatabaseTest {
 
-    private var driver: SqlDriver? = null
-    private var database: Database? = null
+    private lateinit var driver: SqlDriver
+    private lateinit var database: Database
 
     protected val listenedBurstQueries: ListenedBurstModelQueries by lazy { database!!.listenedBurstModelQueries }
 
@@ -30,7 +30,7 @@ internal abstract class DatabaseTest {
         }
 
         database = Database(
-            driver = driver!!,
+            driver = driver,
             listenedBurstModelAdapter = ListenedBurstModel.Adapter(
                 date_textAdapter = dateTimeStringAdapter,
             )
@@ -39,9 +39,7 @@ internal abstract class DatabaseTest {
 
     @AfterTest
     fun cleanup() {
-        driver!!.close()
-        driver = null
-        database = null
+        driver.close()
     }
 }
 

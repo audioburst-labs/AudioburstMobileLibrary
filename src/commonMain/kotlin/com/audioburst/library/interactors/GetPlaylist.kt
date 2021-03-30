@@ -39,7 +39,7 @@ internal class GetPlaylist(
                 if (listenedBursts.isEmpty()) {
                     playlist
                 } else {
-                    playlist.copy(playlist.bursts.filter { !listenedBursts.contains(it.id) })
+                    playlist.copy(playlist.bursts.filterNot { listenedBursts.contains(it.id) })
                 }
             }
         } else {
