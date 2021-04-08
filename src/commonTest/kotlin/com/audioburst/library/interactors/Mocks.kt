@@ -46,6 +46,7 @@ internal fun playlistInfoOf(
     name: String = "",
     description: String = "",
     image: String = "",
+    squareImage: String = "",
     url: String = "",
 ): PlaylistInfo =
     PlaylistInfo(
@@ -54,6 +55,7 @@ internal fun playlistInfoOf(
         name = name,
         description = description,
         image = image,
+        squareImage = squareImage,
         url = url,
     )
 

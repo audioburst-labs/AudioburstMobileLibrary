@@ -17,4 +17,5 @@ internal data class ImageResponse(
     val url: String,
     val thumbnail: String,
     val svg: String,
+    val square: String,
 )

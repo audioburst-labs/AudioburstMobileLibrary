@@ -27,6 +27,7 @@ class PlaylistResponseToPlaylistInfoTest {
         assertEquals(playlistsResponse.playlistName, mapped.name)
         assertEquals(playlistsResponse.description, mapped.description)
         assertEquals(playlistsResponse.image.thumbnail, mapped.image)
+        assertEquals(playlistsResponse.image.square, mapped.squareImage)
     }
 
     @Test
@@ -64,11 +65,13 @@ internal fun imageResponseOf(
     url: String = "",
     thumbnail: String = "",
     svg: String = "",
+    square: String = "",
 ): ImageResponse =
     ImageResponse(
         url = url,
         thumbnail = thumbnail,
         svg = svg,
+        square = square,
     )
 
 internal fun userStorageOf(userId: String? = null, selectedKeysCount: Int = 0, filterListenedBursts: Boolean = false): UserStorage =

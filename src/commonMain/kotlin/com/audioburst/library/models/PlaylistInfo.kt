@@ -6,6 +6,7 @@ class PlaylistInfo(
     val name: String,
     val description: String,
     val image: String,
+    val squareImage: String,
     val url: String,
 ) {
 
@@ -20,6 +21,7 @@ class PlaylistInfo(
         if (name != other.name) return false
         if (description != other.description) return false
         if (image != other.image) return false
+        if (squareImage != other.squareImage) return false
         if (url != other.url) return false
 
         return true
@@ -31,11 +33,12 @@ class PlaylistInfo(
         result = 31 * result + name.hashCode()
         result = 31 * result + description.hashCode()
         result = 31 * result + image.hashCode()
+        result = 31 * result + squareImage.hashCode()
         result = 31 * result + url.hashCode()
         return result
     }
 
     override fun toString(): String {
-        return "PlaylistInfo(section='$section', id=$id, name='$name', description='$description', image='$image', url='$url')"
+        return "PlaylistInfo(section='$section', id=$id, name='$name', description='$description', image='$image', squareImage='$squareImage', url='$url')"
     }
 }

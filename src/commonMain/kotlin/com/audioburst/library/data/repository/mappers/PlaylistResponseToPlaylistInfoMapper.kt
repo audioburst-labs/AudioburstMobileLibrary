@@ -14,6 +14,7 @@ internal class PlaylistResponseToPlaylistInfoMapper {
             description = from.description,
             image = from.image.thumbnail,
             url = from.url(userId),
+            squareImage = from.image.square,
         )
 
     private fun PlaylistsResponse.url(userId: String): String =
