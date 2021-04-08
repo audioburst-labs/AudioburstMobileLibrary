@@ -405,7 +405,7 @@ __attribute__((swift_name("Playlist")))
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("PlaylistInfo")))
 @interface AMLPlaylistInfo : AMLBase
-- (instancetype)initWithSection:(NSString *)section id:(int32_t)id name:(NSString *)name description:(NSString *)description image:(NSString *)image url:(NSString *)url __attribute__((swift_name("init(section:id:name:description:image:url:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithSection:(NSString *)section id:(int32_t)id name:(NSString *)name description:(NSString *)description image:(NSString *)image squareImage:(NSString *)squareImage url:(NSString *)url __attribute__((swift_name("init(section:id:name:description:image:squareImage:url:)"))) __attribute__((objc_designated_initializer));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
@@ -414,6 +414,7 @@ __attribute__((swift_name("PlaylistInfo")))
 @property (readonly) NSString *image __attribute__((swift_name("image")));
 @property (readonly) NSString *name __attribute__((swift_name("name")));
 @property (readonly) NSString *section __attribute__((swift_name("section")));
+@property (readonly) NSString *squareImage __attribute__((swift_name("squareImage")));
 @property (readonly) NSString *url __attribute__((swift_name("url")));
 @end;
 
