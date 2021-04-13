@@ -1,15 +1,17 @@
 package com.audioburst.library.data.repository.cache
 
-import co.touchlab.stately.concurrency.AtomicReference
 import com.audioburst.library.models.AppSettings
+import com.audioburst.library.utils.getValue
+import com.audioburst.library.utils.nullableAtomic
+import com.audioburst.library.utils.setValue
 
 internal class AppSettingsCache: Cache<Unit, AppSettings> {
 
-    private val appSettings: AtomicReference<AppSettings?> = AtomicReference(null)
+    private var appSettings by nullableAtomic<AppSettings>()
 
-    override suspend fun get(key: Unit): AppSettings? = appSettings.get()
+    override suspend fun get(key: Unit): AppSettings? = appSettings
 
     override suspend fun set(key: Unit, value: AppSettings) {
-        appSettings.set(value)
+        appSettings = value
     }
 }

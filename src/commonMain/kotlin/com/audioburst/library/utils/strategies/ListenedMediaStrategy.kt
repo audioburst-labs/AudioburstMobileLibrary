@@ -1,24 +1,20 @@
 package com.audioburst.library.utils.strategies
 
-import co.touchlab.stately.concurrency.AtomicReference
-import co.touchlab.stately.concurrency.value
 import com.audioburst.library.models.*
-import com.audioburst.library.models.DownloadedAdvertisement
-import com.audioburst.library.models.EventPayload
-import com.audioburst.library.utils.PlaybackPeriodsCreator
+import com.audioburst.library.utils.*
 
 internal class ListenedMediaStrategy private constructor(
-        private val configuration: Configuration,
-        private val refreshInterval: Long,
+    private val configuration: Configuration,
+    private val refreshInterval: Long,
 ) {
 
-    private val previousNotifyTime: AtomicReference<Long> = AtomicReference(0)
-    private val previouslyCheckedBurstId: AtomicReference<String?> = AtomicReference(null)
+    private var previousNotifyTime by atomic(0)
+    private var previouslyCheckedBurstId by nullableAtomic<String>()
 
     fun check(periodsResult: PlaybackPeriodsCreator.Result, advertisements: List<DownloadedAdvertisement>): EventPayload? {
         if (periodsResult.duration <= refreshInterval) {
-            previousNotifyTime.value = 0
-            previouslyCheckedBurstId.value = null
+            previousNotifyTime = 0
+            previouslyCheckedBurstId = null
         }
         return checkStrategy(periodsResult, advertisements)
     }
@@ -34,8 +30,8 @@ internal class ListenedMediaStrategy private constructor(
         }
         return when (configuration.type) {
             Configuration.Type.OneOff -> {
-                if (playTimeMs >= configuration.minimumListenTime.milliseconds.toLong() && previouslyCheckedBurstId.value != burst.id) {
-                    previouslyCheckedBurstId.value = burst.id
+                if (playTimeMs >= configuration.minimumListenTime.milliseconds.toLong() && previouslyCheckedBurstId != burst.id) {
+                    previouslyCheckedBurstId = burst.id
                     periodsResult.eventPayload
                 } else {
                     null
@@ -43,8 +39,8 @@ internal class ListenedMediaStrategy private constructor(
             }
             Configuration.Type.Periodical -> {
                 val remainder = playTimeMs.rem(configuration.minimumListenTime.milliseconds.toLong())
-                if (playTimeMs > previousNotifyTime.value + refreshInterval && playTimeMs > refreshInterval && remainder in 0 until refreshInterval) {
-                    previousNotifyTime.value = playTimeMs
+                if (playTimeMs > previousNotifyTime + refreshInterval && playTimeMs > refreshInterval && remainder in 0 until refreshInterval) {
+                    previousNotifyTime = playTimeMs
                     periodsResult.eventPayload
                 } else {
                     null

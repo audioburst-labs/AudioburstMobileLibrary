@@ -1,6 +1,8 @@
 package com.audioburst.library.di.providers
 
-import co.touchlab.stately.concurrency.AtomicReference
+import com.audioburst.library.utils.getValue
+import com.audioburst.library.utils.nullableAtomic
+import com.audioburst.library.utils.setValue
 
 internal interface Provider<T> {
 
@@ -13,13 +15,13 @@ internal fun <T> provider(creator: () -> T): Provider<T> =
     }
 
 internal abstract class Singleton<T : Any>: Provider<T> {
-    private val t: AtomicReference<T?> = AtomicReference(null)
+    private var t by nullableAtomic<T>()
 
     protected abstract fun creator(): T
 
     override fun get(): T =
-        t.get() ?: creator().apply {
-            t.set(this)
+        t ?: creator().apply {
+            t = this
         }
 }
 

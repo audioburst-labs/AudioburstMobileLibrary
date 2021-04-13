@@ -1,6 +1,5 @@
 package com.audioburst.library.utils
 
-import co.touchlab.stately.concurrency.AtomicReference
 import com.audioburst.library.models.*
 
 internal interface LibraryConfiguration {
@@ -22,14 +21,14 @@ internal class LibraryConfigurationHolder(
     override val libraryKey: LibraryKey = platformLibraryKey
     override val libraryVersion: LibraryVersion = LibraryVersion(LIBRARY_VERSION)
 
-    private var _subscriptionKey: AtomicReference<SubscriptionKey?> = AtomicReference(null)
+    private var _subscriptionKey by nullableAtomic<SubscriptionKey>()
     override val subscriptionKey: SubscriptionKey
-        get() = _subscriptionKey.get() ?: throw IllegalStateException(
+        get() = _subscriptionKey ?: throw IllegalStateException(
             "Accessing Subscription Key before it was set by the user."
         )
 
     override fun set(subscriptionKey: SubscriptionKey) {
-        _subscriptionKey.set(subscriptionKey)
+        _subscriptionKey = subscriptionKey
     }
 
     companion object {

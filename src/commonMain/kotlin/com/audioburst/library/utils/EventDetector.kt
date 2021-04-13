@@ -1,6 +1,5 @@
 package com.audioburst.library.utils
 
-import co.touchlab.stately.concurrency.AtomicReference
 import com.audioburst.library.interactors.CurrentAdsProvider
 import com.audioburst.library.interactors.CurrentPlaylist
 import com.audioburst.library.interactors.PlaybackEventHandler
@@ -39,7 +38,7 @@ internal class StrategyBasedEventDetector(
     private val scope = CoroutineScope(appDispatchers.main + SupervisorJob())
     private val previousStates: Queue<InternalPlaybackState> = FixedSizeQueue(NUMBER_OF_CACHED_STATES)
     private val listenerCallTimer: PeriodicTimer = PeriodicTimer()
-    private var playbackStateListener: AtomicReference<PlaybackStateListener?> = AtomicReference(null)
+    private var playbackStateListener by nullableAtomic<PlaybackStateListener>()
 
     override fun start() {
         startTimers()
@@ -57,7 +56,7 @@ internal class StrategyBasedEventDetector(
 
     private fun requestNewState() {
         Logger.i("Requesting new playback state")
-        playbackStateListener.get()?.getPlaybackState()?.let(::setCurrentState)
+        playbackStateListener?.getPlaybackState()?.let(::setCurrentState)
     }
 
     private fun setCurrentState(playbackState: PlaybackState) {
@@ -88,17 +87,17 @@ internal class StrategyBasedEventDetector(
     }
 
     private fun currentEventPayload(isPlaying: Boolean): EventPayload? =
-        playbackStateListener.get()?.getPlaybackState()?.let { playbackState ->
+        playbackStateListener?.getPlaybackState()?.let { playbackState ->
             input(playbackState)?.currentEventPayload(isPlaying = isPlaying)
         }
 
     override fun setPlaybackStateListener(listener: PlaybackStateListener) {
-        playbackStateListener.set(listener)
+        playbackStateListener = listener
     }
 
     override fun removePlaybackStateListener(listener: PlaybackStateListener) {
-        if (playbackStateListener.get() == listener) {
-            playbackStateListener.set(null)
+        if (playbackStateListener == listener) {
+            playbackStateListener = null
         }
     }
 

@@ -55,8 +55,8 @@ internal class ListenedStrategy(
     }
 
     private inner class EventCreator(
-            configuration: Configuration,
-            private val creator: (EventPayload) -> PlaybackEvent,
+        configuration: Configuration,
+        private val creator: (EventPayload) -> PlaybackEvent,
     ) {
         private val listenedMediaStrategy = factory.create(configuration)
         fun create(result: PlaybackPeriodsCreator.Result, input: AnalysisInput): PlaybackEvent? =
