@@ -7,7 +7,6 @@ import com.audioburst.library.models.*
 import com.audioburst.library.utils.strategies.ListenedStrategy
 import com.audioburst.library.utils.strategies.PlaybackEventStrategy
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
@@ -25,7 +24,8 @@ internal interface EventDetector {
 }
 
 internal class StrategyBasedEventDetector(
-    private val checkInterval: Duration,
+    checkInterval: Duration,
+    private val scope: CoroutineScope,
     private val currentPlaylist: CurrentPlaylist,
     private val currentAds: CurrentAdsProvider,
     private val playbackEventHandler: PlaybackEventHandler,
@@ -35,10 +35,15 @@ internal class StrategyBasedEventDetector(
     private val appDispatchers: AppDispatchers,
 ) : EventDetector {
 
-    private val scope = CoroutineScope(appDispatchers.main + SupervisorJob())
     private val previousStates: Queue<InternalPlaybackState> = FixedSizeQueue(NUMBER_OF_CACHED_STATES)
-    private val listenerCallTimer: PeriodicTimer = PeriodicTimer()
-    private var playbackStateListener by nullableAtomic<PlaybackStateListener>()
+    private val listenerCallTimer: PeriodicTimer = PeriodicTimer(interval = checkInterval, scope = scope)
+    private var currentPlaybackStateListener by nullableAtomic<PlaybackStateListener>()
+
+    init {
+        listenerCallTimer.timer
+            .onEach { requestNewState() }
+            .launchIn(scope)
+    }
 
     override fun start() {
         startTimers()
@@ -56,7 +61,7 @@ internal class StrategyBasedEventDetector(
 
     private fun requestNewState() {
         Logger.i("Requesting new playback state")
-        playbackStateListener?.getPlaybackState()?.let(::setCurrentState)
+        currentPlaybackStateListener?.getPlaybackState()?.let(::setCurrentState)
     }
 
     private fun setCurrentState(playbackState: PlaybackState) {
@@ -87,28 +92,22 @@ internal class StrategyBasedEventDetector(
     }
 
     private fun currentEventPayload(isPlaying: Boolean): EventPayload? =
-        playbackStateListener?.getPlaybackState()?.let { playbackState ->
+        currentPlaybackStateListener?.getPlaybackState()?.let { playbackState ->
             input(playbackState)?.currentEventPayload(isPlaying = isPlaying)
         }
 
     override fun setPlaybackStateListener(listener: PlaybackStateListener) {
-        playbackStateListener = listener
+        currentPlaybackStateListener = listener
     }
 
     override fun removePlaybackStateListener(listener: PlaybackStateListener) {
-        if (playbackStateListener == listener) {
-            playbackStateListener = null
+        if (currentPlaybackStateListener == listener) {
+            currentPlaybackStateListener = null
         }
     }
 
     private fun startTimers() {
-        listenerCallTimer.start(
-            interval = checkInterval
-        ).onEach { result ->
-            if (result is PeriodicTimer.Result.OnTick) {
-                requestNewState()
-            }
-        }.launchIn(scope)
+        listenerCallTimer.start()
     }
 
     private fun stopTimers() {

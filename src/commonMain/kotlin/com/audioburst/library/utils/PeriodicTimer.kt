@@ -1,45 +1,40 @@
 package com.audioburst.library.utils
 
 import com.audioburst.library.models.Duration
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.channelFlow
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.asSharedFlow
+import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalCoroutinesApi::class)
-internal class PeriodicTimer {
+internal class PeriodicTimer(
+    private val interval: Duration,
+    private val scope: CoroutineScope,
+) {
 
-    private var currentProducerScope by atomic<ProducerScope<Result>?>(null)
+    private var currentTimerJob by nullableAtomic<Job>()
     private var isRunning by atomic(false)
+    private val sharedFlow = MutableSharedFlow<Tick>()
+    val timer: Flow<Tick> = sharedFlow.asSharedFlow()
 
-    fun start(interval: Duration): Flow<Result> =
-        channelFlow {
-            if (isRunning) {
-                send(Result.AlreadyRunning)
-            } else {
-                currentProducerScope = this
+    fun start() {
+        if (!isRunning) {
+            currentTimerJob = scope.launch {
                 isRunning = true
                 while (isRunning) {
                     delay(interval.milliseconds.toLong())
-                    if (!isClosedForSend) {
-                        send(Result.OnTick)
-                    }
+                    sharedFlow.emit(Tick)
                 }
             }
         }
-
-    fun pause(): Boolean =
-        if (isRunning) {
-            isRunning = false
-            currentProducerScope?.close()
-            true
-        } else {
-            false
-        }
-
-    sealed class Result {
-        object OnTick: Result()
-        object AlreadyRunning: Result()
     }
+
+    fun pause() {
+        isRunning = false
+        currentTimerJob?.cancel()
+    }
+
+    object Tick
 }

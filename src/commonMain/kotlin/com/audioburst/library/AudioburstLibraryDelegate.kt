@@ -8,7 +8,6 @@ import com.audioburst.library.utils.PlaybackStateListener
 import com.audioburst.library.utils.StrategyBasedEventDetector
 import com.audioburst.library.utils.SubscriptionKeySetter
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -23,18 +22,16 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
     internal lateinit var postUserPreferences: PostUserPreferences
     internal lateinit var getUserPreferences: GetUserPreferences
     internal lateinit var getPlaylistsInfo: GetPlaylistsInfo
-    internal lateinit var appDispatchers: AppDispatchers
     internal lateinit var eventDetector: StrategyBasedEventDetector
     internal lateinit var updateUserId: UpdateUserId
     internal lateinit var getPlaylist: GetPlaylist
     internal lateinit var getAdUrl: GetAdUrl
-
-    private val scope: CoroutineScope by lazy { CoroutineScope(appDispatchers.main + SupervisorJob()) }
+    internal lateinit var scope: CoroutineScope
 
     init {
         Injector.inject(this)
         subscriptionKeySetter.set(SubscriptionKey(applicationKey))
-        scope.launch(appDispatchers.background) { removeOldListenedBursts() }
+        scope.launch { removeOldListenedBursts() }
     }
 
     suspend fun setAudioburstUserID(userId: String): Result<Boolean> {

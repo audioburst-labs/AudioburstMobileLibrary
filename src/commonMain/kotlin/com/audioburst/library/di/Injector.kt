@@ -25,7 +25,9 @@ import com.squareup.sqldelight.db.SqlDriver
 import io.ktor.client.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.json.serializer.*
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.serialization.json.Json
 
 internal object Injector {
@@ -34,6 +36,9 @@ internal object Injector {
     private const val SETTINGS_NAME = "com.audioburst.library"
     private const val DATABASE_NAME = "com_audioburst_library.db"
 
+    private val libraryScopeProvider: Provider<CoroutineScope> = singleton {
+        CoroutineScope(context = appDispatchersProvider.get().main + SupervisorJob())
+    }
     private val jsonProvider: Provider<Json> = JsonProvider()
     private val serializerProvider: Provider<JsonSerializer> = provider { KotlinxSerializer(json = jsonProvider.get()) }
     private val libraryConfigurationProvider: Provider<LibraryConfiguration> = singleton {
@@ -214,6 +219,7 @@ internal object Injector {
             appDispatchers = appDispatchersProvider.get(),
             checkInterval = playbackStateCheckInterval,
             listenedStrategy = listenedStrategyProvider.get(),
+            scope = libraryScopeProvider.get(),
         )
     }
 
@@ -315,11 +321,11 @@ internal object Injector {
             postUserPreferences = postUserPreferencesProvider.get()
             getUserPreferences = getUserPreferencesProvider.get()
             getPlaylistsInfo = getPlaylistsInfoProvider.get()
-            appDispatchers = appDispatchersProvider.get()
             eventDetector = eventDetectorProvider.get()
             updateUserId = updateUserIdProvider.get()
             getPlaylist = getPlaylistProvider.get()
             getAdUrl = getAdDataProvider.get()
+            scope = libraryScopeProvider.get()
         }
     }
 }

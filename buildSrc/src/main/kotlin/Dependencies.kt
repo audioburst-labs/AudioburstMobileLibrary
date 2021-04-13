@@ -36,7 +36,7 @@ object Dependencies {
     }
 
     object Coroutines {
-        private const val version = "1.4.1-native-mt"
+        private const val version = "1.4.3-native-mt"
         const val commonMain = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
         const val androidMain = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version"
     }

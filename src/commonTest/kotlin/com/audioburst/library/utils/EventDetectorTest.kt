@@ -6,6 +6,7 @@ import com.audioburst.library.utils.strategies.ListenedMediaStrategy
 import com.audioburst.library.utils.strategies.ListenedStrategy
 import com.audioburst.library.utils.strategies.PlaybackEventStrategy
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlin.test.Test
 import kotlin.test.assertTrue
@@ -104,6 +105,7 @@ class EventDetectorTest {
 
 internal fun eventDetectorOf(
     playlist: Playlist? = null,
+    scope: CoroutineScope = CoroutineScope(appDispatchersOf().main),
     ads: List<DownloadedAdvertisement> = emptyList(),
     playbackEventHandler: (PlaybackEvent) -> Unit = {},
     playbackEvent: PlaybackEvent = PlaybackEvent.Skip(eventPayloadOf()),
@@ -124,6 +126,7 @@ internal fun eventDetectorOf(
         appDispatchers = appDispatchersOf(),
         checkInterval = checkInterval,
         listenedStrategy = listenedStrategy,
+        scope = scope,
     )
 
 internal fun playbackPeriodsCreatorOf(
