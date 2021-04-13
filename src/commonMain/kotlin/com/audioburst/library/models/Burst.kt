@@ -1,6 +1,6 @@
 package com.audioburst.library.models
 
-data class Burst(
+class Burst(
     val id: String,
     val title: String,
     val creationDate: String,
