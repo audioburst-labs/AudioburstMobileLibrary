@@ -35,7 +35,7 @@ internal class PlayerEventToEventRequestMapper(
             playlist_name = from.playlistName ?: EMPTY_STRING,
             pageview_id = from.pageViewId,
             app_session_id = from.libraryConfiguration.sessionId.value,
-            ad = from.advertisementEvent?.let(advertisementEventToAdvertisementEventRequestMapper::map)?.let(json::encodeToString) ?: EMPTY_OBJECT,
+            ad = from.advertisementEvent?.let(advertisementEventToAdvertisementEventRequestMapper::map)?.let { json.encodeToString(it) } ?: EMPTY_OBJECT,
             action_type = from.action.type.id,
             action_value = from.action.value,
             player_type = EMPTY_STRING,
