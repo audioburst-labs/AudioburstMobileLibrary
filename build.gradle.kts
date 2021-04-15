@@ -6,6 +6,7 @@ plugins {
     kotlin(Dependencies.Plugins.serialization) version Dependencies.kotlinVersion
     id(Dependencies.Plugins.swiftPackage) version Dependencies.Plugins.swiftPackageVersion
     id(Dependencies.Plugins.mavenPublish)
+    id(Dependencies.Plugins.signing)
     id(Dependencies.Plugins.sqlDelight) version Dependencies.sqlDelightVersion
 }
 group = Constants.Library.packageName
@@ -130,30 +131,56 @@ publishing {
             artifact("$buildDir/outputs/aar/AudioburstMobileLibrary-release.aar")
             artifact(sources.get())
 
-            pom.withXml {
-                val dependenciesNode = asNode().appendNode("dependencies")
-                configurations.releaseImplementation.get().allDependencies.forEach {
-                    dependenciesNode.appendNode("dependency").apply {
-                        appendNode("groupId", it.group)
-                        appendNode("artifactId", it.name)
-                        appendNode("version", it.version)
+            pom {
+                name.set(artifactId)
+                description.set("AudioburstMobileLibrary is a multi platform library that allows convenient access to the Audioburst’s Content APIs.")
+                url.set("https://github.com/audioburst-labs/AudioburstMobileLibrary")
+                licenses {
+                    license {
+                        name.set("Terms of Service")
+                        url.set("https://audioburst.com/audioburst-publisher-terms")
                     }
                 }
-            }
-            repositories {
-                maven {
-                    val user = gradleLocalProperties(rootDir).getProperty("bintray.user")
-                    val apiKey = gradleLocalProperties(rootDir).getProperty("bintray.apikey")
-
-                    url = uri("https://api.bintray.com/maven/$user/maven/${Constants.Library.archiveName}/;publish=0;override=1")
-                    credentials {
-                        username = user
-                        password = apiKey
+                developers {
+                    developer {
+                        id.set("Kamil-H")
+                        name.set("Kamil Halko")
+                        email.set("kamil@audioburst.com")
+                    }
+                }
+                scm {
+                    url.set("https://github.com/audioburst-labs/AudioburstMobileLibrary/tree/master")
+                }
+                withXml {
+                    val dependenciesNode = asNode().appendNode("dependencies")
+                    configurations.releaseImplementation.get().allDependencies.forEach {
+                        dependenciesNode.appendNode("dependency").apply {
+                            appendNode("groupId", it.group)
+                            appendNode("artifactId", it.name)
+                            appendNode("version", it.version)
+                        }
+                    }
+                }
+                repositories {
+                    maven {
+                        url = uri("https://oss.sonatype.org/service/local/staging/deploy/maven2/")
+                        credentials {
+                            username = gradleLocalProperties(rootDir).getProperty("ossrhUsername")
+                            password = gradleLocalProperties(rootDir).getProperty("ossrhPassword")
+                        }
                     }
                 }
             }
         }
     }
+}
+
+ext["signing.keyId"] = gradleLocalProperties(rootDir).getProperty("signing.keyId")
+ext["signing.secretKeyRingFile"] = gradleLocalProperties(rootDir).getProperty("signing.secretKeyRingFile")
+ext["signing.password"] = gradleLocalProperties(rootDir).getProperty("signing.password")
+
+signing {
+    sign(publishing.publications)
 }
 
 val assembleReleaseAndPublishToMavenRepository by tasks.registering {

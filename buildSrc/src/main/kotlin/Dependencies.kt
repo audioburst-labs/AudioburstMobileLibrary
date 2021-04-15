@@ -28,6 +28,7 @@ object Dependencies {
         const val cocoapods = "native.cocoapods"
         const val androidLibrary = "com.android.library"
         const val mavenPublish = "maven-publish"
+        const val signing = "signing"
         const val serialization = "plugin.serialization"
         const val swiftPackageVersion = "1.0.2"
         const val swiftPackage = "com.chromaticnoise.multiplatform-swiftpackage"
