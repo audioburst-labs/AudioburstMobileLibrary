@@ -23,7 +23,7 @@ This guide is a quick walkthrough to add AudioburstMobileLibrary to an Android a
 ## Add AudioburstMobileLibrary to your app
 
 ### Step 1. Add AudioburstMobileLibrary dependency
-[ ![Download Android](https://api.bintray.com/packages/audioburst/maven/mobile-library/images/download.svg) ](https://bintray.com/audioburst/maven/mobile-library/_latestVersion)
+![GitHub release](https://img.shields.io/github/v/release/audioburst-labs/AudioburstMobileLibrary)
 
 Add AudioburstMobileLibrary Android SDK to your project. To do this, add the following dependency in your app level `build.gradle` file:
 ```gradle
@@ -260,6 +260,8 @@ This guide is a quick walkthrough to add AudioburstMobileLibrary to an iOS app. 
 ## Add AudioburstMobileLibrary to your app
 
 ### Step 1. Add AudioburstMobileLibrary dependency
+![GitHub release](https://img.shields.io/github/v/release/audioburst-labs/AudioburstMobileLibrary)
+
 You can use [CocoaPods](http://cocoapods.org/) to install [AudioburstPlayer](https://cocoapods.org/pods/AudioburstMobileLibrary) by adding it to your `Podfile`:
 
 ```ruby
@@ -267,7 +269,7 @@ platform :ios, '12.0'
 use_frameworks!
 
 target 'MyApp' do
-    pod 'AudioburstMobileLibrary', '~> 0.0.16'
+    pod 'AudioburstMobileLibrary', '~> {latest-version}'
 end
 ```
 
