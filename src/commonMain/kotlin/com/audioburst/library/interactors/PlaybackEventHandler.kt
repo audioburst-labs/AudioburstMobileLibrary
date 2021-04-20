@@ -8,9 +8,10 @@ import com.audioburst.library.data.storage.UserStorage
 import com.audioburst.library.models.*
 import com.audioburst.library.utils.LibraryConfiguration
 import com.audioburst.library.utils.Logger
+import com.audioburst.library.utils.TimestampProvider
 
 internal interface PlaybackEventHandler {
-    suspend fun handle(playbackEvent: PlaybackEvent)
+    suspend fun handle(event: Event)
 }
 
 internal class PlaybackEventHandlerInteractor(
@@ -19,14 +20,18 @@ internal class PlaybackEventHandlerInteractor(
     private val unsentEventStorage: UnsentEventStorage,
     private val libraryConfiguration: LibraryConfiguration,
     private val listenedBurstStorage: ListenedBurstStorage,
+    private val timestampProvider: TimestampProvider,
 ) : PlaybackEventHandler {
 
-    override suspend fun handle(playbackEvent: PlaybackEvent) {
-        Logger.i("Event detected: ${playbackEvent.actionName}")
-        when (playbackEvent) {
-            is PlaybackEvent.BurstListened -> markBurstAsListened(playbackEvent.eventPayload.burst)
-            is PlaybackEvent.AdListened -> postAdvertisementEvent(playbackEvent)
-            else -> postPlayerEvent(playbackEvent)
+    override suspend fun handle(event: Event) {
+        Logger.i("Event detected: ${event.actionName}")
+        when (event) {
+            is PlaybackEvent -> when (event) {
+                is PlaybackEvent.BurstListened -> markBurstAsListened(event.eventPayload.burst)
+                is PlaybackEvent.AdListened -> postAdvertisementEvent(event)
+                else -> postPlayerEvent(event)
+            }
+            is GeneralEvent.GetPlaylists -> postGeneralEvent(event)
         }
     }
 
@@ -61,16 +66,33 @@ internal class PlaybackEventHandlerInteractor(
             currentPixelURL = reportingData.url
         )
 
+    private suspend fun postGeneralEvent(generalEvent: GeneralEvent) {
+        val userId = userStorage.userId ?: return
+        postEvent(
+            PlayerEvent(
+                userId = userId,
+                libraryConfiguration = libraryConfiguration,
+                time = timestampProvider.currentTimeMillis(),
+            ),
+            generalEvent.actionName,
+        )
+    }
+
     private suspend fun postPlayerEvent(playbackEvent: PlaybackEvent, advertisementEvent: AdvertisementEvent? = null) {
         val userId = userStorage.userId ?: return
-        val playerEvent = playbackEvent.toPlayerEvent(
-            userId = userId,
-            advertisementEvent = advertisementEvent
-        )
-        val resource = userRepository.postEvent(playerEvent, playbackEvent.actionName)
-        if (resource is Resource.Error) {
-            unsentEventStorage.add(playerEvent)
+        val playerEvent = when (playbackEvent) {
+            is PlaybackEvent.CtaClick -> playbackEvent.toPlayerEvent(
+                userId = userId,
+                advertisementEvent = advertisementEvent,
+                ctaButtonText = playbackEvent.buttonText,
+                ctaUrl = playbackEvent.url,
+            )
+            else -> playbackEvent.toPlayerEvent(
+                userId = userId,
+                advertisementEvent = advertisementEvent,
+            )
         }
+        postEvent(playerEvent, playbackEvent.actionName)
         if (playbackEvent is PlaybackEvent.StartOfPlay) {
             userRepository.postBurstPlayback(
                 playlistId = playbackEvent.eventPayload.burst.playlistId,
@@ -80,7 +102,19 @@ internal class PlaybackEventHandlerInteractor(
         }
     }
 
-    private fun PlaybackEvent.toPlayerEvent(userId: String, advertisementEvent: AdvertisementEvent? = null): PlayerEvent = with(eventPayload) {
+    private suspend fun postEvent(playerEvent: PlayerEvent, eventName: String) {
+        val resource = userRepository.postEvent(playerEvent, eventName)
+        if (resource is Resource.Error) {
+            unsentEventStorage.add(playerEvent)
+        }
+    }
+
+    private fun PlaybackEvent.toPlayerEvent(
+        userId: String,
+        advertisementEvent: AdvertisementEvent? = null,
+        ctaButtonText: String? = null,
+        ctaUrl: String? = null,
+    ): PlayerEvent = with(eventPayload) {
         PlayerEvent(
             burstLength = length(),
             playerInstanceId = playerSessionId.value,
@@ -98,6 +132,8 @@ internal class PlaybackEventHandlerInteractor(
             pageViewId = playerSessionId.value,
             advertisementEvent = advertisementEvent,
             action = playerAction,
+            ctaButtonText = ctaButtonText,
+            ctaUrl = ctaUrl,
         )
     }
 

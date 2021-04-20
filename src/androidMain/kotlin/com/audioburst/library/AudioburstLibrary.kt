@@ -109,6 +109,17 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
     }
 
     /**
+     * [Burst] class exposes nullable [CtaData], which you can use to show a CTA (Call to action) button which prompts
+     * the user to an immediate response. The CtaData, when available, provides the text to be shown on the button
+     * (buttonText) and the link (url) to open in the browser upon clicking the button.
+     *
+     * When the user clicks this button, you should call the following function to inform the library about this.
+     */
+    fun ctaButtonClick(burstId: String) {
+        delegate.ctaButtonClick(burstId)
+    }
+
+    /**
      * Use this function to register new [PlaybackStateListener]. Library will call this interface everytime we need
      * information about what is currently being played. Note that at the same time you can have only one [PlaybackStateListener]
      * registered.

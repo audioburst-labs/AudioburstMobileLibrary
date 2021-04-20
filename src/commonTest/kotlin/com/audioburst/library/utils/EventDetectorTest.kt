@@ -2,6 +2,7 @@ package com.audioburst.library.utils
 
 import com.audioburst.library.interactors.*
 import com.audioburst.library.models.*
+import com.audioburst.library.utils.strategies.CtaClickStrategy
 import com.audioburst.library.utils.strategies.ListenedMediaStrategy
 import com.audioburst.library.utils.strategies.ListenedStrategy
 import com.audioburst.library.utils.strategies.PlaybackEventStrategy
@@ -17,7 +18,7 @@ class EventDetectorTest {
     fun testWhenPlayCalledThenPlaybackStatePlayIsGettingHandled() {
         // GIVEN
         val audioUrl = "audioUrl"
-        val handledPlaybackEvents = mutableListOf<PlaybackEvent>()
+        val handledPlaybackEvents = mutableListOf<Event>()
         val eventDetector = eventDetectorOf(
             playlist = playlistOf(
                 bursts = listOf(
@@ -46,7 +47,7 @@ class EventDetectorTest {
     fun testWhenPauseCalledThenPlaybackStatePauseIsGettingHandled() {
         // GIVEN
         val audioUrl = "audioUrl"
-        val handledPlaybackEvents = mutableListOf<PlaybackEvent>()
+        val handledPlaybackEvents = mutableListOf<Event>()
         val eventDetector = eventDetectorOf(
             playlist = playlistOf(
                 bursts = listOf(
@@ -74,7 +75,7 @@ class EventDetectorTest {
     @Test
     fun testIfStrategyReturnsPlaybackEventThenThisEventIsGettingHandled() {
         // GIVEN
-        val handledPlaybackEvents = mutableListOf<PlaybackEvent>()
+        val handledPlaybackEvents = mutableListOf<Event>()
         val playbackEvent = PlaybackEvent.Play(eventPayloadOf())
         val audioUrl = "audioUrl"
         val eventDetector = eventDetectorOf(
@@ -107,18 +108,19 @@ internal fun eventDetectorOf(
     playlist: Playlist? = null,
     scope: CoroutineScope = CoroutineScope(appDispatchersOf().main),
     ads: List<DownloadedAdvertisement> = emptyList(),
-    playbackEventHandler: (PlaybackEvent) -> Unit = {},
+    playbackEventHandler: (Event) -> Unit = {},
     playbackEvent: PlaybackEvent = PlaybackEvent.Skip(eventPayloadOf()),
     timestamp: Long = 0,
     checkInterval: Duration = 1.0.toDuration(DurationUnit.Seconds),
-    listenedStrategy: ListenedStrategy = listenedStrategyOf()
+    listenedStrategy: ListenedStrategy = listenedStrategyOf(),
+    ctaClickStrategy: CtaClickStrategy = CtaClickStrategy(),
 ): StrategyBasedEventDetector =
     StrategyBasedEventDetector(
         currentPlaylist = currentPlaylistOf(playlist),
         currentAds = currentAdsOf(ads),
         playbackEventHandler = object : PlaybackEventHandler {
-            override suspend fun handle(playbackEvent: PlaybackEvent) {
-                playbackEventHandler(playbackEvent)
+            override suspend fun handle(event: Event) {
+                playbackEventHandler(event)
             }
         },
         strategies = listOf(strategyOf(playbackEvent)),
@@ -127,6 +129,7 @@ internal fun eventDetectorOf(
         checkInterval = checkInterval,
         listenedStrategy = listenedStrategy,
         scope = scope,
+        ctaClickStrategy = ctaClickStrategy,
     )
 
 internal fun playbackPeriodsCreatorOf(

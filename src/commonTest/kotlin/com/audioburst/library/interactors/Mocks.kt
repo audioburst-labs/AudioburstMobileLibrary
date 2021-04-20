@@ -116,6 +116,7 @@ internal fun burstOf(
     source: BurstSource = burstSourceOf(),
     shareUrl: String = "",
     keywords: List<String> = emptyList(),
+    ctaData: CtaData? = null,
     adUrl: String? = null,
 ): Burst =
     Burst(
@@ -133,7 +134,17 @@ internal fun burstOf(
         source = source,
         shareUrl = shareUrl,
         keywords = keywords,
+        ctaData = ctaData,
         adUrl = adUrl,
+    )
+
+internal fun ctaDataOf(
+    buttonText: String = "",
+    url: String = "",
+): CtaData =
+    CtaData(
+        buttonText = buttonText,
+        url = url,
     )
 
 internal fun burstSourceOf(
@@ -246,6 +257,7 @@ internal fun playbackEventHandlerInteractorOf(
     unsentEventStorage: UnsentEventStorage = InMemoryUnsentEventStorage(),
     libraryConfiguration: LibraryConfiguration = libraryConfigurationOf(),
     listenedBurstStorage: ListenedBurstStorage = InMemoryListenedBurstStorage(),
+    timestampProvider: TimestampProvider = timestampProviderOf(),
 ): PlaybackEventHandlerInteractor =
     PlaybackEventHandlerInteractor(
         userStorage = userStorage,
@@ -253,6 +265,7 @@ internal fun playbackEventHandlerInteractorOf(
         unsentEventStorage = unsentEventStorage,
         libraryConfiguration = libraryConfiguration,
         listenedBurstStorage = listenedBurstStorage,
+        timestampProvider = timestampProvider,
     )
 
 internal class InMemoryListenedBurstStorage(private val listenedBurstsExpireDays: Long = 30) : ListenedBurstStorage {
@@ -278,9 +291,9 @@ internal class InMemoryListenedBurstStorage(private val listenedBurstsExpireDays
 }
 
 internal class MemorablePlaybackEventHandler : PlaybackEventHandler {
-    val sentEvents: MutableList<PlaybackEvent> = mutableListOf()
-    override suspend fun handle(playbackEvent: PlaybackEvent) {
-        sentEvents.add(playbackEvent)
+    val sentEvents: MutableList<Event> = mutableListOf()
+    override suspend fun handle(event: Event) {
+        sentEvents.add(event)
     }
 }
 

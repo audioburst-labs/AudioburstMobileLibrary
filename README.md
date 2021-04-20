@@ -149,6 +149,14 @@ audioburstLibrary
     }
 ```  
 
+## Use Cta Data
+`Burst` class exposes nullable `CtaData`, which you can use to show a CTA (Call to action) button which prompts the user to an immediate response.
+The CtaData, when available, provides the text to be shown on the button (`buttonText`) and the link (`url`) to open in the browser upon clicking the button.
+When the user clicks this button, you should call the following function to inform the library about this:
+```kotlin
+audioburstLibrary.ctaButtonClick(burstId)
+```
+
 ## Pass recorded PCM file
 `AudioburstLibrary` is able to process raw audio files that contain a recorded request of what should be played. You can record a voice command stating what you would like to listen to and then upload it to your device and use AudioburstLibrary to get bursts on this topic.
 
@@ -355,6 +363,14 @@ audioburstLibrary.getPersonalPlaylist { pendingPlaylist in
 } onError: { error in
     // Handle error
 }
+```
+
+## Use Cta Data
+`Burst` class exposes nullable `CtaData`, which you can use to show a CTA (Call to action) button which prompts the user to an immediate response.
+The CtaData, when available, provides the text to be shown on the button (`buttonText`) and the link (`url`) to open in the browser upon clicking the button.
+When the user clicks this button, you should call the following function to inform the library about this:
+```kotlin
+audioburstLibrary.ctaButtonClick(burstId)
 ```
 
 ## Pass recorded PCM file

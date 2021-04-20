@@ -15,6 +15,7 @@ class Burst(
     val source: BurstSource,
     val shareUrl: String,
     val keywords: List<String>,
+    val ctaData: CtaData?,
     internal val adUrl: String?,
 ) {
     val isAdAvailable: Boolean
@@ -40,6 +41,7 @@ class Burst(
         if (source != other.source) return false
         if (shareUrl != other.shareUrl) return false
         if (keywords != other.keywords) return false
+        if (ctaData != other.ctaData) return false
         if (adUrl != other.adUrl) return false
 
         return true
@@ -60,11 +62,12 @@ class Burst(
         result = 31 * result + source.hashCode()
         result = 31 * result + shareUrl.hashCode()
         result = 31 * result + keywords.hashCode()
+        result = 31 * result + (ctaData?.hashCode() ?: 0)
         result = 31 * result + (adUrl?.hashCode() ?: 0)
         return result
     }
 
     override fun toString(): String {
-        return "Burst(id='$id', title='$title', creationDate='$creationDate', duration=$duration, sourceName='$sourceName', category=$category, playlistId=$playlistId, showName='$showName', streamUrl=$streamUrl, audioUrl='$audioUrl', imageUrls=$imageUrls, source=$source, shareUrl='$shareUrl', keywords=$keywords, adUrl=$adUrl)"
+        return "Burst(id='$id', title='$title', creationDate='$creationDate', duration=$duration, sourceName='$sourceName', category=$category, playlistId=$playlistId, showName='$showName', streamUrl=$streamUrl, audioUrl='$audioUrl', imageUrls=$imageUrls, source=$source, shareUrl='$shareUrl', keywords=$keywords, ctaData=$ctaData, adUrl=$adUrl)"
     }
 }

@@ -478,6 +478,38 @@ class PlaybackEventStrategyInputTest {
         // THEN
         assertTrue(eventPayload != null)
     }
+
+    @Test
+    fun testEventPayloadWhenPlaylistContainsBurst() {
+        // GIVEN
+        val burst = burstOf(id = "id")
+        val playlist = playlistOf(
+            bursts = listOf(burst)
+        )
+        val input = inputOf(playlist = playlist)
+
+        // WHEN
+        val eventPayload = input.currentEventPayload(burst = burst)
+
+        // THEN
+        assertTrue(eventPayload != null)
+    }
+
+    @Test
+    fun testEventPayloadWhenPlaylistDoesNotContainsPassedBurst() {
+        // GIVEN
+        val burst = burstOf(id = "id")
+        val playlist = playlistOf(
+            bursts = listOf(burstOf())
+        )
+        val input = inputOf(playlist = playlist)
+
+        // WHEN
+        val eventPayload = input.currentEventPayload(burst = burst)
+
+        // THEN
+        assertTrue(eventPayload == null)
+    }
 }
 
 internal fun inputOf(

@@ -5,6 +5,7 @@ import com.audioburst.library.data.repository.UserRepository
 import com.audioburst.library.data.repository.mappers.userStorageOf
 import com.audioburst.library.data.storage.UnsentEventStorage
 import com.audioburst.library.models.DurationUnit
+import com.audioburst.library.models.GeneralEvent
 import com.audioburst.library.models.PlaybackEvent
 import com.audioburst.library.models.toDuration
 import com.audioburst.library.runTest
@@ -310,5 +311,36 @@ class PlaybackEventHandlerInteractorTest {
 
         // THEN
         assertTrue(sentEvents.last().playerEvent.stream!!)
+    }
+
+    @Test
+    fun testIfCtaDataIsCorrectlyPassed() = runTest {
+        // GIVEN
+        val buttonText = "buttonText"
+        val url = "url"
+        val playbackEvent = PlaybackEvent.CtaClick(
+            eventPayload = eventPayloadOf(),
+            buttonText = buttonText,
+            url = url,
+        )
+
+        // WHEN
+        interactor.handle(playbackEvent)
+
+        // THEN
+        assertEquals(buttonText, sentEvents.last().playerEvent.ctaButtonText)
+        assertEquals(url, sentEvents.last().playerEvent.ctaUrl)
+    }
+
+    @Test
+    fun testIfGetPlaylistsEventIsGettingSent() = runTest {
+        // GIVEN
+        val playbackEvent = GeneralEvent.GetPlaylists()
+
+        // WHEN
+        interactor.handle(playbackEvent)
+
+        // THEN
+        assertTrue(sentEvents.lastOrNull() != null)
     }
 }

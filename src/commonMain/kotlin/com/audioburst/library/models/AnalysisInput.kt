@@ -9,24 +9,29 @@ internal data class AnalysisInput(
     val advertisements: List<DownloadedAdvertisement>,
 )
 
-internal fun AnalysisInput.currentEventPayload(isPlaying: Boolean = true): EventPayload? =
-    eventPayload(currentState, isPlaying)
+internal fun AnalysisInput.currentEventPayload(burst: Burst? = null, isPlaying: Boolean = true): EventPayload? =
+    eventPayload(currentState, burst, isPlaying)
 
-internal fun AnalysisInput.eventPayload(playbackState: InternalPlaybackState, isPlaying: Boolean = true): EventPayload? {
-    val burst = burstFromState(playbackState) ?: return null
+internal fun AnalysisInput.eventPayload(playbackState: InternalPlaybackState, burst: Burst? = null, isPlaying: Boolean = true): EventPayload? {
+    if (burst != null && playlist.containsBurst(burst)) {
+        return null
+    }
+    val currentBurst = burst ?: burstFromState(playbackState) ?: return null
     return EventPayload(
         playerAction = playlist.playerAction,
         playlistId = playlist.id,
         playlistName = playlist.name,
-        burst = burst,
+        burst = currentBurst,
         isPlaying = isPlaying,
         occurrenceTime = playbackState.occurrenceTime,
         currentPlayBackPosition = playbackState.position,
         playerSessionId = playlist.playerSessionId,
-        advertisement = burst.advertisement(advertisements),
+        advertisement = currentBurst.advertisement(advertisements),
         currentPlaybackUrl = playbackState.url,
     )
 }
+
+private fun Playlist.containsBurst(burst: Burst): Boolean = bursts.firstOrNull { it.id == burst.id } == null
 
 internal fun AnalysisInput.lastState(): InternalPlaybackState? = previousStates.lastOrNull()
 

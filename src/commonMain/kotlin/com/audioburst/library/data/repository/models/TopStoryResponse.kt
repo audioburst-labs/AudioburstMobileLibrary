@@ -81,6 +81,7 @@ internal data class PromoteResponse(
     val adData: AdDataResponse?,
     val type: String?,
     val url: String?,
+    val ctaData: CtaDataResponse?,
 )
 
 @Serializable
@@ -99,4 +100,11 @@ internal data class ReportingPixelURLResponse(
     val PixelURL: String,
     val PositionText: String,
     val Position: Double,
+)
+
+@Serializable
+data class CtaDataResponse(
+    val ButtonText: String,
+    val URL: String,
+    val OpenInNewTab: Boolean,
 )

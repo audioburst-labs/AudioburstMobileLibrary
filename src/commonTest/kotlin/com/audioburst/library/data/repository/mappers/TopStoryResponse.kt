@@ -116,11 +116,24 @@ internal fun promoteResponseOf(
     adData: AdDataResponse? = null,
     type: String? = null,
     url: String? = null,
+    ctaDataResponse: CtaDataResponse? = null,
 ): PromoteResponse =
     PromoteResponse(
         adData = adData,
         type = type,
         url = url,
+        ctaData = ctaDataResponse,
+    )
+
+internal fun ctaDataResponseOf(
+    ButtonText: String = "",
+    URL: String = "",
+    OpenInNewTab: Boolean = false,
+): CtaDataResponse =
+    CtaDataResponse(
+        ButtonText = ButtonText,
+        URL = URL,
+        OpenInNewTab = OpenInNewTab,
     )
 
 internal fun adDataResponseOf(

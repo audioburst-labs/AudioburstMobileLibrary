@@ -4,6 +4,7 @@ import com.audioburst.library.interactors.CurrentAdsProvider
 import com.audioburst.library.interactors.CurrentPlaylist
 import com.audioburst.library.interactors.PlaybackEventHandler
 import com.audioburst.library.models.*
+import com.audioburst.library.utils.strategies.CtaClickStrategy
 import com.audioburst.library.utils.strategies.ListenedStrategy
 import com.audioburst.library.utils.strategies.PlaybackEventStrategy
 import kotlinx.coroutines.CoroutineScope
@@ -17,6 +18,10 @@ internal interface EventDetector {
     fun start()
 
     fun stop()
+
+    fun ctaButtonClick(burstId: String)
+
+    fun getPlaylists()
 
     fun setPlaybackStateListener(listener: PlaybackStateListener)
 
@@ -33,6 +38,7 @@ internal class StrategyBasedEventDetector(
     private val listenedStrategy: ListenedStrategy,
     private val timestampProvider: TimestampProvider,
     private val appDispatchers: AppDispatchers,
+    private val ctaClickStrategy: CtaClickStrategy,
 ) : EventDetector {
 
     private val previousStates: Queue<InternalPlaybackState> = FixedSizeQueue(NUMBER_OF_CACHED_STATES)
@@ -57,6 +63,18 @@ internal class StrategyBasedEventDetector(
         val eventPayload = currentEventPayload(isPlaying = false) ?: return
         handle(PlaybackEvent.Pause(eventPayload))
         requestNewState()
+    }
+
+    override fun ctaButtonClick(burstId: String) {
+        val input = currentPlaybackStateListener?.getPlaybackState()?.let(this@StrategyBasedEventDetector::input) ?: return
+        ctaClickStrategy.check(
+            input = input,
+            burstId = burstId,
+        )?.let(this@StrategyBasedEventDetector::handle)
+    }
+
+    override fun getPlaylists() {
+        handle(GeneralEvent.GetPlaylists())
     }
 
     private fun requestNewState() {
@@ -114,9 +132,9 @@ internal class StrategyBasedEventDetector(
         listenerCallTimer.pause()
     }
 
-    private fun handle(playbackEvent: PlaybackEvent) {
+    private fun handle(event: Event) {
         scope.launch {
-            playbackEventHandler.handle(playbackEvent)
+            playbackEventHandler.handle(event)
         }
     }
 

@@ -42,6 +42,8 @@ class BurstResponseToBurstTest {
         assertEquals(mapped.showName, response.source.showName)
         assertEquals(mapped.streamUrl, response.contentURLs.streamURL)
         assertEquals(mapped.audioUrl, response.contentURLs.audioURL)
+        assertEquals(mapped.ctaData?.url, response.promote?.ctaData?.URL)
+        assertEquals(mapped.ctaData?.buttonText, response.promote?.ctaData?.ButtonText)
     }
 
     @Test

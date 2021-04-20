@@ -1,6 +1,10 @@
 package com.audioburst.library.models
 
-internal sealed class PlaybackEvent(val actionName: String, val eventPayload: EventPayload) {
+internal sealed class Event {
+    abstract val actionName: String
+}
+
+internal sealed class PlaybackEvent(override val actionName: String, val eventPayload: EventPayload) : Event() {
 
     class Play(eventPayload: EventPayload) : PlaybackEvent("play", eventPayload)
     class Playing(eventPayload: EventPayload) : PlaybackEvent("playing", eventPayload)
@@ -26,4 +30,9 @@ internal sealed class PlaybackEvent(val actionName: String, val eventPayload: Ev
     ) : PlaybackEvent("AD", eventPayload)
     class ContentLoaded(eventPayload: EventPayload) : PlaybackEvent("contentLoad", eventPayload)
     class BurstListened(eventPayload: EventPayload) : PlaybackEvent("BurstListened", eventPayload)
+    class CtaClick(eventPayload: EventPayload, val buttonText: String, val url: String) : PlaybackEvent("cta-click", eventPayload)
+}
+
+internal sealed class GeneralEvent(override val actionName: String) : Event() {
+    class GetPlaylists : GeneralEvent("getPlaylists")
 }

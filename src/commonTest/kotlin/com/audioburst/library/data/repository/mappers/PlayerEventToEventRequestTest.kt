@@ -35,16 +35,16 @@ class PlayerEventToEventRequestTest {
         assertEquals(mapped.playlist_name, "")
         assertEquals(mapped.pageview_id, playerEvent.pageViewId)
         assertEquals(mapped.app_session_id, playerEvent.libraryConfiguration.sessionId.value)
-        assertEquals(mapped.action_type, playerEvent.action.type.id)
-        assertEquals(mapped.action_value, playerEvent.action.value)
+        assertEquals(mapped.action_type, playerEvent.action?.type?.id)
+        assertEquals(mapped.action_value, playerEvent.action?.value)
         assertEquals(mapped.player_type, "")
         assertEquals(mapped.screen_size, "")
         assertEquals(mapped.experience_id, "")
         assertEquals(mapped.player_settings, "{}")
         assertEquals(mapped.page_url, "")
         assertEquals(mapped.referrer_url, "")
-        assertEquals(mapped.ab_cta, "")
-        assertEquals(mapped.ab_cta_link, "")
+        assertEquals(mapped.cta_title, "")
+        assertEquals(mapped.cta_link, "")
     }
 }
 
@@ -73,7 +73,9 @@ internal fun playerEventOf(
     totalPlayTime: Double? = null,
     pageViewId: String = "",
     advertisementEvent: AdvertisementEvent? = null,
-    action: PlayerAction = playerActionOf()
+    action: PlayerAction = playerActionOf(),
+    ctaButtonText: String? = null,
+    ctaUrl: String? = null,
 ) : PlayerEvent =
     PlayerEvent(
         userId = userId,
@@ -92,4 +94,6 @@ internal fun playerEventOf(
         pageViewId = pageViewId,
         advertisementEvent = advertisementEvent,
         action = action,
+        ctaButtonText = ctaButtonText,
+        ctaUrl = ctaUrl,
     )

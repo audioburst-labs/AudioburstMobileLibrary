@@ -145,6 +145,7 @@ internal object Injector {
             unsentEventStorage = unsentEventStorageProvider.get(),
             libraryConfiguration = libraryConfigurationProvider.get(),
             listenedBurstStorage = listenedBurstStorageProvider.get(),
+            timestampProvider = timestampProviderProvider.get(),
         )
     }
     private val timestampProviderProvider: Provider<TimestampProvider> = provider { PlatformTimestampProvider }
@@ -209,6 +210,7 @@ internal object Injector {
             main = Dispatchers.Main
         )
     }
+    private val ctaClickStrategyProvider: Provider<CtaClickStrategy> = provider { CtaClickStrategy() }
     private val eventDetectorProvider: Provider<StrategyBasedEventDetector> = singleton {
         StrategyBasedEventDetector(
             currentPlaylist = currentPlaylistProvider.get(),
@@ -220,6 +222,7 @@ internal object Injector {
             checkInterval = playbackStateCheckInterval,
             listenedStrategy = listenedStrategyProvider.get(),
             scope = libraryScopeProvider.get(),
+            ctaClickStrategy = ctaClickStrategyProvider.get(),
         )
     }
 

@@ -50,11 +50,13 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
 
     suspend fun getPlaylists(): Result<List<PlaylistInfo>> {
         Logger.i("getPlaylists")
+        eventDetector.getPlaylists()
         return getPlaylistsInfo()
     }
 
     fun getPlaylists(onData: (List<PlaylistInfo>) -> Unit, onError: (LibraryError) -> Unit) {
         Logger.i("getPlaylists")
+        eventDetector.getPlaylists()
         scope.launch {
             getPlaylistsInfo()
                 .onData { onData(it) }
@@ -156,6 +158,11 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
     fun stop() {
         Logger.i("stop")
         eventDetector.stop()
+    }
+
+    fun ctaButtonClick(burstId: String) {
+        Logger.i("ctaButtonClick")
+        eventDetector.ctaButtonClick(burstId)
     }
 
     fun setPlaybackStateListener(listener: PlaybackStateListener) {

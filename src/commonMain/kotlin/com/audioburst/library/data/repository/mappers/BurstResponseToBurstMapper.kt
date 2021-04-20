@@ -1,7 +1,9 @@
 package com.audioburst.library.data.repository.mappers
 
 import com.audioburst.library.data.repository.models.BurstsResponse
+import com.audioburst.library.data.repository.models.CtaDataResponse
 import com.audioburst.library.models.Burst
+import com.audioburst.library.models.CtaData
 import com.audioburst.library.models.DurationUnit
 import com.audioburst.library.models.toDuration
 import com.audioburst.library.utils.LibraryConfiguration
@@ -28,6 +30,7 @@ internal class BurstResponseToBurstMapper constructor(
             source = sourceResponseToBurstSourceMapper.map(from.source),
             shareUrl = from.shareUrl(),
             keywords = from.entities ?: emptyList(),
+            ctaData = from.promote?.ctaData?.toCtaData(),
             adUrl = from.adUrl(userId)
         )
 
@@ -46,6 +49,12 @@ internal class BurstResponseToBurstMapper constructor(
         } else {
             null
         }
+
+    private fun CtaDataResponse.toCtaData(): CtaData =
+        CtaData(
+            buttonText = ButtonText,
+            url = URL,
+        )
 
     companion object {
         private const val UTM_SOURCE_QUERY_NAME = "utm_source"
