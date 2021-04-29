@@ -67,7 +67,7 @@ internal object Injector {
             uuidFactory = uuidFactoryProvider.get()
         )
     }
-    private val advertisementResponseToAdvertisementMapperProvider: Provider<AdvertisementResponseToAdvertisementMapper> = provider { AdvertisementResponseToAdvertisementMapper() }
+    private val advertisementResponseToAdvertisementMapperProvider: Provider<AdvertisementResponseToPromoteDataMapper> = provider { AdvertisementResponseToPromoteDataMapper() }
     private val sourceResponseToBurstSourceProvider: Provider<SourceResponseToBurstSourceMapper> = provider { SourceResponseToBurstSourceMapper() }
     private val burstResponseToBurstProvider: Provider<BurstResponseToBurstMapper> = provider {
         BurstResponseToBurstMapper(

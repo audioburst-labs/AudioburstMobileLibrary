@@ -32,7 +32,7 @@ internal interface UserRepository {
 
     suspend fun postBurstPlayback(playlistId: Long, burstId: String, userId: String): Resource<Unit>
 
-    suspend fun getAdData(adUrl: Url): Resource<Advertisement>
+    suspend fun getPromoteData(adUrl: Url): Resource<PromoteData>
 }
 
 internal class HttpUserRepository(
@@ -44,7 +44,7 @@ internal class HttpUserRepository(
     private val userResponseToUserMapper: UserResponseToUserMapper,
     private val playlistResponseToPlaylistInfoMapper: PlaylistResponseToPlaylistInfoMapper,
     private val topStoryResponseToPlaylist: TopStoryResponseToPlaylist,
-    private val advertisementResponseToAdvertisementMapper: AdvertisementResponseToAdvertisementMapper,
+    private val advertisementResponseToAdvertisementMapper: AdvertisementResponseToPromoteDataMapper,
     private val playerEventToEventRequestMapper: PlayerEventToEventRequestMapper,
 ) : UserRepository {
 
@@ -117,7 +117,7 @@ internal class HttpUserRepository(
             )
         )
 
-    override suspend fun getAdData(adUrl: Url): Resource<Advertisement> =
+    override suspend fun getPromoteData(adUrl: Url): Resource<PromoteData> =
         httpClient.execute<AdvertisementResponse>(adUrl)
             .map(advertisementResponseToAdvertisementMapper::map)
 

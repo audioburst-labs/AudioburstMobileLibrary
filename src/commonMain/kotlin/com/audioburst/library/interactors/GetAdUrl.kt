@@ -17,15 +17,17 @@ internal class GetAdUrl(
 
     internal suspend operator fun invoke(burst: Burst): Result<String> =
         burst.adUrl?.let { adUrl ->
-            userRepository.getAdData(
+            userRepository.getPromoteData(
                 adUrl = Url(adUrl)
             )
-        }?.onData {
-            playlistStorage.setAdvertisement(
-                url = Url(burst.adUrl),
-                advertisement = it
-            )
-        }?.map { it.burstUrl }?.asResult()?.let {
+        }?.onData { promoteData ->
+            if (promoteData.advertisement?.burstUrl != null) {
+                playlistStorage.setAdvertisement(
+                    url = Url(burst.adUrl),
+                    advertisement = promoteData.advertisement
+                )
+            }
+        }?.map { it.advertisement?.burstUrl }?.asResult()?.let {
             when (it) {
                 is Result.Data -> if (it.value == null) {
                     Result.Error(LibraryError.AdUrlNotFound)

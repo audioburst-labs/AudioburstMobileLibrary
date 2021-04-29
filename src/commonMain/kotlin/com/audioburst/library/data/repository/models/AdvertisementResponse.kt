@@ -4,7 +4,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class AdvertisementResponse(
-    val adData: AdvertisementDataResponse,
+    val adData: AdvertisementDataResponse?,
     val type: String,
     val url: String?,
 )

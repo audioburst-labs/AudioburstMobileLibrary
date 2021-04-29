@@ -167,7 +167,7 @@ internal fun reportingPixelURLResponseOf(
     )
 
 internal fun advertisementResponseOf(
-    adData: AdvertisementDataResponse = advertisementAdDataResponseOf(),
+    adData: AdvertisementDataResponse? = null,
     type: String = "",
     url: String? = null,
 ): AdvertisementResponse =

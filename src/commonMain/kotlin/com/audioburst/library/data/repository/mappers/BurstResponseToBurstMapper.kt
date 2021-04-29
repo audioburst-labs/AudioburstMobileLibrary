@@ -40,14 +40,18 @@ internal class BurstResponseToBurstMapper constructor(
         }.buildString()
 
     private fun BurstsResponse.adUrl(userId: String): String? =
-        if (promote != null) {
-            URLBuilder(BASE_AD_URL).apply {
-                encodedPath += "/$burstId"
-                parameters.append(USER_ID_QUERY_PARAM, userId)
-                category?.let { parameters.append(CATEGORY_QUERY_PARAM, it) }
-            }.buildString()
-        } else {
-            null
+        promote?.url?.let { adUrl ->
+            try {
+                URLBuilder(adUrl).apply {
+                    if (!adUrl.contains(USER_ID_QUERY_PARAM)) {
+                        parameters.append(USER_ID_QUERY_PARAM, userId)
+                    }
+                    category?.let { parameters.append(CATEGORY_QUERY_PARAM, it) }
+                    parameters.append(AD_ONLY_QUERY_PARAM, true.toString())
+                }.buildString()
+            } catch (exception: URLParserException) {
+                null
+            }
         }
 
     private fun CtaDataResponse.toCtaData(): CtaData =
@@ -58,8 +62,8 @@ internal class BurstResponseToBurstMapper constructor(
 
     companion object {
         private const val UTM_SOURCE_QUERY_NAME = "utm_source"
-        private const val BASE_AD_URL = "https://sapi.audioburst.com/audio/get/streamwithad"
         private const val USER_ID_QUERY_PARAM = "userId"
         private const val CATEGORY_QUERY_PARAM = "category"
+        private const val AD_ONLY_QUERY_PARAM = "adonly"
     }
 }

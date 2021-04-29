@@ -59,6 +59,15 @@ internal fun playlistInfoOf(
         url = url,
     )
 
+internal fun promoteDataOf(
+    advertisement: Advertisement? = null,
+    ctaData: CtaData? = null,
+): PromoteData =
+    PromoteData(
+        advertisement = advertisement,
+        ctaData = ctaData,
+    )
+
 internal fun advertisementOf(
     burstUrl: String? = null,
     id: String = "",
@@ -231,7 +240,7 @@ internal class MockUserRepository(
 
     override suspend fun postBurstPlayback(playlistId: Long, burstId: String, userId: String): Resource<Unit> = returns.postBurstPlayback
 
-    override suspend fun getAdData(adUrl: Url): Resource<Advertisement> = returns.getAdData
+    override suspend fun getPromoteData(adUrl: Url): Resource<PromoteData> = returns.getPromoteData
 
     data class Returns(
         val registerUser: Resource<User> = Resource.Data(userOf()),
@@ -242,7 +251,7 @@ internal class MockUserRepository(
         val postPlayerEvent: Resource<Unit> = Resource.Data(Unit),
         val postReportingData: Resource<Unit> = Resource.Data(Unit),
         val postBurstPlayback: Resource<Unit> = Resource.Data(Unit),
-        val getAdData: Resource<Advertisement> = Resource.Data(advertisementOf()),
+        val getPromoteData: Resource<PromoteData> = Resource.Data(promoteDataOf()),
     )
 
     data class SentEvent(

@@ -5,24 +5,38 @@ import kotlin.test.assertEquals
 
 class PromoteResponseToAdvertisementTest {
 
-    private val mapper = AdvertisementResponseToAdvertisementMapper()
+    private val mapper = AdvertisementResponseToPromoteDataMapper()
 
     @Test
     fun testMapper() {
         // GIVEN
-        val promote = advertisementResponseOf()
+        val promote = advertisementResponseOf(
+            adData = advertisementAdDataResponseOf()
+        )
 
         // WHEN
         val mapped = mapper.map(promote)
 
         // THEN
-        assertEquals(mapped.id, promote.adData.id)
-        assertEquals(mapped.type, promote.type)
-        assertEquals(mapped.audioURL, promote.adData.audioURL)
-        assertEquals(mapped.duration.seconds, promote.adData.duration)
-        assertEquals(mapped.pixelURL, promote.adData.pixelURL)
-        assertEquals(mapped.position, promote.adData.position)
-        assertEquals(mapped.provider, promote.adData.provider)
-        assertEquals(mapped.reportingData.size, promote.adData.reportingPixelURLs.size)
+        assertEquals(mapped.advertisement?.id, promote.adData?.id)
+        assertEquals(mapped.advertisement?.type, promote.type)
+        assertEquals(mapped.advertisement?.audioURL, promote.adData?.audioURL)
+        assertEquals(mapped.advertisement?.duration?.seconds, promote.adData?.duration)
+        assertEquals(mapped.advertisement?.pixelURL, promote.adData?.pixelURL)
+        assertEquals(mapped.advertisement?.position, promote.adData?.position)
+        assertEquals(mapped.advertisement?.provider, promote.adData?.provider)
+        assertEquals(mapped.advertisement?.reportingData?.size, promote.adData?.reportingPixelURLs?.size)
+    }
+
+    @Test
+    fun testMapperWhenAdDataIsNull() {
+        // GIVEN
+        val promote = advertisementResponseOf(adData = null)
+
+        // WHEN
+        val mapped = mapper.map(promote)
+
+        // THEN
+        assertEquals(null, mapped.advertisement)
     }
 }

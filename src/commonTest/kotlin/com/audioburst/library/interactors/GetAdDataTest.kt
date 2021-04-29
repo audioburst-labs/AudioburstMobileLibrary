@@ -2,8 +2,8 @@ package com.audioburst.library.interactors
 
 import com.audioburst.library.data.Resource
 import com.audioburst.library.data.storage.InMemoryPlaylistStorage
-import com.audioburst.library.models.Advertisement
 import com.audioburst.library.models.LibraryError
+import com.audioburst.library.models.PromoteData
 import com.audioburst.library.models.Result
 import com.audioburst.library.models.errorType
 import com.audioburst.library.runTest
@@ -15,11 +15,11 @@ import kotlin.test.assertTrue
 class GetAdDataTest {
 
     private val playlistStorage = InMemoryPlaylistStorage()
-    private fun interactor(userRepositoryReturns: Resource<Advertisement>): GetAdUrl =
+    private fun interactor(userRepositoryReturns: Resource<PromoteData>): GetAdUrl =
         GetAdUrl(
             userRepository = userRepositoryOf(
                 returns = MockUserRepository.Returns(
-                    getAdData = userRepositoryReturns
+                    getPromoteData = userRepositoryReturns
                 )
             ),
             playlistStorage = playlistStorage,
@@ -35,8 +35,8 @@ class GetAdDataTest {
         // GIVEN
         val burstUrl = "audioUrl"
         val userRepositoryReturns = Resource.Data(
-            advertisementOf(
-                burstUrl = burstUrl
+            promoteDataOf(
+                advertisement = advertisementOf(burstUrl = burstUrl)
             )
         )
         val burst = burstOf(adUrl = "google.com")
@@ -54,8 +54,8 @@ class GetAdDataTest {
         // GIVEN
         val burstUrl = null
         val userRepositoryReturns = Resource.Data(
-            advertisementOf(
-                burstUrl = burstUrl
+            promoteDataOf(
+                advertisement = advertisementOf(burstUrl = burstUrl)
             )
         )
         val burst = burstOf(adUrl = "google.com")
@@ -71,7 +71,7 @@ class GetAdDataTest {
     @Test
     fun testIfWhenAdUrlIsNullAndResourceDataIsReturnedFromRepositoryThenInteractorReturnsNull() = runTest {
         // GIVEN
-        val userRepositoryReturns = Resource.Data(advertisementOf())
+        val userRepositoryReturns = Resource.Data(promoteDataOf(advertisement = advertisementOf()))
         val burst = burstOf(adUrl = null)
 
         // WHEN
@@ -100,8 +100,8 @@ class GetAdDataTest {
         // GIVEN
         val burstUrl = "burstUrl"
         val userRepositoryReturns = Resource.Data(
-            advertisementOf(
-                burstUrl = burstUrl
+            promoteDataOf(
+                advertisement = advertisementOf(burstUrl = burstUrl)
             )
         )
         val burst = burstOf(adUrl = "google.com")
@@ -113,5 +113,24 @@ class GetAdDataTest {
         // THEN
         require(resource is Result.Data)
         assertTrue(playlistStorage.currentAds.isNotEmpty())
+    }
+
+    @Test
+    fun testIfAdIsNotBeingSavedWhenUserRepositoryReturnsResourceDataButBurstUrlIsNullAndPlaylistStorageContainsACorrectPlaylist() = runTest {
+        // GIVEN
+        val userRepositoryReturns = Resource.Data(
+            promoteDataOf(
+                advertisement = advertisementOf(burstUrl = null)
+            )
+        )
+        val burst = burstOf(adUrl = "google.com")
+
+        // WHEN
+        playlistStorage.setPlaylist(playlistOf(bursts = listOf(burst)))
+        val resource = interactor(userRepositoryReturns)(burst)
+
+        // THEN
+        require(resource is Result.Error)
+        assertTrue(playlistStorage.currentAds.isEmpty())
     }
 }

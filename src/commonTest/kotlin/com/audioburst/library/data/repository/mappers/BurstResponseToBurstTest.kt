@@ -12,7 +12,8 @@ import kotlin.test.assertTrue
 class BurstResponseToBurstTest {
 
     private val libraryKey = "libraryKey"
-    private val userId = "userId"
+    private val userId = "user_id"
+    private val streamWithAdUrl = "https://sapi.audioburst.com/audio/get/streamwithad/6D6g8PNJ7WPR"
 
     private val mapper = BurstResponseToBurstMapper(
         libraryConfiguration = libraryConfigurationOf(libraryKey = libraryKey),
@@ -118,36 +119,70 @@ class BurstResponseToBurstTest {
     }
 
     @Test
-    fun testIfAdUrlIsGettingParsedProperlyWhenPromoteResponseIsNotNull() {
+    fun testIfUserIdIsGettingAddedToTheAdUrlWhenUserIdIsNotNull() {
         // GIVEN
-        val burstId = "burstId"
-        val notNullPromoteResponse = burstsResponseOf(burstId = burstId, promote = promoteResponseOf())
-        val expectedUrl = "https://sapi.audioburst.com/audio/get/streamwithad/$burstId?userId=$userId"
+        val notNullPromoteResponse = burstsResponseOf(promote = promoteResponseOf(url = streamWithAdUrl))
 
         // WHEN
         val mappedNotNullKeywordsResponse = mapper.map(notNullPromoteResponse, userId, queryId = 0L)
 
         // THEN
-        assertEquals(expectedUrl, mappedNotNullKeywordsResponse.adUrl)
+        assertTrue(mappedNotNullKeywordsResponse.adUrl?.contains(userId) == true)
     }
 
     @Test
-    fun testIfAdUrlIsGettingParsedProperlyWhenPromoteResponseIsNotNullAndCategoryIsAvailable() {
+    fun testIfUserIdIsNotGettingReplacedWhenAdUrlAlreadyHasUserIdSet() {
         // GIVEN
-        val burstId = "burstId"
-        val category = "category"
-        val notNullPromoteResponse = burstsResponseOf(
-                burstId = burstId,
-                category = category,
-                promote = promoteResponseOf()
-        )
-        val expectedUrl = "https://sapi.audioburst.com/audio/get/streamwithad/$burstId?userId=$userId&category=$category"
+        val presentUserId = "presentUserId"
+        val streamWithAdWithUserIdUrl = "$streamWithAdUrl?userId=$presentUserId"
+        val notNullPromoteResponse = burstsResponseOf(promote = promoteResponseOf(url = streamWithAdWithUserIdUrl))
 
         // WHEN
         val mappedNotNullKeywordsResponse = mapper.map(notNullPromoteResponse, userId, queryId = 0L)
 
         // THEN
-        assertEquals(expectedUrl, mappedNotNullKeywordsResponse.adUrl)
+        assertTrue(mappedNotNullKeywordsResponse.adUrl?.contains(userId) == false)
+        assertTrue(mappedNotNullKeywordsResponse.adUrl?.contains(presentUserId) == true)
+    }
+
+    @Test
+    fun testIfAdUrlIsGettingParsedProperlyWhenPromoteResponseUrlIsNotNullAndCategoryIsAvailable() {
+        // GIVEN
+        val category = "category"
+        val notNullPromoteResponse = burstsResponseOf(
+            category = category,
+            promote = promoteResponseOf(url = streamWithAdUrl)
+        )
+
+        // WHEN
+        val mappedNotNullKeywordsResponse = mapper.map(notNullPromoteResponse, userId, queryId = 0L)
+
+        // THEN
+        assertTrue(mappedNotNullKeywordsResponse.adUrl?.contains(category) == true)
+    }
+
+    @Test
+    fun testIfAdUrlIsContainsAdOnlyEqualsToTrue() {
+        // GIVEN
+        val notNullPromoteResponse = burstsResponseOf(promote = promoteResponseOf(url = streamWithAdUrl))
+
+        // WHEN
+        val mappedNotNullKeywordsResponse = mapper.map(notNullPromoteResponse, userId, queryId = 0L)
+
+        // THEN
+        assertTrue(mappedNotNullKeywordsResponse.adUrl?.contains("adonly=true") == true)
+    }
+
+    @Test
+    fun testIfAdUrlIsNullWhenPromoteResponseUrlIsNotNullButItIsAlsoNotCorrectUrl() {
+        // GIVEN
+        val notNullPromoteResponse = burstsResponseOf(promote = promoteResponseOf(url = ""))
+
+        // WHEN
+        val mappedNotNullKeywordsResponse = mapper.map(notNullPromoteResponse, userId, queryId = 0L)
+
+        // THEN
+        assertTrue(mappedNotNullKeywordsResponse.adUrl == null)
     }
 }
 
