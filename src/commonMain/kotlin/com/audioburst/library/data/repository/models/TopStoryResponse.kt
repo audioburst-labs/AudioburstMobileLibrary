@@ -103,7 +103,7 @@ internal data class ReportingPixelURLResponse(
 )
 
 @Serializable
-data class CtaDataResponse(
+internal data class CtaDataResponse(
     val ButtonText: String,
     val URL: String,
     val OpenInNewTab: Boolean,
