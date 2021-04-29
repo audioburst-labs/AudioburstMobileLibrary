@@ -6,7 +6,7 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class AMLListenedBurstModelAdapter, AMLBurst, AMLLibraryError, AMLPendingPlaylist, AMLPlaylistInfo, AMLPlaylist, NSData, AMLUserPreferences, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLDateTime, AMLDurationUnit, AMLKotlinEnum<E>, AMLKotlinArray<T>, AMLKey, AMLPlayerActionType, AMLPlayerAction, AMLPreference, AMLResult<__covariant T>, AMLKotlinNothing, AMLListenedBurstModel, AMLRuntimeQuery<__covariant RowType>, AMLRuntimeTransacterTransaction, AMLKotlinByteArray, AMLKotlinByteIterator;
+@class AMLListenedBurstModelAdapter, AMLBurst, AMLLibraryError, AMLPendingPlaylist, AMLPlaylistInfo, AMLPlaylist, NSData, AMLUserPreferences, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLCtaData, AMLDateTime, AMLDurationUnit, AMLKotlinEnum<E>, AMLKotlinArray<T>, AMLKey, AMLPlayerActionType, AMLPlayerAction, AMLPreference, AMLResult<__covariant T>, AMLKotlinNothing, AMLListenedBurstModel, AMLRuntimeQuery<__covariant RowType>, AMLRuntimeTransacterTransaction, AMLKotlinByteArray, AMLKotlinByteIterator;
 
 @protocol AMLListenedBurstModelQueries, AMLRuntimeTransactionWithoutReturn, AMLRuntimeTransactionWithReturn, AMLRuntimeTransacter, AMLDatabase, AMLRuntimeSqlDriver, AMLRuntimeSqlDriverSchema, AMLPlaybackStateListener, AMLKotlinComparable, AMLRuntimeColumnAdapter, AMLRuntimeTransactionCallbacks, AMLRuntimeSqlPreparedStatement, AMLRuntimeSqlCursor, AMLRuntimeCloseable, AMLKotlinIterator, AMLRuntimeQueryListener;
 
@@ -165,6 +165,7 @@ __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("AudioburstLibrary")))
 @interface AMLAudioburstLibrary : AMLBase
 - (instancetype)initWithApplicationKey:(NSString *)applicationKey __attribute__((swift_name("init(applicationKey:)"))) __attribute__((objc_designated_initializer));
+- (void)ctaButtonClickBurstId:(NSString *)burstId __attribute__((swift_name("ctaButtonClick(burstId:)")));
 - (void)filterListenedBurstsEnabled:(BOOL)enabled __attribute__((swift_name("filterListenedBursts(enabled:)")));
 - (void)getAdUrlBurst:(AMLBurst *)burst onData:(void (^)(NSString *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getAdUrl(burst:onData:onError:)")));
 - (void)getPersonalPlaylistOnData:(void (^)(AMLPendingPlaylist *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPersonalPlaylist(onData:onError:)")));
@@ -189,13 +190,14 @@ __attribute__((swift_name("PlaybackStateListener")))
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("Burst")))
 @interface AMLBurst : AMLBase
-- (instancetype)initWithId:(NSString *)id title:(NSString *)title creationDate:(NSString *)creationDate duration:(AMLDuration *)duration sourceName:(NSString *)sourceName category:(NSString * _Nullable)category playlistId:(int64_t)playlistId showName:(NSString *)showName streamUrl:(NSString * _Nullable)streamUrl audioUrl:(NSString *)audioUrl imageUrls:(NSArray<NSString *> *)imageUrls source:(AMLBurstSource *)source shareUrl:(NSString *)shareUrl keywords:(NSArray<NSString *> *)keywords adUrl:(NSString * _Nullable)adUrl __attribute__((swift_name("init(id:title:creationDate:duration:sourceName:category:playlistId:showName:streamUrl:audioUrl:imageUrls:source:shareUrl:keywords:adUrl:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithId:(NSString *)id title:(NSString *)title creationDate:(NSString *)creationDate duration:(AMLDuration *)duration sourceName:(NSString *)sourceName category:(NSString * _Nullable)category playlistId:(int64_t)playlistId showName:(NSString *)showName streamUrl:(NSString * _Nullable)streamUrl audioUrl:(NSString *)audioUrl imageUrls:(NSArray<NSString *> *)imageUrls source:(AMLBurstSource *)source shareUrl:(NSString *)shareUrl keywords:(NSArray<NSString *> *)keywords ctaData:(AMLCtaData * _Nullable)ctaData adUrl:(NSString * _Nullable)adUrl __attribute__((swift_name("init(id:title:creationDate:duration:sourceName:category:playlistId:showName:streamUrl:audioUrl:imageUrls:source:shareUrl:keywords:ctaData:adUrl:)"))) __attribute__((objc_designated_initializer));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
 @property (readonly) NSString *audioUrl __attribute__((swift_name("audioUrl")));
 @property (readonly) NSString * _Nullable category __attribute__((swift_name("category")));
 @property (readonly) NSString *creationDate __attribute__((swift_name("creationDate")));
+@property (readonly) AMLCtaData * _Nullable ctaData __attribute__((swift_name("ctaData")));
 @property (readonly) AMLDuration *duration __attribute__((swift_name("duration")));
 @property (readonly) NSString *id __attribute__((swift_name("id")));
 @property (readonly) NSArray<NSString *> *imageUrls __attribute__((swift_name("imageUrls")));
@@ -222,6 +224,17 @@ __attribute__((swift_name("BurstSource")))
 @property (readonly) NSString *showName __attribute__((swift_name("showName")));
 @property (readonly) NSString *sourceName __attribute__((swift_name("sourceName")));
 @property (readonly) NSString * _Nullable sourceType __attribute__((swift_name("sourceType")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("CtaData")))
+@interface AMLCtaData : AMLBase
+- (instancetype)initWithButtonText:(NSString *)buttonText url:(NSString *)url __attribute__((swift_name("init(buttonText:url:)"))) __attribute__((objc_designated_initializer));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@property (readonly) NSString *buttonText __attribute__((swift_name("buttonText")));
+@property (readonly) NSString *url __attribute__((swift_name("url")));
 @end;
 
 __attribute__((objc_subclassing_restricted))
