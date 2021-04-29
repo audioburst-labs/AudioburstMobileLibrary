@@ -18,11 +18,14 @@ internal class HttpClientProvider(
                 accept(ContentType.Application.Json, ContentType.Application.OctetStream)
             }
             defaultRequest {
-                headers.append(SUBSCRIPTION_KEY_NAME, libraryConfigurationProvider.get().subscriptionKey.value)
+                val configuration = libraryConfigurationProvider.get()
+                headers.append(SUBSCRIPTION_KEY_NAME, configuration.subscriptionKey.value)
+                headers.append(VERSION_NUMBER_NAME, configuration.libraryVersion.value)
             }
         }
 
     companion object {
         private const val SUBSCRIPTION_KEY_NAME = "Ocp-Apim-Subscription-Key"
+        private const val VERSION_NUMBER_NAME = "Ocp-Apim-Version-Number"
     }
 }
