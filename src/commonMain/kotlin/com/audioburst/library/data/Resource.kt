@@ -26,6 +26,14 @@ internal inline infix fun <T> Resource<T>.onData(f: (T) -> Unit): Resource<T> = 
     is Resource.Error -> this
 }
 
+internal inline infix fun Resource<*>.onError(f: (ErrorType) -> Unit): Resource<*> = when (this) {
+    is Resource.Data -> this
+    is Resource.Error -> {
+        f(errorType)
+        this
+    }
+}
+
 internal fun <T> Resource<T>.result(): T? = when (this) {
     is Resource.Data -> result
     is Resource.Error -> null

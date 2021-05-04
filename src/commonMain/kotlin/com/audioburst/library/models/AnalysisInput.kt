@@ -13,7 +13,7 @@ internal fun AnalysisInput.currentEventPayload(burst: Burst? = null, isPlaying: 
     eventPayload(currentState, burst, isPlaying)
 
 internal fun AnalysisInput.eventPayload(playbackState: InternalPlaybackState, burst: Burst? = null, isPlaying: Boolean = true): EventPayload? {
-    if (burst != null && playlist.containsBurst(burst)) {
+    if (burst != null && !playlist.containsBurst(burst)) {
         return null
     }
     val currentBurst = burst ?: burstFromState(playbackState) ?: return null
@@ -31,7 +31,7 @@ internal fun AnalysisInput.eventPayload(playbackState: InternalPlaybackState, bu
     )
 }
 
-private fun Playlist.containsBurst(burst: Burst): Boolean = bursts.firstOrNull { it.id == burst.id } == null
+private fun Playlist.containsBurst(burst: Burst): Boolean = bursts.any { it.id == burst.id }
 
 internal fun AnalysisInput.lastState(): InternalPlaybackState? = previousStates.lastOrNull()
 

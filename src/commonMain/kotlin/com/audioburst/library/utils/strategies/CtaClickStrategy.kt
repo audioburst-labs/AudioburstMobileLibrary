@@ -14,7 +14,7 @@ internal class CtaClickStrategy {
         val burst = input.playlist.bursts.firstOrNull { it.id == burstId } ?: return null
         val ctaData = burst.ctaData ?: return null
         val lastState = input.lastState()
-        val isPlaying = if (lastState == null) false else (input.currentState.occurrenceTime - lastState.occurrenceTime <= THRESHOLD)
+        val isPlaying = lastState?.let { input.currentState.occurrenceTime - lastState.occurrenceTime <= PLAYING_THRESHOLD } ?: false
         val eventPayload = input.currentEventPayload(burst = burst, isPlaying = isPlaying) ?: return null
         return PlaybackEvent.CtaClick(
             eventPayload = eventPayload,
@@ -24,6 +24,6 @@ internal class CtaClickStrategy {
     }
 
     companion object {
-        private const val THRESHOLD = 2000L
+        private const val PLAYING_THRESHOLD = 2000L
     }
 }

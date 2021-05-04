@@ -1,6 +1,6 @@
 package com.audioburst.library.interactors
 
-import com.audioburst.library.data.Resource
+import com.audioburst.library.data.onError
 import com.audioburst.library.data.repository.UserRepository
 import com.audioburst.library.data.storage.ListenedBurstStorage
 import com.audioburst.library.data.storage.UnsentEventStorage
@@ -103,8 +103,7 @@ internal class PlaybackEventHandlerInteractor(
     }
 
     private suspend fun postEvent(playerEvent: PlayerEvent, eventName: String) {
-        val resource = userRepository.postEvent(playerEvent, eventName)
-        if (resource is Resource.Error) {
+        userRepository.postEvent(playerEvent, eventName).onError {
             unsentEventStorage.add(playerEvent)
         }
     }
