@@ -188,7 +188,7 @@ internal fun eventPayloadOf(
     playlistName = playlistName,
     burst = burst,
     isPlaying = isPlaying,
-    occurrenceTime = occurrenceTime,
+    occurrenceTime = occurrenceTime.toDouble().toDuration(DurationUnit.Milliseconds),
     currentPlayBackPosition = currentPlayBackPosition,
     playerSessionId = playerSessionId,
     advertisement = advertisement,

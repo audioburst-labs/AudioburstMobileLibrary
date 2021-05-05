@@ -72,7 +72,7 @@ internal class PlaybackEventHandlerInteractor(
             PlayerEvent(
                 userId = userId,
                 libraryConfiguration = libraryConfiguration,
-                time = timestampProvider.currentTimeMillis(),
+                time = timestampProvider.timeSince1970().milliseconds.toLong(),
             ),
             generalEvent.actionName,
         )
@@ -126,7 +126,7 @@ internal class PlaybackEventHandlerInteractor(
             playlistId = playlistId,
             userId = userId,
             libraryConfiguration = libraryConfiguration,
-            time = occurrenceTime,
+            time = occurrenceTime.milliseconds.toLong(),
             playlistName = playlistName,
             pageViewId = playerSessionId.value,
             advertisementEvent = advertisementEvent,

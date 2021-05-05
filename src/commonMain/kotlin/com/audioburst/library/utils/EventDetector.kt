@@ -106,7 +106,7 @@ internal class StrategyBasedEventDetector(
         val state = InternalPlaybackState(
             url = playbackState.url,
             position = playbackState.positionMillis.toDouble().toDuration(DurationUnit.Milliseconds),
-            occurrenceTime = timestampProvider.currentTimeMillis()
+            occurrenceTime = timestampProvider.timeSince1970()
         )
         return AnalysisInput(
             playlist = playlist,

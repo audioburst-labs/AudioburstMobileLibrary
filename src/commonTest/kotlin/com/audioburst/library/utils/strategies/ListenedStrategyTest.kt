@@ -116,7 +116,7 @@ class ListenedStrategyTest {
                 2.0.toDuration(DurationUnit.Seconds)
             ),
         )
-        val now = PlatformTimestampProvider.currentTimeMillis()
+        val now = PlatformTimestampProvider.timeSince1970()
 
         // WHEN
         val events = listOf(
@@ -127,7 +127,7 @@ class ListenedStrategyTest {
                 currentState = playbackStateOf(
                     url = url,
                     position = position,
-                    occurrenceTime = now + (position * 1000).toLong()
+                    occurrenceTime = (now + position.toDuration(DurationUnit.Seconds)).milliseconds.toLong()
                 ),
                 playlist = playlist,
                 previousStates = previousStates,
@@ -137,9 +137,6 @@ class ListenedStrategyTest {
             }
         }
 
-        events.forEach {
-            println(it.actionName)
-        }
         // THEN
         assertTrue(events.filterIsInstance<PlaybackEvent.TwoSecPlaying>().isNotEmpty())
         assertTrue(events.filterIsInstance<PlaybackEvent.BurstListened>().isNotEmpty())

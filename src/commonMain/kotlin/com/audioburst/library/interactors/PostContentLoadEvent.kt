@@ -17,7 +17,7 @@ internal class PostContentLoadEvent(
         coroutineScope {
             launch {
                 playlist.toEventPayload(
-                    occurrenceTime = timestampProvider.currentTimeMillis()
+                    occurrenceTime = timestampProvider.timeSince1970()
                 )?.let(PlaybackEvent::ContentLoaded)?.let { playbackEventHandler.handle(it) }
             }
         }
@@ -27,7 +27,7 @@ internal class PostContentLoadEvent(
 private fun Playlist.toEventPayload(
     isPlaying: Boolean = false,
     currentPlayBackPosition: Duration = 0.0.toDuration(DurationUnit.Seconds),
-    occurrenceTime: Long,
+    occurrenceTime: Duration,
 ): EventPayload? {
     val burst = bursts.firstOrNull() ?: return null
     return EventPayload(

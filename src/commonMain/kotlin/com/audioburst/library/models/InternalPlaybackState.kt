@@ -31,5 +31,5 @@ class PlaybackState(
 internal data class InternalPlaybackState(
     val url: String,
     val position: Duration,
-    val occurrenceTime: Long,
+    val occurrenceTime: Duration,
 )

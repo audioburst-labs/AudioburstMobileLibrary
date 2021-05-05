@@ -304,7 +304,7 @@ private fun List<Duration>.toInputs(timeBetween: Duration, inputCreator: (Int) -
                 copy(
                     currentState = currentState.copy(
                         position = stateTime.current,
-                        occurrenceTime = timeBetween.milliseconds.toLong(),
+                        occurrenceTime = timeBetween,
                     ),
                     previousStates = FixedSizeQueue<InternalPlaybackState>(previousStates.size).apply {
                         addAll(
@@ -312,7 +312,7 @@ private fun List<Duration>.toInputs(timeBetween: Duration, inputCreator: (Int) -
                                 previousStates.map {
                                     it.copy(
                                         position = previousPosition,
-                                        occurrenceTime = 0
+                                        occurrenceTime = 0.0.toDuration(DurationUnit.Milliseconds)
                                     )
                                 }
                             } ?: emptyList()

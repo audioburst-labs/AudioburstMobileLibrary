@@ -1,11 +1,8 @@
 package com.audioburst.library.utils
 
 import co.touchlab.stately.collections.IsoMutableList
-import com.audioburst.library.models.EventPayload
-import com.audioburst.library.models.InternalPlaybackState
-import com.audioburst.library.models.AnalysisInput
+import com.audioburst.library.models.*
 import com.audioburst.library.models.eventPayload
-import com.audioburst.library.models.lastState
 
 internal fun interface PlaybackPeriodsCreator {
     fun check(input: AnalysisInput): List<Result>
@@ -56,7 +53,7 @@ internal class InputBasedPlaybackPeriodsCreator : PlaybackPeriodsCreator {
         }.filterNotNull()
 
     private fun timeLeftInPrevious(newState: InternalPlaybackState, previousState: InternalPlaybackState): Long =
-        newState.occurrenceTime - previousState.occurrenceTime - newState.positionMilliseconds
+        (newState.occurrenceTime - previousState.occurrenceTime - newState.position).milliseconds.toLong()
 
     private fun isValid(newState: InternalPlaybackState, previousState: InternalPlaybackState): Boolean =
         !isSeekBack(newState, previousState) && !isSeekForward(newState, previousState)
@@ -68,7 +65,7 @@ internal class InputBasedPlaybackPeriodsCreator : PlaybackPeriodsCreator {
         newState.positionMilliseconds < previousState.positionMilliseconds
 
     private fun isSeekForward(newState: InternalPlaybackState, previousState: InternalPlaybackState): Boolean =
-        newState.positionMilliseconds > previousState.positionMilliseconds + newState.occurrenceTime - previousState.occurrenceTime + TIME_DIFFERENCE_THRESHOLD_MS
+        newState.positionMilliseconds > (previousState.position + newState.occurrenceTime - previousState.occurrenceTime + TIME_DIFFERENCE_THRESHOLD_MS).milliseconds
 
     private fun AnalysisInput.toResult(playbackState: InternalPlaybackState): PlaybackPeriodsCreator.Result? =
         eventPayload(playbackState)?.let {
@@ -79,7 +76,7 @@ internal class InputBasedPlaybackPeriodsCreator : PlaybackPeriodsCreator {
         }
 
     companion object {
-        private const val TIME_DIFFERENCE_THRESHOLD_MS = 50
+        private val TIME_DIFFERENCE_THRESHOLD_MS = 50.0.toDuration(DurationUnit.Milliseconds)
     }
 }
 

@@ -12,5 +12,5 @@ internal fun playbackStateOf(
     InternalPlaybackState(
         url = url,
         position = position.toDuration(DurationUnit.Seconds),
-        occurrenceTime = occurrenceTime,
+        occurrenceTime = occurrenceTime.toDouble().toDuration(DurationUnit.Milliseconds),
     )

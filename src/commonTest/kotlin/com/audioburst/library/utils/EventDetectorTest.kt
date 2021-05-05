@@ -131,7 +131,7 @@ internal fun strategyOf(playbackEvent: PlaybackEvent = PlaybackEvent.Skip(eventP
     PlaybackEventStrategy { playbackEvent }
 
 internal fun timestampProviderOf(timestamp: Long = 0): TimestampProvider =
-    TimestampProvider { timestamp }
+    TimestampProvider { timestamp.toDouble().toDuration(DurationUnit.Milliseconds) }
 
 internal fun appDispatchersOf(dispatcher: CoroutineDispatcher = Dispatchers.Unconfined): AppDispatchers =
     AppDispatchers(
