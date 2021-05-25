@@ -77,6 +77,16 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
         delegate.getPersonalPlaylist()
 
     /**
+     * You can use this function to pass search query and search for [Burst]s.
+     *
+     * Returns [Result.Data] when it was possible to get requested resource. When the API returned an empty list of [Burst]s
+     * you will get [LibraryError.NoSearchResults]. In case there was a problem getting it [Result.Error] will be returned
+     * with a proper error ([LibraryError]).
+     */
+    suspend fun search(query: String): Result<Playlist> =
+        delegate.search(query)
+
+    /**
      * Use this function to get information about user's [UserPreferences].
      *
      * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it

@@ -55,7 +55,8 @@ enum class LibraryError(val message: String) {
     Unexpected(Strings.errorUnexpected),
     WrongApplicationKey(Strings.errorWrongApplicationKey),
     AdUrlNotFound(Strings.errorAdUrlNotFound),
-    NoKeysSelected(Strings.errorNoKeysSelected)
+    NoKeysSelected(Strings.errorNoKeysSelected),
+    NoSearchResults(Strings.errorNoSearchResults),
 }
 
 inline fun <T, U> Result<T>.map(f: (T) -> U): Result<U> = when (this) {

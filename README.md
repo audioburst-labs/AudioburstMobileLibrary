@@ -91,6 +91,18 @@ audioburstLibrary.getPlaylist(playlistItem)
     }
 ```
 
+## Search for a query
+The Library exposes an ability to search for a text query. The response will either be a `Playlist` with the list of `Bursts` found OR a `NoSearchResults` error.  
+```kotlin
+audioburstLibrary.search(query)
+    .onData { playlist ->
+        // Build your playback queue by using list of Bursts
+    }
+    .onError { error -> 
+        // Handle error
+    }
+```
+
 ## Get advertisement url
 You can also play advertisements before playlist items (bursts.)
 To do so, check if a specific `Burst` has an ad by calling `Burst.isAdAvailable`. 
@@ -313,6 +325,16 @@ audioburstLibrary.getPlaylists { playlists in
 ## Get playlist information
 ```swift
 audioburstLibrary.getPlaylist(playlistInfo: playlistInfo) { playlist in
+    // Build your playback queue by using list of Bursts
+} onError: { errorType in
+    // Handle error
+}
+```
+
+## Search for a query
+The Library exposes an ability to search for a text query. The response will either be a `Playlist` with the list of `Bursts` found OR a `NoSearchResults` error.
+```swift
+audioburstLibrary.search(query: query) { playlist in
     // Build your playback queue by using list of Bursts
 } onError: { errorType in
     // Handle error

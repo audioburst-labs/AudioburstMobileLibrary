@@ -232,6 +232,8 @@ internal class MockUserRepository(
 
     override suspend fun getPlaylist(userId: String, byteArray: ByteArray): Resource<Playlist> = returns.getPlaylistByByteArray
 
+    override suspend fun search(userId: String, query: String): Resource<Playlist> = returns.search
+
     override suspend fun postEvent(playerEvent: PlayerEvent, name: String): Resource<Unit> = returns.postPlayerEvent.apply {
         sentEvents.add(SentEvent(name, playerEvent))
     }
@@ -248,6 +250,7 @@ internal class MockUserRepository(
         val getPlaylists: Resource<List<PlaylistInfo>> = Resource.Data(listOf()),
         val getPlaylistByPlaylistInfo: Resource<Playlist> = Resource.Data(playlistOf()),
         val getPlaylistByByteArray: Resource<Playlist> = Resource.Data(playlistOf()),
+        val search: Resource<Playlist> = Resource.Data(playlistOf()),
         val postPlayerEvent: Resource<Unit> = Resource.Data(Unit),
         val postReportingData: Resource<Unit> = Resource.Data(Unit),
         val postBurstPlayback: Resource<Unit> = Resource.Data(Unit),

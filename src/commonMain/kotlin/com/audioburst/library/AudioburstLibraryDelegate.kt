@@ -26,6 +26,7 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
     internal lateinit var updateUserId: UpdateUserId
     internal lateinit var getPlaylist: GetPlaylist
     internal lateinit var getAdUrl: GetAdUrl
+    internal lateinit var search: Search
     internal lateinit var scope: CoroutineScope
 
     init {
@@ -120,6 +121,20 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
                     .onError { onError(it) }
             }
             .launchIn(scope)
+    }
+
+    suspend fun search(query: String): Result<Playlist> {
+        Logger.i("search")
+        return search.invoke(query)
+    }
+
+    fun search(query: String, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
+        Logger.i("search")
+        scope.launch {
+            search.invoke(query)
+                .onData { onData(it) }
+                .onError { onError(it) }
+        }
     }
 
     suspend fun getUserPreferences(): Result<UserPreferences> {

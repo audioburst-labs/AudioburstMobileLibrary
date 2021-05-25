@@ -80,6 +80,17 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
     }
 
     /**
+     * You can use this function to pass search query and search for [Burst]s.
+     *
+     * Returns [Result.Data] when it was possible to get requested resource. When the API returned an empty list of [Burst]s
+     * you will get [LibraryError.NoSearchResults]. In case there was a problem getting it [Result.Error] will be returned
+     * with a proper error ([LibraryError]).
+     */
+    fun search(query: String, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
+        delegate.search(query, onData, onError)
+    }
+
+    /**
      * Use this function to get information about user's [UserPreferences].
      *
      * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it

@@ -94,6 +94,16 @@ internal class AudioburstV2Api(private val json: Json) {
             body = Endpoint.Body.Bytes(byteArray),
         )
 
+    fun search(query: String, userId: String): Endpoint =
+        endpoint(
+            path = "search/keyword",
+            queryParams = mapOf(
+                "q" to query,
+                "userId" to userId,
+            ),
+            method = Endpoint.Method.GET,
+        )
+
     companion object {
         private const val BASE_URL = "sapi.audioburst.com/v2"
     }

@@ -198,6 +198,14 @@ internal object Injector {
             userStorage = userStorageProvider.get(),
         )
     }
+    private val searchProvider: Provider<Search> = provider {
+        Search(
+            getUser = getUserProvider.get(),
+            userRepository = userRepositoryProvider.get(),
+            postContentLoadEvent = postContentLoadEventProvider.get(),
+            playlistStorage = playlistStorageProvider.get(),
+        )
+    }
     private val getAdDataProvider: Provider<GetAdUrl> = provider {
         GetAdUrl(
             userRepository = userRepositoryProvider.get(),
@@ -328,6 +336,7 @@ internal object Injector {
             updateUserId = updateUserIdProvider.get()
             getPlaylist = getPlaylistProvider.get()
             getAdUrl = getAdDataProvider.get()
+            search = searchProvider.get()
             scope = libraryScopeProvider.get()
         }
     }

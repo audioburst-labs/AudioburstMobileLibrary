@@ -12,4 +12,6 @@ internal object Strings {
     const val errorAdUrlNotFound = "This Burst doesn't have Advertisement URL. Please call Burst.isAdAvailable to check whether Burst have advertisement or not"
 
     const val errorNoKeysSelected = "To be able to request personal playlist, you need to select at least one topic before."
+
+    const val errorNoSearchResults = "No Bursts found for the query."
 }
