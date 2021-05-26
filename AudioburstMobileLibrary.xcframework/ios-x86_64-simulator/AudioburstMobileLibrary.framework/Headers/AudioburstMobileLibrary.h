@@ -174,6 +174,7 @@ __attribute__((swift_name("AudioburstLibrary")))
 - (void)getPlaylistsOnData:(void (^)(NSArray<AMLPlaylistInfo *> *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPlaylists(onData:onError:)")));
 - (void)getUserPreferencesOnData:(void (^)(AMLUserPreferences *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getUserPreferences(onData:onError:)")));
 - (void)removePlaybackStateListenerListener:(id<AMLPlaybackStateListener>)listener __attribute__((swift_name("removePlaybackStateListener(listener:)")));
+- (void)searchQuery:(NSString *)query onData:(void (^)(AMLPlaylist *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("search(query:onData:onError:)")));
 - (void)setAudioburstUserIDUserId:(NSString *)userId onData:(void (^)(AMLBoolean *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("setAudioburstUserID(userId:onData:onError:)")));
 - (void)setPlaybackStateListenerListener:(id<AMLPlaybackStateListener>)listener __attribute__((swift_name("setPlaybackStateListener(listener:)")));
 - (void)setUserPreferencesUserPreferences:(AMLUserPreferences *)userPreferences onData:(void (^)(AMLUserPreferences *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("setUserPreferences(userPreferences:onData:onError:)")));
@@ -333,6 +334,7 @@ __attribute__((swift_name("LibraryError")))
 @property (class, readonly) AMLLibraryError *wrongapplicationkey __attribute__((swift_name("wrongapplicationkey")));
 @property (class, readonly) AMLLibraryError *adurlnotfound __attribute__((swift_name("adurlnotfound")));
 @property (class, readonly) AMLLibraryError *nokeysselected __attribute__((swift_name("nokeysselected")));
+@property (class, readonly) AMLLibraryError *nosearchresults __attribute__((swift_name("nosearchresults")));
 + (AMLKotlinArray<AMLLibraryError *> *)values __attribute__((swift_name("values()")));
 @property (readonly) NSString *message __attribute__((swift_name("message")));
 @end;
@@ -379,6 +381,7 @@ __attribute__((swift_name("PlayerAction.Type_")))
 @property (class, readonly) AMLPlayerActionType *personalized __attribute__((swift_name("personalized")));
 @property (class, readonly) AMLPlayerActionType *channel __attribute__((swift_name("channel")));
 @property (class, readonly) AMLPlayerActionType *voice __attribute__((swift_name("voice")));
+@property (class, readonly) AMLPlayerActionType *search __attribute__((swift_name("search")));
 + (AMLKotlinArray<AMLPlayerActionType *> *)values __attribute__((swift_name("values()")));
 @property (readonly) NSString *id __attribute__((swift_name("id")));
 @end;
