@@ -55,14 +55,12 @@ internal class StrategyBasedEventDetector(
         startTimers()
         val eventPayload = currentEventPayload(isPlaying = true) ?: return
         handle(PlaybackEvent.Play(eventPayload))
-        requestNewState()
     }
 
     override fun stop() {
         stopTimers()
         val eventPayload = currentEventPayload(isPlaying = false) ?: return
         handle(PlaybackEvent.Pause(eventPayload))
-        requestNewState()
     }
 
     override fun ctaButtonClick(burstId: String) {
