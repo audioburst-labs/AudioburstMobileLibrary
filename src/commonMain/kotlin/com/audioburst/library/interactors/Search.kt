@@ -7,6 +7,7 @@ import com.audioburst.library.data.storage.PlaylistStorage
 import com.audioburst.library.models.LibraryError
 import com.audioburst.library.models.Playlist
 import com.audioburst.library.models.Result
+import com.audioburst.library.models.User
 
 internal class Search(
     private val getUser: GetUser,
@@ -15,9 +16,15 @@ internal class Search(
     private val playlistStorage: PlaylistStorage,
 ) {
 
+    suspend operator fun invoke(byteArray: ByteArray): Result<Playlist> =
+        getPlaylist { userRepository.getPlaylist(userId = it.userId, byteArray = byteArray) }
+
     suspend operator fun invoke(query: String): Result<Playlist> =
+        getPlaylist { userRepository.search(userId = it.userId, query = query) }
+
+    private suspend fun getPlaylist(getPlaylistCall: suspend (User) -> Resource<Playlist>): Result<Playlist> =
         when (val getUserResult = getUser()) {
-            is Resource.Data -> when (val resource = userRepository.search(userId = getUserResult.result.userId, query = query)) {
+            is Resource.Data -> when (val resource = getPlaylistCall(getUserResult.result)) {
                 is Resource.Data -> {
                     if (resource.result.bursts.isNotEmpty()) {
                         postContentLoadEvent(resource.result)

@@ -17,13 +17,17 @@ class SearchTest {
     private lateinit var playlistStorage: InMemoryPlaylistStorage
     private fun interactor(
         search: Resource<Playlist> = Resource.Data(playlistOf()),
+        getPlaylistByByteArray: Resource<Playlist> = Resource.Data(playlistOf()),
         userResource: Resource<User>,
         postContentLoadEvent: PostContentLoadEvent = postContentLoadEventOf(),
     ): Search =
         Search(
             getUser = getUserOf(userResource),
             userRepository = userRepositoryOf(
-                returns = MockUserRepository.Returns(search = search)
+                returns = MockUserRepository.Returns(
+                    search = search,
+                    getPlaylistByByteArray = getPlaylistByByteArray,
+                )
             ),
             postContentLoadEvent = postContentLoadEvent,
             playlistStorage = playlistStorage,
@@ -52,6 +56,23 @@ class SearchTest {
     }
 
     @Test
+    fun testIfResultDataIsReturnedWhenSearchWithByteArrayReturnsPlaylistWithAtLeastOneBurst() = runTest {
+        // GIVEN
+        val getPlaylistReturn = Resource.Data(playlistOf(bursts = listOf(burstOf())))
+        val userResource = Resource.Data(userOf())
+
+        // WHEN
+        val resource = interactor(
+            getPlaylistByByteArray = getPlaylistReturn,
+            userResource = userResource,
+        )(byteArrayOf())
+
+        // THEN
+        assertTrue(resource is Result.Data)
+        assertTrue(playlistStorage.currentPlaylist != null)
+    }
+
+    @Test
     fun testIfNoSearchResultsIsReturnedWhenSearchReturnsPlaylistWithoutBursts() = runTest {
         // GIVEN
         val getPlaylistReturn = Resource.Data(playlistOf())
@@ -70,6 +91,24 @@ class SearchTest {
     }
 
     @Test
+    fun testIfNoSearchResultsIsReturnedWhenSearchWithByteArrayReturnsPlaylistWithoutBursts() = runTest {
+        // GIVEN
+        val getPlaylistReturn = Resource.Data(playlistOf())
+        val userResource = Resource.Data(userOf())
+
+        // WHEN
+        val resource = interactor(
+            getPlaylistByByteArray = getPlaylistReturn,
+            userResource = userResource,
+        )(byteArrayOf())
+
+        // THEN
+        require(resource is Result.Error)
+        assertEquals(LibraryError.NoSearchResults, resource.error)
+        assertTrue(playlistStorage.currentPlaylist == null)
+    }
+
+    @Test
     fun testIfGetUserReturnsErrorThenErrorIsReturnedSearchIsCalled() = runTest {
         // GIVEN
         val getPlaylistReturn = Resource.Data(playlistOf())
@@ -77,9 +116,26 @@ class SearchTest {
 
         // WHEN
         val resource = interactor(
-            search = getPlaylistReturn,
+            getPlaylistByByteArray = getPlaylistReturn,
             userResource = userResource,
         )(query = "")
+
+        // THEN
+        assertTrue(resource is Result.Error)
+        assertTrue(playlistStorage.currentPlaylist == null)
+    }
+
+    @Test
+    fun testIfGetUserReturnsErrorThenErrorIsReturnedSearchWithByteArrayIsCalled() = runTest {
+        // GIVEN
+        val getPlaylistReturn = Resource.Data(playlistOf())
+        val userResource = resourceErrorOf()
+
+        // WHEN
+        val resource = interactor(
+            getPlaylistByByteArray = getPlaylistReturn,
+            userResource = userResource,
+        )(byteArrayOf())
 
         // THEN
         assertTrue(resource is Result.Error)
@@ -94,9 +150,26 @@ class SearchTest {
 
         // WHEN
         val resource = interactor(
-            search = getPlaylistReturn,
+            getPlaylistByByteArray = getPlaylistReturn,
             userResource = userResource,
         )(query = "")
+
+        // THEN
+        assertTrue(resource is Result.Error)
+        assertTrue(playlistStorage.currentPlaylist == null)
+    }
+
+    @Test
+    fun testIfGetUserReturnsUserAndSearchWithByteArrayReturnsErrorThenErrorIsReturned() = runTest {
+        // GIVEN
+        val getPlaylistReturn = resourceErrorOf()
+        val userResource = Resource.Data(userOf())
+
+        // WHEN
+        val resource = interactor(
+            getPlaylistByByteArray = getPlaylistReturn,
+            userResource = userResource,
+        )(byteArrayOf())
 
         // THEN
         assertTrue(resource is Result.Error)
@@ -118,6 +191,26 @@ class SearchTest {
                 playbackEventHandler = playbackEventHandler
             )
         )(query = "")
+
+        // THEN
+        assertTrue(playbackEventHandler.sentEvents.isNotEmpty())
+    }
+
+    @Test
+    fun testIfContentLoadEventIsGettingSentWhenSearchWithByteArrayIsSuccessful() = runTest {
+        // GIVEN
+        val getPlaylistReturn = Resource.Data(playlistOf(bursts = listOf(burstOf())))
+        val userResource = Resource.Data(userOf())
+        val playbackEventHandler = MemorablePlaybackEventHandler()
+
+        // WHEN
+        interactor(
+            getPlaylistByByteArray = getPlaylistReturn,
+            userResource = userResource,
+            postContentLoadEvent = postContentLoadEventOf(
+                playbackEventHandler = playbackEventHandler
+            )
+        )(byteArrayOf())
 
         // THEN
         assertTrue(playbackEventHandler.sentEvents.isNotEmpty())

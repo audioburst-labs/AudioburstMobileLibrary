@@ -19,7 +19,6 @@ class GetPlaylistTest {
     private val playlistStorage = InMemoryPlaylistStorage()
     private fun interactor(
         getPlaylistByPlaylistInfo: Resource<Playlist> = Resource.Data(playlistOf()),
-        getPlaylistByByteArray: Resource<Playlist> = Resource.Data(playlistOf()),
         userResource: Resource<User>,
         postContentLoadEvent: PostContentLoadEvent = postContentLoadEventOf(),
         listenedBurstStorage: ListenedBurstStorage = listenedBurstsStorageOf(),
@@ -28,10 +27,7 @@ class GetPlaylistTest {
         GetPlaylist(
             getUser = getUserOf(userResource),
             userRepository = userRepositoryOf(
-                returns = MockUserRepository.Returns(
-                    getPlaylistByPlaylistInfo = getPlaylistByPlaylistInfo,
-                    getPlaylistByByteArray = getPlaylistByByteArray,
-                )
+                returns = MockUserRepository.Returns(getPlaylistByPlaylistInfo = getPlaylistByPlaylistInfo)
             ),
             postContentLoadEvent = postContentLoadEvent,
             playlistStorage = playlistStorage,
@@ -62,23 +58,6 @@ class GetPlaylistTest {
     }
 
     @Test
-    fun testIfResultDataIsReturnedWhenGetPlaylistWithByteArrayReturnsThat() = runTest {
-        // GIVEN
-        val getPlaylistReturn = Resource.Data(playlistOf())
-        val userResource = Resource.Data(userOf())
-
-        // WHEN
-        val resource = interactor(
-            getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
-        )(byteArrayOf())
-
-        // THEN
-        assertTrue(resource is Result.Data)
-        assertTrue(playlistStorage.currentPlaylist != null)
-    }
-
-    @Test
     fun testIfGetUserReturnsErrorThenErrorIsReturnedGetPlaylistWithPlaylistInfoIsCalled() = runTest {
         // GIVEN
         val getPlaylistReturn = Resource.Data(playlistOf())
@@ -95,22 +74,6 @@ class GetPlaylistTest {
     }
 
     @Test
-    fun testIfGetUserReturnsErrorThenErrorIsReturnedGetPlaylistWithByteArrayIsCalled() = runTest {
-        // GIVEN
-        val getPlaylistReturn = Resource.Data(playlistOf())
-        val userResource = resourceErrorOf()
-
-        // WHEN
-        val resource = interactor(
-            getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
-        )(byteArrayOf())
-
-        // THEN
-        assertTrue(resource is Result.Error)
-    }
-
-    @Test
     fun testIfGetUserReturnsUserAndUserRepositoryGetPlaylistWithPlaylistTypeReturnsErrorThenErrorIsReturned() = runTest {
         // GIVEN
         val getPlaylistReturn = resourceErrorOf()
@@ -121,22 +84,6 @@ class GetPlaylistTest {
             getPlaylistByPlaylistInfo = getPlaylistReturn,
             userResource = userResource,
         )(playlistInfoOf())
-
-        // THEN
-        assertTrue(resource is Result.Error)
-    }
-
-    @Test
-    fun testIfGetUserReturnsUserAndUserRepositoryGetPlaylistWithByteArrayReturnsErrorThenErrorIsReturned() = runTest {
-        // GIVEN
-        val getPlaylistReturn = resourceErrorOf()
-        val userResource = Resource.Data(userOf())
-
-        // WHEN
-        val resource = interactor(
-            getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
-        )(byteArrayOf())
 
         // THEN
         assertTrue(resource is Result.Error)
@@ -163,33 +110,7 @@ class GetPlaylistTest {
     }
 
     @Test
-    fun testIfContentLoadEventIsGettingSentWhenGetPlaylistWithByteArrayIsSuccessful() = runTest {
-        // GIVEN
-        val getPlaylistReturn = Resource.Data(playlistOf(bursts = listOf(burstOf())))
-        val userResource = Resource.Data(userOf())
-        val playbackEventHandler = MemorablePlaybackEventHandler()
-
-        // WHEN
-        interactor(
-            getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
-            postContentLoadEvent = postContentLoadEventOf(
-                playbackEventHandler = playbackEventHandler
-            )
-        )(byteArrayOf())
-
-        // THEN
-        assertTrue(playbackEventHandler.sentEvents.isNotEmpty())
-    }
-
-    private fun testBurstFiltering(
-        isFilteringApplied: Boolean,
-        interactorCall: suspend (
-            getPlaylistReturn: Resource<Playlist>,
-            userResource: Resource<User>,
-            listenedBurstStorage: ListenedBurstStorage
-        ) -> Result<Playlist>
-    ) = runTest {
+    fun testIfBurstsAreGettingFilteredAccordingToWhatAlreadyHasBeenListenedToWhenRequestingPlaylistByPlaylistInfo() = runTest {
         // GIVEN
         val listenedBurstIds = listOf("id1", "id2", "id3")
         val notListenedBurstId = "id4"
@@ -203,63 +124,69 @@ class GetPlaylistTest {
         )
 
         // WHEN
-        val resource = interactorCall(getPlaylistReturn, userResource, listenedBurstStorage)
+        val resource = interactor(
+            getPlaylistByPlaylistInfo = getPlaylistReturn,
+            userResource = userResource,
+            listenedBurstStorage = listenedBurstStorage,
+            userStorage = userStorageOf(filterListenedBursts = true)
+        )(playlistInfoOf())
 
         // THEN
         assertTrue(resource is Result.Data)
-        if (isFilteringApplied) {
-            assertTrue(resource.value.bursts.size == 1)
-            assertEquals(notListenedBurstId, resource.value.bursts.first().id)
-        } else {
-            assertEquals(getPlaylistReturn.result.bursts.size, resource.value.bursts.size)
-        }
+        assertTrue(resource.value.bursts.size == 1)
+        assertEquals(notListenedBurstId, resource.value.bursts.first().id)
     }
 
     @Test
-    fun testIfBurstsAreGettingFilteredAccordingToWhatAlreadyHasBeenListenedToWhenRequestingPlaylistByPlaylistInfo() {
-        testBurstFiltering(isFilteringApplied = true) { getPlaylistByPlaylistInfo, userResource, listenedBurstStorage ->
-            interactor(
-                getPlaylistByPlaylistInfo = getPlaylistByPlaylistInfo,
-                userResource = userResource,
-                listenedBurstStorage = listenedBurstStorage,
-                userStorage = userStorageOf(filterListenedBursts = true)
-            )(playlistInfoOf())
-        }
+    fun testIfBurstsAreNotGettingFilteredAccordingToWhatAlreadyHasBeenListenedToWhenRequestingPlaylistByPlaylistInfoWhenFilterListenedBurstsIsFalse() = runTest {
+        // GIVEN
+        val listenedBurstIds = listOf("id1", "id2", "id3")
+        val notListenedBurstId = "id4"
+        val getPlaylistReturn = Resource.Data(
+            playlistOf(bursts = (listenedBurstIds + listOf(notListenedBurstId)).map { burstOf(id = it) })
+        )
+        val listenedBursts = listenedBurstIds.map { listenedBurstOf(id = it) }
+        val userResource = Resource.Data(userOf())
+        val listenedBurstStorage = listenedBurstsStorageOf(
+            getAll = listenedBursts,
+        )
+
+        // WHEN
+        val resource = interactor(
+            getPlaylistByPlaylistInfo = getPlaylistReturn,
+            userResource = userResource,
+            listenedBurstStorage = listenedBurstStorage,
+            userStorage = userStorageOf(filterListenedBursts = false)
+        )(playlistInfoOf())
+
+        // THEN
+        assertTrue(resource is Result.Data)
+        assertEquals(getPlaylistReturn.result.bursts.size, resource.value.bursts.size)
     }
 
     @Test
-    fun testIfBurstsAreNotGettingFilteredAccordingToWhatAlreadyHasBeenListenedToWhenRequestingPlaylistByPlaylistInfoWhenFilterListenedBurstsIsFalse() {
-        testBurstFiltering(isFilteringApplied = false) { getPlaylistByPlaylistInfo, userResource, listenedBurstStorage ->
-            interactor(
-                getPlaylistByPlaylistInfo = getPlaylistByPlaylistInfo,
-                userResource = userResource,
-                listenedBurstStorage = listenedBurstStorage,
-                userStorage = userStorageOf(filterListenedBursts = false)
-            )(playlistInfoOf())
-        }
-    }
+    fun testIfTwoFirstBurstsAreReturnedEvenThoughAllBurstsHasBeenAlreadyListenedTo() = runTest {
+        // GIVEN
+        val listenedBurstIds = listOf("id1", "id2", "id3")
+        val getPlaylistReturn = Resource.Data(
+            playlistOf(bursts = (listenedBurstIds).map { burstOf(id = it) })
+        )
+        val listenedBursts = listenedBurstIds.map { listenedBurstOf(id = it) }
+        val userResource = Resource.Data(userOf())
+        val listenedBurstStorage = listenedBurstsStorageOf(getAll = listenedBursts)
 
-    @Test
-    fun testIfBurstsAreGettingFilteredAccordingToWhatAlreadyHasBeenListenedToWhenRequestingPlaylistByByteArray() {
-        testBurstFiltering(isFilteringApplied = true) { getPlaylistByPlaylistInfo, userResource, listenedBurstStorage ->
-            interactor(
-                getPlaylistByByteArray = getPlaylistByPlaylistInfo,
-                userResource = userResource,
-                listenedBurstStorage = listenedBurstStorage,
-                userStorage = userStorageOf(filterListenedBursts = true)
-            )(byteArrayOf())
-        }
-    }
+        // WHEN
+        val resource = interactor(
+            getPlaylistByPlaylistInfo = getPlaylistReturn,
+            userResource = userResource,
+            listenedBurstStorage = listenedBurstStorage,
+            userStorage = userStorageOf(filterListenedBursts = true)
+        )(playlistInfoOf())
 
-    @Test
-    fun testIfBurstsAreNotGettingFilteredAccordingToWhatAlreadyHasBeenListenedToWhenRequestingPlaylistByByteArrayWhenFilterListenedBurstsIsFalse() {
-        testBurstFiltering(isFilteringApplied = false) { getPlaylistByPlaylistInfo, userResource, listenedBurstStorage ->
-            interactor(
-                getPlaylistByByteArray = getPlaylistByPlaylistInfo,
-                userResource = userResource,
-                listenedBurstStorage = listenedBurstStorage,
-                userStorage = userStorageOf(filterListenedBursts = false)
-            )(byteArrayOf())
-        }
+        // THEN
+        assertTrue(resource is Result.Data)
+        assertEquals(expected = 2, resource.value.bursts.size)
+        assertEquals(getPlaylistReturn.result.bursts[0], resource.value.bursts[0])
+        assertEquals(getPlaylistReturn.result.bursts[1], resource.value.bursts[1])
     }
 }

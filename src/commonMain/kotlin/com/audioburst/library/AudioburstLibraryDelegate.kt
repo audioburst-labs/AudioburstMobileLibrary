@@ -72,7 +72,7 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
 
     suspend fun getPlaylist(byteArray: ByteArray): Result<Playlist> {
         Logger.i("getPlaylist")
-        return getPlaylist.invoke(byteArray)
+        return search.invoke(byteArray)
     }
 
     fun getPlaylist(playlistInfo: PlaylistInfo, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
@@ -87,7 +87,7 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
     fun getPlaylist(byteArray: ByteArray, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
         Logger.i("getPlaylist")
         scope.launch {
-            getPlaylist.invoke(byteArray)
+            search.invoke(byteArray)
                 .onData { onData(it) }
                 .onError { onError(it) }
         }

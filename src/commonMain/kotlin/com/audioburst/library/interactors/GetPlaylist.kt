@@ -22,9 +22,6 @@ internal class GetPlaylist(
     suspend operator fun invoke(playlistInfo: PlaylistInfo): Result<Playlist> =
         getPlaylist { userRepository.getPlaylist(it.userId, playlistInfo) }
 
-    suspend operator fun invoke(byteArray: ByteArray): Result<Playlist> =
-        getPlaylist { userRepository.getPlaylist(it.userId, byteArray) }
-
     private suspend fun getPlaylist(getPlaylistCall: suspend (User) -> Resource<Playlist>): Result<Playlist> =
         getUser().then { user ->
             getPlaylistCall(user).onData {
@@ -36,13 +33,25 @@ internal class GetPlaylist(
         if (userStorage.filterListenedBursts) {
             map { playlist ->
                 val listenedBursts = listenedBurstStorage.getRecentlyListened().map { it.id }
+                println("listenedBursts: ${listenedBursts.joinToString { it }}")
                 if (listenedBursts.isEmpty()) {
                     playlist
                 } else {
-                    playlist.copy(playlist.bursts.filterNot { listenedBursts.contains(it.id) })
+                    val filteredBursts = playlist.bursts.filterNot { listenedBursts.contains(it.id) }
+                    println("filteredBursts: ${filteredBursts.joinToString { it.id }}")
+                    val newBurstList = filteredBursts.ifEmpty {
+                        println("HEREEE")
+                        playlist.bursts.take(NUMBER_OF_BURST_WHEN_ALL_LISTENED)
+                    }
+                    println("newBurstList: ${newBurstList.joinToString { it.id }}")
+                    playlist.copy(newBurstList)
                 }
             }
         } else {
             this
         }
+
+    companion object {
+        private const val NUMBER_OF_BURST_WHEN_ALL_LISTENED = 2
+    }
 }
