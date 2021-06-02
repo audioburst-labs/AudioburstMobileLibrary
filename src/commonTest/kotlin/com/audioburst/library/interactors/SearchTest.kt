@@ -34,7 +34,7 @@ class SearchTest {
         )
 
     @BeforeTest
-    fun clear() {
+    fun setup() {
         playlistStorage = InMemoryPlaylistStorage()
     }
 

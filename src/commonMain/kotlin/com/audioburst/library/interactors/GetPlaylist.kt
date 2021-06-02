@@ -33,17 +33,13 @@ internal class GetPlaylist(
         if (userStorage.filterListenedBursts) {
             map { playlist ->
                 val listenedBursts = listenedBurstStorage.getRecentlyListened().map { it.id }
-                println("listenedBursts: ${listenedBursts.joinToString { it }}")
                 if (listenedBursts.isEmpty()) {
                     playlist
                 } else {
                     val filteredBursts = playlist.bursts.filterNot { listenedBursts.contains(it.id) }
-                    println("filteredBursts: ${filteredBursts.joinToString { it.id }}")
                     val newBurstList = filteredBursts.ifEmpty {
-                        println("HEREEE")
                         playlist.bursts.take(NUMBER_OF_BURST_WHEN_ALL_LISTENED)
                     }
-                    println("newBurstList: ${newBurstList.joinToString { it.id }}")
                     playlist.copy(newBurstList)
                 }
             }
