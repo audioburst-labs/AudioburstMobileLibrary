@@ -2,10 +2,7 @@ package com.audioburst.library.utils
 
 import com.audioburst.library.interactors.*
 import com.audioburst.library.models.*
-import com.audioburst.library.utils.strategies.CtaClickStrategy
-import com.audioburst.library.utils.strategies.ListenedMediaStrategy
-import com.audioburst.library.utils.strategies.ListenedStrategy
-import com.audioburst.library.utils.strategies.PlaybackEventStrategy
+import com.audioburst.library.utils.strategies.*
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -41,35 +38,6 @@ class EventDetectorTest {
 
         // THEN
         assertTrue(handledPlaybackEvents.filterIsInstance<PlaybackEvent.Play>().isNotEmpty())
-    }
-
-    @Test
-    fun testWhenPauseCalledThenPlaybackStatePauseIsGettingHandled() {
-        // GIVEN
-        val audioUrl = "audioUrl"
-        val handledPlaybackEvents = mutableListOf<Event>()
-        val eventDetector = eventDetectorOf(
-            playlist = playlistOf(
-                bursts = listOf(
-                    burstOf(
-                        audioUrl = audioUrl
-                    )
-                )
-            ),
-            playbackEventHandler = { handledPlaybackEvents.add(it) }
-        )
-        eventDetector.setPlaybackStateListener {
-            PlaybackState(
-                url = audioUrl,
-                positionMillis = 1000
-            )
-        }
-
-        // WHEN
-        eventDetector.stop()
-
-        // THEN
-        assertTrue(handledPlaybackEvents.filterIsInstance<PlaybackEvent.Pause>().isNotEmpty())
     }
 
     @Test
@@ -114,6 +82,7 @@ internal fun eventDetectorOf(
     checkInterval: Duration = 1.0.toDuration(DurationUnit.Seconds),
     listenedStrategy: ListenedStrategy = listenedStrategyOf(),
     ctaClickStrategy: CtaClickStrategy = CtaClickStrategy(),
+    playPauseStrategy: PlayPauseStrategy = PlayPauseStrategy()
 ): StrategyBasedEventDetector =
     StrategyBasedEventDetector(
         currentPlaylist = currentPlaylistOf(playlist),
@@ -130,6 +99,7 @@ internal fun eventDetectorOf(
         listenedStrategy = listenedStrategy,
         scope = scope,
         ctaClickStrategy = ctaClickStrategy,
+        playPauseStrategy = playPauseStrategy,
     )
 
 internal fun playbackPeriodsCreatorOf(

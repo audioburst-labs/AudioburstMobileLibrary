@@ -6,6 +6,7 @@ import com.audioburst.library.interactors.PlaybackEventHandler
 import com.audioburst.library.models.*
 import com.audioburst.library.utils.strategies.CtaClickStrategy
 import com.audioburst.library.utils.strategies.ListenedStrategy
+import com.audioburst.library.utils.strategies.PlayPauseStrategy
 import com.audioburst.library.utils.strategies.PlaybackEventStrategy
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.launchIn
@@ -39,6 +40,7 @@ internal class StrategyBasedEventDetector(
     private val timestampProvider: TimestampProvider,
     private val appDispatchers: AppDispatchers,
     private val ctaClickStrategy: CtaClickStrategy,
+    private val playPauseStrategy: PlayPauseStrategy,
 ) : EventDetector {
 
     private val previousStates: Queue<InternalPlaybackState> = FixedSizeQueue(NUMBER_OF_CACHED_STATES)
@@ -49,18 +51,25 @@ internal class StrategyBasedEventDetector(
         listenerCallTimer.timer
             .onEach { requestNewState() }
             .launchIn(scope)
+        playPauseStrategy.event
+            .onEach {
+                when (it) {
+                    is PlaybackEvent.Play -> startTimers()
+                    is PlaybackEvent.Pause -> stopTimers()
+                }
+                handle(it)
+            }
+            .launchIn(scope)
     }
 
     override fun start() {
-        startTimers()
         val eventPayload = currentEventPayload(isPlaying = true) ?: return
-        handle(PlaybackEvent.Play(eventPayload))
+        playPauseStrategy.play(eventPayload)
     }
 
     override fun stop() {
-        stopTimers()
         val eventPayload = currentEventPayload(isPlaying = false) ?: return
-        handle(PlaybackEvent.Pause(eventPayload))
+        playPauseStrategy.pause(eventPayload)
     }
 
     override fun ctaButtonClick(burstId: String) {
