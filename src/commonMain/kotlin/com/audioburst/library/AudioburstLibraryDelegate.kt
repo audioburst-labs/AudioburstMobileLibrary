@@ -98,10 +98,24 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
         return getAdUrl.invoke(burst)
     }
 
+    suspend fun getAdUrl(burstId: String): Result<String> {
+        Logger.i("getAdUrl")
+        return getAdUrl.invoke(burstId)
+    }
+
     fun getAdUrl(burst: Burst, onData: (String) -> Unit, onError: (LibraryError) -> Unit) {
         Logger.i("getAdUrl")
         scope.launch {
             getAdUrl.invoke(burst)
+                .onData { onData(it) }
+                .onError { onError(it) }
+        }
+    }
+
+    fun getAdUrl(burstId: String, onData: (String) -> Unit, onError: (LibraryError) -> Unit) {
+        Logger.i("getAdUrl")
+        scope.launch {
+            getAdUrl.invoke(burstId)
                 .onData { onData(it) }
                 .onError { onError(it) }
         }

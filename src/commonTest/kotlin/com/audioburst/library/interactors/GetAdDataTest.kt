@@ -1,5 +1,6 @@
 package com.audioburst.library.interactors
 
+import com.audioburst.library.data.ErrorType
 import com.audioburst.library.data.Resource
 import com.audioburst.library.data.storage.InMemoryPlaylistStorage
 import com.audioburst.library.models.LibraryError
@@ -132,5 +133,65 @@ class GetAdDataTest {
         // THEN
         require(resource is Result.Error)
         assertTrue(playlistStorage.currentAds.isEmpty())
+    }
+
+    @Test
+    fun testIfErrorIsReturnedWhenThereIsNoBurstForProvidedBurstId() = runTest {
+        // GIVEN
+        val burstUrl = "audioUrl"
+        val burstId = "burstId"
+        val userRepositoryReturns = Resource.Data(
+            promoteDataOf(
+                advertisement = advertisementOf(burstUrl = burstUrl)
+            )
+        )
+
+        // WHEN
+        val resource = interactor(userRepositoryReturns)(burstId)
+
+        // THEN
+        require(resource is Result.Error)
+        require(resource.error == LibraryError.AdUrlNotFound)
+    }
+
+    @Test
+    fun testIfDataIsReturnedWhenThereIsBurstForProvidedBurstIdAndRepositoryReturnsData() = runTest {
+        // GIVEN
+        val burstUrl = "audioUrl"
+        val burstId = "burstId"
+        val userRepositoryReturns = Resource.Data(
+            promoteDataOf(
+                advertisement = advertisementOf(burstUrl = burstUrl)
+            )
+        )
+        playlistStorage.setPlaylist(
+            playlistOf(
+                bursts = listOf(
+                    burstOf(
+                        id = burstId,
+                        adUrl = burstUrl,
+                    )
+                )
+            )
+        )
+
+        // WHEN
+        val resource = interactor(userRepositoryReturns)(burstId)
+
+        // THEN
+        require(resource is Result.Data)
+    }
+
+    @Test
+    fun testIfErrorIsReturnedWhenThereIsBurstForProvidedBurstIdButRepositoryReturnsError() = runTest {
+        // GIVEN
+        val burstId = "burstId"
+        val userRepositoryReturns = Resource.Error(ErrorType.createFrom(Throwable()))
+
+        // WHEN
+        val resource = interactor(userRepositoryReturns)(burstId)
+
+        // THEN
+        require(resource is Result.Error)
     }
 }

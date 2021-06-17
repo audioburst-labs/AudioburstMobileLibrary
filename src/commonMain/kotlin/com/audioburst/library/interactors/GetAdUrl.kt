@@ -15,6 +15,11 @@ internal class GetAdUrl(
     private val playlistStorage: PlaylistStorage,
 ) {
 
+    internal suspend operator fun invoke(burstId: String): Result<String> =
+        playlistStorage.currentPlaylist?.bursts?.firstOrNull { it.id == burstId }?.let { burst ->
+            invoke(burst)
+        } ?: Result.Error(LibraryError.AdUrlNotFound)
+
     internal suspend operator fun invoke(burst: Burst): Result<String> =
         burst.adUrl?.let { adUrl ->
             userRepository.getPromoteData(

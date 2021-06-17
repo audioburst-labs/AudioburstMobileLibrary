@@ -68,6 +68,18 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
         delegate.getAdUrl(burst)
 
     /**
+     * In case you would like to play Burst's advertisement audio, you should use this function to get URL to play.
+     * Note that only [Burst] whose [Burst.isAdAvailable] returns true will return correct URL. Otherwise you will get
+     * [LibraryError.AdUrlNotFound] error in [Result.Error].
+     * This is the version of the method that accepts [Burst.id] as a parameter.
+     *
+     * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it
+     * [Result.Error] will be returned with a proper error ([LibraryError]).
+     */
+    suspend fun getAdUrl(burstId: String): Result<String> =
+        delegate.getAdUrl(burstId)
+
+    /**
      * Personal playlist is a special type of playlist that is built with user preferences in mind. Sometimes it takes
      * more time to prepare a personal playlist that is why library exposes an ability to "subscribe" to ongoing changes
      * to personal playlist. By subscribing you will be notified every time there are new [Burst]`s in the playlist until
