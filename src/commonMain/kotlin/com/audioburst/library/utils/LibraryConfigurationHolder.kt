@@ -32,6 +32,6 @@ internal class LibraryConfigurationHolder(
     }
 
     companion object {
-        private const val LIBRARY_VERSION = "0.0.22"
+        private const val LIBRARY_VERSION = "0.0.23"
     }
 }

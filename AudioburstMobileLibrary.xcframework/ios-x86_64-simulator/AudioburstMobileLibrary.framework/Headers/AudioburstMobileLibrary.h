@@ -168,6 +168,7 @@ __attribute__((swift_name("AudioburstLibrary")))
 - (void)ctaButtonClickBurstId:(NSString *)burstId __attribute__((swift_name("ctaButtonClick(burstId:)")));
 - (void)filterListenedBurstsEnabled:(BOOL)enabled __attribute__((swift_name("filterListenedBursts(enabled:)")));
 - (void)getAdUrlBurst:(AMLBurst *)burst onData:(void (^)(NSString *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getAdUrl(burst:onData:onError:)")));
+- (void)getAdUrlBurstId:(NSString *)burstId onData:(void (^)(NSString *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getAdUrl(burstId:onData:onError:)")));
 - (void)getPersonalPlaylistOnData:(void (^)(AMLPendingPlaylist *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPersonalPlaylist(onData:onError:)")));
 - (void)getPlaylistPlaylistInfo:(AMLPlaylistInfo *)playlistInfo onData:(void (^)(AMLPlaylist *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPlaylist(playlistInfo:onData:onError:)")));
 - (void)getPlaylistData:(NSData *)data onData:(void (^)(AMLPlaylist *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPlaylist(data:onData:onError:)")));
