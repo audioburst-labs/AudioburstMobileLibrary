@@ -266,6 +266,12 @@ __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("Duration")))
 @interface AMLDuration : AMLBase
 - (instancetype)initWithValue:(double)value unit:(AMLDurationUnit *)unit __attribute__((swift_name("init(value:unit:)"))) __attribute__((objc_designated_initializer));
+- (int32_t)compareToThreshold:(AMLDuration *)threshold __attribute__((swift_name("compareTo(threshold:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (AMLDuration *)minusOther:(AMLDuration *)other __attribute__((swift_name("minus(other:)")));
+- (AMLDuration *)plusOther:(AMLDuration *)other __attribute__((swift_name("plus(other:)")));
+- (NSString *)description __attribute__((swift_name("description()")));
 @property (readonly) double milliseconds __attribute__((swift_name("milliseconds")));
 @property (readonly) double seconds __attribute__((swift_name("seconds")));
 @end;
@@ -276,6 +282,7 @@ __attribute__((swift_name("Duration.Companion")))
 + (instancetype)alloc __attribute__((unavailable));
 + (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
 + (instancetype)companion __attribute__((swift_name("init()")));
+@property (readonly) AMLDuration *ZERO __attribute__((swift_name("ZERO")));
 @end;
 
 __attribute__((swift_name("KotlinComparable")))
