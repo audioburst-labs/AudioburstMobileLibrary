@@ -51,6 +51,8 @@ class Duration(private val value: Double, private val unit: DurationUnit) {
 
     companion object {
         private const val SECONDS_TO_MILLISECONDS_MULTIPLIER = 1000
+
+        val ZERO: Duration = 0.0.toDuration(DurationUnit.Milliseconds)
     }
 }
 

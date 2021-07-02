@@ -1,12 +1,9 @@
 package com.audioburst.library.utils.strategies
 
-import com.audioburst.library.models.AnalysisInput
-import com.audioburst.library.models.PlaybackEvent
-import com.audioburst.library.models.currentEventPayload
-import com.audioburst.library.models.lastState
+import com.audioburst.library.models.*
 
 /**
- * When URL received in currentState() function is the same as previous, but position is bigger than previous position + 3
+ * When URL received in currentState() function is the same as previous, but position is bigger than previous position + 4s
  */
 internal class ForwardStrategy : PlaybackEventStrategy<PlaybackEvent.Forward> {
 
@@ -15,7 +12,7 @@ internal class ForwardStrategy : PlaybackEventStrategy<PlaybackEvent.Forward> {
         val lastState = input.lastState() ?: return null
         return when (lastState.url) {
             input.currentState.url -> when {
-                input.currentState.position.seconds > (lastState.position.seconds + THRESHOLD) -> PlaybackEvent.Forward(eventPayload)
+                input.currentState.position > (lastState.position + THRESHOLD) -> PlaybackEvent.Forward(eventPayload)
                 else -> null
             }
             else -> null
@@ -23,6 +20,6 @@ internal class ForwardStrategy : PlaybackEventStrategy<PlaybackEvent.Forward> {
     }
 
     companion object {
-        private const val THRESHOLD = 3
+        private val THRESHOLD = 4.0.toDuration(DurationUnit.Seconds)
     }
 }

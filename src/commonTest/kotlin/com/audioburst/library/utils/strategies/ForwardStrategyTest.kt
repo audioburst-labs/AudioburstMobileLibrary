@@ -29,7 +29,7 @@ internal class ForwardStrategyTest {
         )
         val currentState = playbackStateOf(
             url = audioUrl,
-            position = position + 4,
+            position = position + 5,
         )
         val previousStates = fixedQueueOf(
             limit = 10,

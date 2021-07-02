@@ -52,22 +52,18 @@ internal class StrategyBasedEventDetector(
             .onEach { requestNewState() }
             .launchIn(scope)
         playPauseStrategy.event
-            .onEach {
-                when (it) {
-                    is PlaybackEvent.Play -> startTimers()
-                    is PlaybackEvent.Pause -> stopTimers()
-                }
-                handle(it)
-            }
+            .onEach { handle(it) }
             .launchIn(scope)
     }
 
     override fun start() {
+        startTimers()
         val eventPayload = currentEventPayload(isPlaying = true) ?: return
         playPauseStrategy.play(eventPayload)
     }
 
     override fun stop() {
+        stopTimers()
         val eventPayload = currentEventPayload(isPlaying = false) ?: return
         playPauseStrategy.pause(eventPayload)
     }

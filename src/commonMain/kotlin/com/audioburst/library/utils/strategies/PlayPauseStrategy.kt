@@ -1,51 +1,53 @@
 package com.audioburst.library.utils.strategies
 
-import com.audioburst.library.models.EventPayload
-import com.audioburst.library.models.PlaybackEvent
+import com.audioburst.library.models.*
 import kotlinx.coroutines.flow.*
 
-internal class PlayPauseStrategy {
+internal class PlayPauseStrategy(private val minimumWaitTime: Duration = 1.0.toDuration(DurationUnit.Seconds)) {
 
     private val internalEvent = MutableStateFlow<Event?>(null)
     val event = internalEvent
         .filterNotNull()
-        .debounce { it.debounceTimeout }
+        .debounce { it.debounceTimeout.milliseconds.toLong() }
         .distinctUntilChanged()
         .mapNotNull { it.toPlaybackEvent() }
 
     fun play(eventPayload: EventPayload) {
-        internalEvent.value = if (internalEvent.value == null) {
+        val previous = internalEvent.value
+        internalEvent.value = if (previous == null || isPlayAfterAWhile(playEventPayload = eventPayload, previous = previous)) {
             Event.PlayImmediately(eventPayload)
         } else {
-            Event.Play(eventPayload)
+            Event.Play(eventPayload, minimumWaitTime)
         }
     }
 
     fun pause(eventPayload: EventPayload) {
         if (internalEvent.value != null) {
-            internalEvent.value = Event.Pause(eventPayload)
+            internalEvent.value = Event.Pause(eventPayload, minimumWaitTime)
         }
     }
+
+    private fun isPlayAfterAWhile(playEventPayload: EventPayload, previous: Event): Boolean =
+        previous is Event.Pause && playEventPayload.occurrenceTime - previous.payload.occurrenceTime > minimumWaitTime
 
     private fun Event.toPlaybackEvent(): PlaybackEvent =
         when (this) {
             is Event.Pause -> PlaybackEvent.Pause(payload)
             is Event.Play -> PlaybackEvent.Play(payload)
-            is Event.PlayImmediately -> PlaybackEvent.Play(payload)
-        }
-
-    private val Event.debounceTimeout: Long
-        get() = when (this) {
-            is Event.Pause -> MINIMAL_TIME_DIFFERENCE
-            is Event.Play -> MINIMAL_TIME_DIFFERENCE
-            is Event.PlayImmediately -> 0L
         }
 
     private sealed class Event {
         abstract val payload: EventPayload
-        class Play(override val payload: EventPayload) : Event()
-        class PlayImmediately(override val payload: EventPayload) : Event()
-        class Pause(override val payload: EventPayload) : Event()
+        abstract val debounceTimeout: Duration
+
+        class Play(override val payload: EventPayload, override val debounceTimeout: Duration) : Event()
+        class Pause(override val payload: EventPayload, override val debounceTimeout: Duration) : Event()
+
+        companion object {
+            @Suppress("FunctionName")
+            fun PlayImmediately(payload: EventPayload): Event =
+                Play(payload = payload, debounceTimeout = Duration.ZERO)
+        }
 
         override fun equals(other: Any?): Boolean {
             if (this === other) return true
@@ -56,9 +58,5 @@ internal class PlayPauseStrategy {
         override fun hashCode(): Int {
             return payload.hashCode()
         }
-    }
-
-    companion object {
-        private const val MINIMAL_TIME_DIFFERENCE = 1000L
     }
 }

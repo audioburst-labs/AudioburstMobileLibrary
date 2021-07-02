@@ -58,6 +58,11 @@ object Dependencies {
         const val iOSMain = "io.ktor:ktor-client-ios:$version"
     }
 
+    object Turbine {
+        private const val version = "0.5.2"
+        const val turbine = "app.cash.turbine:turbine:$version"
+    }
+
     object SqlDelight {
         private const val version = sqlDelightVersion
         const val runtime = "com.squareup.sqldelight:runtime:$version"

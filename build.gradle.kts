@@ -53,6 +53,7 @@ kotlin {
                 implementation(Dependencies.Test.Common.testCommon)
                 implementation(Dependencies.Test.Common.testAnnotationsCommon)
                 implementation(Dependencies.Ktor.test)
+                implementation(Dependencies.Turbine.turbine)
             }
         }
         val androidMain by getting {
@@ -112,6 +113,11 @@ tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().all {
     kotlinOptions.freeCompilerArgs += "-Xinline-classes"
     kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     kotlinOptions.jvmTarget = JavaVersion.VERSION_1_8.toString()
+}
+kotlin.sourceSets.matching {
+    it.name.endsWith("Test")
+}.configureEach {
+    languageSettings.useExperimentalAnnotation("kotlin.time.ExperimentalTime")
 }
 
 // PUBLISHING ANDROID
