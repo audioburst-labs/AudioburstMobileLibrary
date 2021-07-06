@@ -59,7 +59,7 @@ object Dependencies {
     }
 
     object Turbine {
-        private const val version = "0.5.2"
+        private const val version = "0.4.1"
         const val turbine = "app.cash.turbine:turbine:$version"
     }
 
