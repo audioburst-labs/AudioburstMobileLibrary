@@ -1,6 +1,7 @@
 package com.audioburst.library.utils.strategies
 
 import com.audioburst.library.models.*
+import com.audioburst.library.utils.Logger
 import com.audioburst.library.utils.PlaybackPeriodsCreator
 import com.audioburst.library.utils.strategies.ListenedMediaStrategy.Configuration
 
@@ -50,6 +51,10 @@ internal class ListenedStrategy(
         return results.flatMap { result ->
             creators.mapNotNull { creator ->
                 creator.create(result, input)
+            }
+        }.apply {
+            if (isNotEmpty()) {
+                Logger.i("Detected: ${joinToString { it.actionName }}")
             }
         }
     }

@@ -39,7 +39,9 @@ internal class ListenedMediaStrategy private constructor(
             }
             Configuration.Type.Periodical -> {
                 val remainder = playTimeMs.rem(configuration.minimumListenTime.milliseconds.toLong())
-                if (playTimeMs > previousNotifyTime + refreshInterval && playTimeMs > refreshInterval && remainder in 0 until refreshInterval) {
+                val result = playTimeMs > previousNotifyTime + refreshInterval && playTimeMs > refreshInterval && remainder in 0 until refreshInterval
+                Logger.i("[$playTimeMs, $remainder, $previousNotifyTime, $result]")
+                if (result) {
                     previousNotifyTime = playTimeMs
                     periodsResult.eventPayload
                 } else {

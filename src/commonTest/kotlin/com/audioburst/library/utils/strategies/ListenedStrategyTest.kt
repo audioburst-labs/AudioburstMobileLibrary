@@ -142,4 +142,56 @@ class ListenedStrategyTest {
         assertTrue(events.filterIsInstance<PlaybackEvent.BurstListened>().isNotEmpty())
         assertTrue(events.filterIsInstance<PlaybackEvent.Playing>().size == 4)
     }
+
+    @Test
+    fun testIfMultipleEventsAreGettingDetected1() {
+        // GIVEN
+        val url = "https://storageaudiobursts.azureedge.net/audio/J8OoDzXD9Pwn.mp3"
+        val playlist = playlistOf(
+            bursts = listOf(
+                burstOf(
+                    audioUrl = url,
+                    duration = 48.0.toDuration(DurationUnit.Seconds)
+                )
+            )
+        )
+        val previousStates: Queue<InternalPlaybackState> = FixedSizeQueue(10)
+        val listenedStrategy = listenedStrategyOf(
+            creator = InputBasedPlaybackPeriodsCreator(),
+            factory = listenedMediaStrategyFactoryOf(
+                2.0.toDuration(DurationUnit.Seconds)
+            ),
+        )
+
+        // WHEN
+        val times = listOf(
+            1625473267705, 1625473269710, 1625473271714, 1625473273717, 1625473275722, 1625473277731, 1625473279736,
+            1625473281741, 1625473283746, 1625473285750, 1625473287755, 1625473289760, 1625473291764, 1625473293769,
+            1625473295774, 1625473297778, 1625473299783, 1625473301788, 1625473303793, 1625473305797, 1625473307804,
+            1625473309807, 1625473311812, 1625473313816, 1625473315821, 1625473317826,
+        )
+        val events = listOf(
+            2.005, 4.010, 6.016, 8.021, 10.026, 12.032, 14.037, 16.042, 18.048, 20.053, 22.058, 24.064, 26.069, 28.074,
+            30.080, 32.085, 34.090, 36.096, 38.101, 40.106, 42.112, 44.117, 46.122, 48.128, 50.133, 52.138,
+        ).flatMapIndexed { index, position ->
+            val input = inputOf(
+                currentState = playbackStateOf(
+                    url = url,
+                    position = position,
+                    occurrenceTime = times[index]
+                ),
+                playlist = playlist,
+                previousStates = previousStates,
+            )
+            listenedStrategy.check(input).apply {
+                previousStates.add(input.currentState)
+            }
+        }
+
+        // THEN
+        println(events.joinToString { it.actionName })
+        assertTrue(events.filterIsInstance<PlaybackEvent.TwoSecPlaying>().isNotEmpty())
+        assertTrue(events.filterIsInstance<PlaybackEvent.BurstListened>().isNotEmpty())
+        assertTrue(events.filterIsInstance<PlaybackEvent.Playing>().size == 4)
+    }
 }
