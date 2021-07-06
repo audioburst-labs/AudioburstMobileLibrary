@@ -1,6 +1,5 @@
 package com.audioburst.library.models
 
-import kotlinx.serialization.Serializable
 import platform.Foundation.*
 
 actual class DateTime private constructor(private val nsDate: NSDate) {
@@ -35,7 +34,7 @@ actual class DateTime private constructor(private val nsDate: NSDate) {
         )
 
     actual companion object {
-        actual fun now(): DateTime = DateTime(NSDate.now())
+        actual fun now(): DateTime = DateTime(NSDate())
 
         actual fun from(isoDateString: String): DateTime? {
             val formatter = NSISO8601DateFormatter()
