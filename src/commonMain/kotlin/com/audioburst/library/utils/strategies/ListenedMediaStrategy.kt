@@ -12,12 +12,19 @@ internal class ListenedMediaStrategy private constructor(
     private var previouslyCheckedBurstId by nullableAtomic<String>()
 
     fun check(periodsResult: PlaybackPeriodsCreator.Result, advertisements: List<DownloadedAdvertisement>): EventPayload? {
-        if (periodsResult.duration <= refreshInterval) {
+        if (periodsResult.isPeriodBeginning()) {
             previousNotifyTime = 0
             previouslyCheckedBurstId = null
         }
         return checkStrategy(periodsResult, advertisements)
     }
+
+    /**
+     * Adding 20% of [refreshInterval] to catch a case when Library started querying a [PlaybackState] a little after
+     * player started to play. 
+     */
+    private fun PlaybackPeriodsCreator.Result.isPeriodBeginning(): Boolean =
+        duration <= refreshInterval + (refreshInterval * PERIOD_BEGINNING_OFFSET_PERCENT)
 
     private fun checkStrategy(periodsResult: PlaybackPeriodsCreator.Result, advertisements: List<DownloadedAdvertisement>): EventPayload? {
         val allPeriods = periodsResult.periods
@@ -39,9 +46,7 @@ internal class ListenedMediaStrategy private constructor(
             }
             Configuration.Type.Periodical -> {
                 val remainder = playTimeMs.rem(configuration.minimumListenTime.milliseconds.toLong())
-                val result = playTimeMs > previousNotifyTime + refreshInterval && playTimeMs > refreshInterval && remainder in 0 until refreshInterval
-                Logger.i("[$playTimeMs, $remainder, $previousNotifyTime, $result]")
-                if (result) {
+                if (playTimeMs > previousNotifyTime + refreshInterval && playTimeMs > refreshInterval && remainder in 0..refreshInterval) {
                     previousNotifyTime = playTimeMs
                     periodsResult.eventPayload
                 } else {
@@ -94,5 +99,9 @@ internal class ListenedMediaStrategy private constructor(
         enum class Type {
             OneOff, Periodical
         }
+    }
+
+    companion object {
+        private const val PERIOD_BEGINNING_OFFSET_PERCENT = 0.2
     }
 }
