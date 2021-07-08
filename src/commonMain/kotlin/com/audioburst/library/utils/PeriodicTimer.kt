@@ -21,8 +21,8 @@ internal class PeriodicTimer(
 
     fun start() {
         if (!isRunning) {
+            isRunning = true
             currentTimerJob = scope.launch {
-                isRunning = true
                 while (isRunning) {
                     delay(interval.milliseconds.toLong())
                     sharedFlow.emit(Tick)
