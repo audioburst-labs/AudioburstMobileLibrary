@@ -13,7 +13,6 @@ import kotlin.test.assertEquals
 
 class PeriodicTimerTest {
 
-    private val scope = CoroutineScope(testCoroutineContext)
     private suspend fun test(timer: PeriodicTimer, validate: suspend FlowTurbine<PeriodicTimer.Tick>.() -> Unit) {
         timer.timer.test {
             validate()
@@ -21,7 +20,8 @@ class PeriodicTimerTest {
     }
 
     @Test
-    fun `test that there is one expectedItem when we wait the same time as interval`() = runTest {
+    fun `test that there is no expectedItem when we wait the same time as interval`() = runTest {
+        val scope = CoroutineScope(testCoroutineContext)
         val interval = 100.0.toDuration(DurationUnit.Milliseconds)
         val timer = PeriodicTimer(interval = interval, scope = scope)
         test(timer) {
@@ -33,7 +33,21 @@ class PeriodicTimerTest {
     }
 
     @Test
+    fun `test that there is one expectedItem when we wait the same time as interval plus offset`() = runTest {
+        val scope = CoroutineScope(testCoroutineContext)
+        val interval = 100.0.toDuration(DurationUnit.Milliseconds)
+        val timer = PeriodicTimer(interval = interval, scope = scope)
+        test(timer) {
+            timer.start()
+            delay(timeMillis = interval.milliseconds.toLong() + MINIMAL_OFFSET)
+            timer.pause()
+            assertEquals(PeriodicTimer.Tick, expectItem())
+        }
+    }
+
+    @Test
     fun `test that there are two expectedItems when we wait double the interval time`() = runTest {
+        val scope = CoroutineScope(testCoroutineContext)
         val interval = 100.0.toDuration(DurationUnit.Milliseconds)
         val timer = PeriodicTimer(interval = interval, scope = scope)
         val expectedItems = 2
@@ -49,6 +63,7 @@ class PeriodicTimerTest {
 
     @Test
     fun `test that calling start multiple times doesn't result in multiple events`() = runTest {
+        val scope = CoroutineScope(testCoroutineContext)
         val interval = 100.0.toDuration(DurationUnit.Milliseconds)
         val timer = PeriodicTimer(interval = interval, scope = scope)
         test(timer) {
@@ -58,6 +73,18 @@ class PeriodicTimerTest {
             delay(timeMillis = interval.milliseconds.toLong())
             timer.pause()
             assertEquals(PeriodicTimer.Tick, expectItem())
+        }
+    }
+
+    @Test
+    fun `test that calling start and stop immediately after results in no events emitted`() = runTest {
+        val scope = CoroutineScope(testCoroutineContext)
+        val interval = 100.0.toDuration(DurationUnit.Milliseconds)
+        val timer = PeriodicTimer(interval = interval, scope = scope)
+        test(timer) {
+            timer.start()
+            timer.pause()
+            expectNoEvents()
         }
     }
 

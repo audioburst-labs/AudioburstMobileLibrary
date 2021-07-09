@@ -1,10 +1,6 @@
 package com.audioburst.library.utils.strategies
 
 import com.audioburst.library.models.*
-import com.audioburst.library.models.AnalysisInput
-import com.audioburst.library.models.PlaybackEvent
-import com.audioburst.library.models.currentEventPayload
-import com.audioburst.library.models.lastState
 
 /**
  * When URL received in currentState() function is the URL of the next Burst in Playlist and user didn't reach 90% of playback of previous Burst

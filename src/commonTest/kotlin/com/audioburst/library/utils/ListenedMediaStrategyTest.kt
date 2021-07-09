@@ -294,24 +294,27 @@ class ListenedMediaStrategyTest {
         // GIVEN
         val minimumListenTime = 1.0.toDuration(DurationUnit.Seconds)
         val adDuration = 5.0.toDuration(DurationUnit.Seconds)
-        val adUrl = Url("adUrl")
+        val getAdUrl = Url("adUrl")
+        val adUrl = "adUrl"
         val advertisements = listOf(
             downloadedAdvertisementOf(
-                downloadUrl = adUrl,
+                downloadUrl = getAdUrl,
                 advertisement = advertisementOf(
-                    duration = adDuration
+                    duration = adDuration,
+                    burstUrl = adUrl,
                 )
             )
         )
         val periodResult = periodResult(
             eventPayload = eventPayloadOf(
                 burst = burstOf(
-                    adUrl = adUrl.value
+                    adUrl = getAdUrl.value
                 )
             ),
             periods = listOf(
                 periodOf(0..adDuration.milliseconds.toLong())
-            )
+            ),
+            forUrl = adUrl,
         )
         val strategy = listenedMediaStrategyConfigurationOf(
             type = Configuration.Type.Periodical,
@@ -333,24 +336,27 @@ class ListenedMediaStrategyTest {
         // GIVEN
         val minimumListenTime = 1.0.toDuration(DurationUnit.Seconds)
         val adDuration = 5.0.toDuration(DurationUnit.Seconds)
-        val adUrl = Url("adUrl")
+        val getAdUrl = Url("adUrl")
+        val adUrl = "adUrl"
         val advertisements = listOf(
             downloadedAdvertisementOf(
-                downloadUrl = adUrl,
+                downloadUrl = getAdUrl,
                 advertisement = advertisementOf(
-                    duration = adDuration
+                    duration = adDuration,
+                    burstUrl = adUrl,
                 )
             )
         )
         val periodResult = periodResult(
             eventPayload = eventPayloadOf(
                 burst = burstOf(
-                    adUrl = adUrl.value
+                    adUrl = getAdUrl.value
                 )
             ),
             periods = listOf(
                 periodOf(0..adDuration.milliseconds.toLong())
-            )
+            ),
+            forUrl = adUrl,
         )
         val strategy = listenedMediaStrategyConfigurationOf(
             type = Configuration.Type.OneOff,
@@ -487,12 +493,14 @@ class ListenedMediaStrategyTest {
 }
 
 internal fun periodResult(
+    forUrl: String = "",
     eventPayload: EventPayload = eventPayloadOf(),
     periods: List<PlaybackPeriodsCreator.Period> = emptyList(),
 ): PlaybackPeriodsCreator.Result =
     PlaybackPeriodsCreator.Result(
         eventPayload = eventPayload,
         periods = periods,
+        forUrl = forUrl,
     )
 
 internal fun periodOf(

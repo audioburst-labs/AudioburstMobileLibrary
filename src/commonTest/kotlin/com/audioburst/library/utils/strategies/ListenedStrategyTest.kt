@@ -192,7 +192,7 @@ class ListenedStrategyTest {
         println(events.joinToString { it.actionName })
         assertTrue(events.filterIsInstance<PlaybackEvent.TwoSecPlaying>().isNotEmpty())
         assertTrue(events.filterIsInstance<PlaybackEvent.BurstListened>().isNotEmpty())
-        assertTrue(events.filterIsInstance<PlaybackEvent.Playing>().size == 4)
+        assertTrue(events.filterIsInstance<PlaybackEvent.Playing>().size == 5)
     }
 
     @Test
@@ -313,21 +313,116 @@ class ListenedStrategyTest {
         // THEN
         assertTrue(events.filterIsInstance<PlaybackEvent.TwoSecPlaying>().size == 3)
         assertTrue(events.filterIsInstance<PlaybackEvent.BurstListened>().size == 3)
-        assertTrue(events.filterIsInstance<PlaybackEvent.Playing>().size == 11)
+        assertTrue(events.filterIsInstance<PlaybackEvent.Playing>().size == 12)
     }
 
     @Test
     fun testIfMultipleEventsAreGettingDetected3() {
-        // GIVEN
-        val playlist = playlistOf(
-            bursts = listOf(
-                burstOf(
-                    id = "699v5DwkWP36",
-                    audioUrl = "https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8",
-                    duration = 25.0.toDuration(DurationUnit.Seconds)
-                ),
+        testWithReport(
+            playlist = playlistOf(
+                bursts = listOf(
+                    burstOf(
+                        id = "699v5DwkWP36",
+                        audioUrl = "https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8",
+                        duration = 25.0.toDuration(DurationUnit.Seconds)
+                    ),
+                )
+            ),
+            report = """
+            1625653233579,https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8,1.98
+            1625653235582,https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8,3.983
+            1625653237585,https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8,5.986
+            1625653239587,https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8,7.988
+            1625653241590,https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8,9.991
+            1625653243592,https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8,11.994
+        """.trimIndent()
+        ) {
+            assertTrue(filterIsInstance<PlaybackEvent.TwoSecPlaying>().size == 1)
+            assertTrue(filterIsInstance<PlaybackEvent.BurstListened>().size == 1)
+            assertTrue(filterIsInstance<PlaybackEvent.Playing>().size == 1)
+        }
+    }
+
+    @Test
+    fun testIfMultipleEventsAreGettingDetected4() {
+        val adUrl = "adUrl"
+        testWithReport(
+            playlist = playlistOf(
+                bursts = listOf(
+                    burstOf(
+                        id = "JexwYyWDyqyR",
+                        audioUrl = "https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3",
+                        duration = 25.0.toDuration(DurationUnit.Seconds),
+                        adUrl = adUrl,
+                    ),
+                )
+            ),
+            report = """
+        1625817971241,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,1.47
+        1625817971243,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,1.472
+        1625817975611,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,5.482
+        1625817975612,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,5.488
+        1625817977257,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,7.486
+        1625817977264,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,7.493
+        1625817979263,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,9.492
+        1625817979270,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,9.499
+        1625817981272,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,11.5
+        1625817981275,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,11.504
+        1625817983275,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,13.503
+        1625817983277,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,13.506
+        1625817985278,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,15.468
+        1625817985282,http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3,15.468
+        1625817987289,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,1.193
+        1625817988015,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,1.919
+        1625817988016,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,1.919
+        1625817989293,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,3.197
+        1625817990023,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,3.924
+        1625817990026,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,3.925
+        1625817991304,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,5.207
+        1625817992026,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,5.929
+        1625817992029,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,5.932
+        1625817993308,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,7.211
+        1625817994031,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,7.934
+        1625817994034,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,7.937
+        1625817995315,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,9.217
+        1625817996035,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,9.938
+        1625817996037,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,9.94
+        1625817997318,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,11.221
+        1625817998039,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,11.942
+        1625817998043,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,11.946
+        1625817999322,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,13.225
+        1625818000043,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,13.946
+        1625818000047,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,13.95
+        1625818001327,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,15.23
+        1625818002049,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,15.952
+        1625818002052,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,15.955
+        1625818003336,https://storageaudiobursts.azureedge.net/audio/JexwYyWDyqyR.mp3,17.236
+        """.trimIndent(),
+            advertisements = listOf(
+                downloadedAdvertisementOf(
+                    downloadUrl = Url(adUrl),
+                    advertisement = advertisementOf(
+                        burstUrl = "http://storageaudiobursts.blob.core.windows.net/ads/source/c76f3471-ce12-4489-a051-3623ed744770.mp3",
+                        duration = 16.0.toDuration(DurationUnit.Seconds),
+                    )
+                )
             )
-        )
+        ) {
+            println(joinToString { "${it.actionName},${it.eventPayload.currentPlayBackPosition}" })
+            assertTrue(filterIsInstance<PlaybackEvent.TwoSecPlaying>().size == 1)
+            assertTrue(filterIsInstance<PlaybackEvent.TwoSecADPlaying>().size == 1)
+            assertTrue(filterIsInstance<PlaybackEvent.BurstListened>().size == 1)
+            assertTrue(filterIsInstance<PlaybackEvent.Playing>().size == 1)
+        }
+    }
+
+    private fun testWithReport(
+        playlist: Playlist,
+        advertisements: List<DownloadedAdvertisement> = emptyList(),
+        report: String,
+        validate: List<PlaybackEvent>.() -> Unit,
+    ) {
+        // GIVEN
         val previousStates: Queue<InternalPlaybackState> = FixedSizeQueue(10)
         val listenedStrategy = listenedStrategyOf(
             creator = InputBasedPlaybackPeriodsCreator(),
@@ -337,14 +432,7 @@ class ListenedStrategyTest {
         )
 
         // WHEN
-        val events = """
-            1625653233579,https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8,1.98
-            1625653235582,https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8,3.983
-            1625653237585,https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8,5.986
-            1625653239587,https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8,7.988
-            1625653241590,https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8,9.991
-            1625653243592,https://storageaudiobursts.azureedge.net/stream/699v5DwkWP36/outputlist.m3u8,11.994
-        """.trimIndent()
+        val events = report
             .lines()
             .map { it.split(",") }
             .flatMap {
@@ -359,6 +447,7 @@ class ListenedStrategyTest {
                     ),
                     playlist = playlist,
                     previousStates = previousStates,
+                    advertisements = advertisements,
                 )
                 listenedStrategy.check(input).apply {
                     previousStates.add(input.currentState)
@@ -366,8 +455,6 @@ class ListenedStrategyTest {
             }
 
         // THEN
-        assertTrue(events.filterIsInstance<PlaybackEvent.TwoSecPlaying>().size == 1)
-        assertTrue(events.filterIsInstance<PlaybackEvent.BurstListened>().size == 1)
-        assertTrue(events.filterIsInstance<PlaybackEvent.Playing>().size == 1)
+        validate(events)
     }
 }

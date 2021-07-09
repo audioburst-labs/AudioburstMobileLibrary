@@ -31,8 +31,8 @@ internal class ListenedMediaStrategy private constructor(
         val burst = periodsResult.eventPayload.burst
 
         val playTimeMs = when (configuration.timeOf) {
-            Configuration.TimeOf.Burst -> burst.burstRange(advertisements).countIfPresentInRanges(allPeriods.map { it.range })
-            Configuration.TimeOf.Advertisement -> burst.advertisementRange(advertisements)?.countIfPresentInRanges(allPeriods.map { it.range }) ?: 0
+            Configuration.TimeOf.Burst -> burst.burstPlayTimeMs(periodsResult)
+            Configuration.TimeOf.Advertisement -> burst.advertisementPlayTimeMs(periodsResult, advertisements)
             Configuration.TimeOf.Total -> allPeriods.sumOf { it.duration }
         }
         return when (configuration.type) {
@@ -46,7 +46,7 @@ internal class ListenedMediaStrategy private constructor(
             }
             Configuration.Type.Periodical -> {
                 val remainder = playTimeMs.rem(configuration.minimumListenTime.milliseconds.toLong())
-                if (playTimeMs > previousNotifyTime + refreshInterval && playTimeMs > refreshInterval && remainder in 0..refreshInterval) {
+                if (playTimeMs >= previousNotifyTime + refreshInterval && playTimeMs >= refreshInterval && remainder in 0..refreshInterval) {
                     previousNotifyTime = playTimeMs
                     periodsResult.eventPayload
                 } else {
@@ -56,27 +56,15 @@ internal class ListenedMediaStrategy private constructor(
         }
     }
 
-    private fun LongRange.countIfPresentInRanges(ranges: List<LongRange>): Long {
-        var sum = 0L
-        forEach { value ->
-            ranges.forEach {
-                if (it.contains(value)) {
-                    sum++
-                }
-            }
-        }
-        return sum
+    private fun Burst.burstPlayTimeMs(periodsResult: PlaybackPeriodsCreator.Result): Long {
+        val currentUrl = periodsResult.forUrl
+        return if (audioUrl == currentUrl || streamUrl == currentUrl || source.audioUrl == currentUrl) periodsResult.duration else 0L
     }
 
-    private fun Burst.burstRange(advertisements: List<DownloadedAdvertisement>): LongRange =
-        advertisement(advertisements)?.let {
-            LongRange(start = it.duration.milliseconds.toLong(), endInclusive = duration.milliseconds.toLong())
-        } ?: LongRange(start = 0, endInclusive = duration.milliseconds.toLong())
-
-    private fun Burst.advertisementRange(advertisements: List<DownloadedAdvertisement>): LongRange? =
-        advertisement(advertisements)?.let {
-            LongRange(start = 0, endInclusive = it.duration.milliseconds.toLong())
-        }
+    private fun Burst.advertisementPlayTimeMs(periodsResult: PlaybackPeriodsCreator.Result, advertisements: List<DownloadedAdvertisement>): Long {
+        val advertisement = advertisement(advertisements) ?: return 0
+        return if (advertisement.burstUrl == periodsResult.forUrl) periodsResult.duration else 0
+    }
 
     internal class Factory(private val refreshInterval: Duration) {
         fun create(configuration: Configuration): ListenedMediaStrategy =

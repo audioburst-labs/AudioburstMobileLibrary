@@ -12,6 +12,7 @@ internal fun interface PlaybackPeriodsCreator {
     }
 
     data class Result(
+        val forUrl: String,
         val periods: List<Period>,
         val eventPayload: EventPayload,
     ) {
@@ -72,6 +73,7 @@ internal class InputBasedPlaybackPeriodsCreator : PlaybackPeriodsCreator {
             PlaybackPeriodsCreator.Result(
                 periods = periods.toList(),
                 eventPayload = it,
+                forUrl = playbackState.url,
             )
         }
 
