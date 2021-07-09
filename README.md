@@ -492,7 +492,7 @@ extension PlayerInteractor: PlaybackStateListener {
             return nil
         }
         let url = asset.url.absoluteString
-        let contentPositionMilis = (player.currentTime().seconds)/1000
+        let contentPositionMilis = (player.currentTime().seconds)*1000
         return PlaybackState(url: url, positionMillis: Int64(contentPositionMilis))
     }
 }
