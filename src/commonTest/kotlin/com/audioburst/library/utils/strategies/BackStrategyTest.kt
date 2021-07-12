@@ -3,13 +3,12 @@ package com.audioburst.library.utils.strategies
 import com.audioburst.library.interactors.burstOf
 import com.audioburst.library.interactors.playlistOf
 import com.audioburst.library.models.AnalysisInput
-import com.audioburst.library.models.PlaybackEvent
 import com.audioburst.library.models.InternalPlaybackState
+import com.audioburst.library.models.PlaybackEvent
 import com.audioburst.library.utils.fixedQueueOf
 import com.audioburst.library.utils.playbackStateOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 internal class BackStrategyTest {
 
@@ -19,14 +18,18 @@ internal class BackStrategyTest {
     fun testWhenSwitchingToPrevious() {
         // GIVEN
         val firstAudioUrl = "firstAudioUrl"
+        val firstBurstId = "firstBurstId"
         val secondAudioUrl = "secondAudioUrl"
+        val secondBurstId = "secondBurstId"
         val playlist = playlistOf(
             bursts = listOf(
                 burstOf(
-                    audioUrl = firstAudioUrl
+                    id = firstBurstId,
+                    audioUrl = firstAudioUrl,
                 ),
                 burstOf(
-                    audioUrl = secondAudioUrl
+                    id = secondBurstId,
+                    audioUrl = secondAudioUrl,
                 )
             )
         )
@@ -53,7 +56,8 @@ internal class BackStrategyTest {
         )
 
         // THEN
-        assertTrue(playbackEvent is PlaybackEvent.Back)
+        require(playbackEvent is PlaybackEvent.Back)
+        assertEquals(secondBurstId, playbackEvent.eventPayload.burst.id)
     }
 
     @Test

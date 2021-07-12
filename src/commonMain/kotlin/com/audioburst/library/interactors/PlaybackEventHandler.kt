@@ -24,7 +24,7 @@ internal class PlaybackEventHandlerInteractor(
 ) : PlaybackEventHandler {
 
     override suspend fun handle(event: Event) {
-        Logger.i("Event detected: ${event.actionName}")
+        Logger.i("Event detected: ${event.actionName}${event.logMessage}")
         when (event) {
             is PlaybackEvent -> when (event) {
                 is PlaybackEvent.BurstListened -> markBurstAsListened(event.eventPayload.burst)
@@ -179,3 +179,9 @@ internal class PlaybackEventHandlerInteractor(
     private fun playerStatus(isPlaying: Boolean): PlayerEvent.Status =
         if (isPlaying) PlayerEvent.Status.Playing else PlayerEvent.Status.Stopped
 }
+
+private val Event.logMessage: String
+    get() = when (this) {
+        is GeneralEvent.GetPlaylists -> ""
+        is PlaybackEvent -> ", ${eventPayload.burst.id}"
+    }

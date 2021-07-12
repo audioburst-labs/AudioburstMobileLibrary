@@ -22,14 +22,18 @@ class SkipStrategyTest {
     ) {
         // GIVEN
         val firstAudioUrl = "firstAudioUrl"
+        val firstBurstId = "firstBurstId"
         val secondAudioUrl = "secondAudioUrl"
+        val secondBurstId = "secondBurstId"
         val playlist = playlistOf(
             bursts = listOf(
                 burstOf(
+                    id = firstBurstId,
                     audioUrl = firstAudioUrl,
                     duration = previousBurstDuration.toDuration(DurationUnit.Seconds)
                 ),
                 burstOf(
+                    id = secondBurstId,
                     audioUrl = secondAudioUrl,
                 )
             )
@@ -59,7 +63,8 @@ class SkipStrategyTest {
 
         // THEN
         if (isValid) {
-            assertTrue(playbackEvent != null)
+            require(playbackEvent != null)
+            assertEquals(firstBurstId, playbackEvent.eventPayload.burst.id)
         } else {
             assertTrue(playbackEvent == null)
         }
@@ -117,7 +122,7 @@ class SkipStrategyTest {
     }
 
     @Test
-    fun `test `() {
+    fun `test that when switching from Burst's ad to Burst's content there is no skip event detection`() {
         // GIVEN
         val burstAudioUrl = "burstAudioUrl"
         val getAdUrl = "getAdUrl"
@@ -167,7 +172,7 @@ class SkipStrategyTest {
     }
 
     @Test
-    fun `test lol`() {
+    fun `test that when switching from Burst's content to next Burst's ad there is skip event detection`() {
         // GIVEN
         val firstBurstAudioUrl = "https://storageaudiobursts.azureedge.net/audio/lKd3NlOJJZMd.mp3"
         val secondBurstAudioUrl = "https://storageaudiobursts.azureedge.net/audio/ZXXnY8BD3dRL.mp3"

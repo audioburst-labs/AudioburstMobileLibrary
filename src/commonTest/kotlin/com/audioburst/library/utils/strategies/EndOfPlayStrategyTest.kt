@@ -2,10 +2,7 @@ package com.audioburst.library.utils.strategies
 
 import com.audioburst.library.interactors.burstOf
 import com.audioburst.library.interactors.playlistOf
-import com.audioburst.library.models.AnalysisInput
-import com.audioburst.library.models.DurationUnit
-import com.audioburst.library.models.InternalPlaybackState
-import com.audioburst.library.models.toDuration
+import com.audioburst.library.models.*
 import com.audioburst.library.utils.fixedQueueOf
 import com.audioburst.library.utils.playbackStateOf
 import kotlin.test.Test
@@ -23,14 +20,18 @@ internal class EndOfPlayStrategyTest {
     ) {
         // GIVEN
         val firstAudioUrl = "firstAudioUrl"
+        val firstBurstId = "firstBurstId"
         val secondAudioUrl = "secondAudioUrl"
+        val secondBurstId = "secondBurstId"
         val playlist = playlistOf(
             bursts = listOf(
                 burstOf(
+                    id = firstBurstId,
                     audioUrl = firstAudioUrl,
                     duration = previousBurstDuration.toDuration(DurationUnit.Seconds)
                 ),
                 burstOf(
+                    id = secondBurstId,
                     audioUrl = secondAudioUrl,
                 )
             )
@@ -60,7 +61,8 @@ internal class EndOfPlayStrategyTest {
 
         // THEN
         if (isValid) {
-            assertTrue(playbackEvent != null)
+            require(playbackEvent is PlaybackEvent.EndOfPlay)
+            assertEquals(firstBurstId, playbackEvent.eventPayload.burst.id)
         } else {
             assertTrue(playbackEvent == null)
         }

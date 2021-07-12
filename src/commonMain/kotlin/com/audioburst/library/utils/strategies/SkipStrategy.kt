@@ -8,8 +8,8 @@ import com.audioburst.library.models.*
 internal class SkipStrategy : PlaybackEventStrategy<PlaybackEvent.Skip> {
 
     override fun check(input: AnalysisInput): PlaybackEvent.Skip? {
-        val eventPayload = input.currentEventPayload() ?: return null
         val lastState = input.lastState() ?: return null
+        val eventPayload = input.eventPayload(lastState) ?: return null
         val indexOfCurrentBurst = input.indexOfCurrentBurst()
         val indexOfPreviousBurst = input.indexOfLastBurst()
         return when {

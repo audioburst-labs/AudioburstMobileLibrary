@@ -21,6 +21,10 @@ internal class LibraryConfigurationHolder(
     override val libraryKey: LibraryKey = platformLibraryKey
     override val libraryVersion: LibraryVersion = LibraryVersion(LIBRARY_VERSION)
 
+    init {
+        Logger.i(LIBRARY_VERSION)
+    }
+
     private var _subscriptionKey by nullableAtomic<SubscriptionKey>()
     override val subscriptionKey: SubscriptionKey
         get() = _subscriptionKey ?: throw IllegalStateException(
