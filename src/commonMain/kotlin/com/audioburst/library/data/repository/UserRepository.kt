@@ -9,7 +9,7 @@ import com.audioburst.library.data.remote.AudioburstV2Api
 import com.audioburst.library.data.repository.mappers.*
 import com.audioburst.library.data.repository.models.AdvertisementResponse
 import com.audioburst.library.data.repository.models.PlaylistsResponse
-import com.audioburst.library.data.repository.models.TopStoryResponse
+import com.audioburst.library.data.repository.models.UserExperienceResponse
 import com.audioburst.library.data.repository.models.UserResponse
 import com.audioburst.library.models.*
 import com.audioburst.library.utils.LibraryConfiguration
@@ -22,12 +22,6 @@ internal interface UserRepository {
 
     suspend fun getPlaylists(userId: String): Resource<List<PlaylistInfo>>
 
-    suspend fun getPlaylist(userId: String, playlistInfo: PlaylistInfo): Resource<Playlist>
-
-    suspend fun getPlaylist(userId: String, byteArray: ByteArray): Resource<Playlist>
-
-    suspend fun search(userId: String, query: String): Resource<Playlist>
-
     suspend fun postEvent(playerEvent: PlayerEvent, name: String): Resource<Unit>
 
     suspend fun postReportingData(reportingData: ReportingData): Resource<Unit>
@@ -35,6 +29,8 @@ internal interface UserRepository {
     suspend fun postBurstPlayback(playlistId: Long, burstId: String, userId: String): Resource<Unit>
 
     suspend fun getPromoteData(adUrl: Url): Resource<PromoteData>
+
+    suspend fun getUserExperience(applicationKey: String, experienceId: String): Resource<UserExperience>
 }
 
 internal class HttpUserRepository(
@@ -48,6 +44,7 @@ internal class HttpUserRepository(
     private val topStoryResponseToPlaylist: TopStoryResponseToPlaylist,
     private val advertisementResponseToAdvertisementMapper: AdvertisementResponseToPromoteDataMapper,
     private val playerEventToEventRequestMapper: PlayerEventToEventRequestMapper,
+    private val userExperienceMapper: UserExperienceResponseToUserExperienceMapper,
 ) : UserRepository {
 
     override suspend fun registerUser(userId: String): Resource<User> =
@@ -59,60 +56,6 @@ internal class HttpUserRepository(
     override suspend fun getPlaylists(userId: String): Resource<List<PlaylistInfo>> =
         httpClient.execute<List<PlaylistsResponse>>(audioburstV2Api.getAllPlaylists()).map { playlistResponses ->
             playlistResponses.map { playlistResponseToPlaylistInfoMapper.map(it, userId) }
-        }
-
-    override suspend fun getPlaylist(userId: String, playlistInfo: PlaylistInfo): Resource<Playlist> =
-        httpClient.execute<TopStoryResponse>(Url(playlistInfo.url))
-            .map { topStoryResponse ->
-                topStoryResponseToPlaylist.map(
-                    from = topStoryResponse,
-                    userId = userId,
-                    playlistId = playlistInfo.id.toString(),
-                    playlistName = playlistInfo.name,
-                    playerAction = PlayerAction(
-                        type = PlayerAction.Type.Channel,
-                        value = playlistInfo.id.toString(),
-                    )
-                )
-            }
-
-    override suspend fun getPlaylist(userId: String, byteArray: ByteArray): Resource<Playlist> =
-        httpClient.execute<TopStoryResponse>(
-            audioburstV2Api.getPlaylist(
-                byteArray = byteArray,
-                userId = userId,
-                libraryKey = libraryConfiguration.libraryKey,
-            )
-        ).map { topStoryResponse ->
-            topStoryResponseToPlaylist.map(
-                from = topStoryResponse,
-                userId = userId,
-                playlistId = "",
-                playlistName = "",
-                playerAction = PlayerAction(
-                    type = PlayerAction.Type.Voice,
-                    value = topStoryResponse.actualQuery ?: "",
-                )
-            )
-        }
-
-    override suspend fun search(userId: String, query: String): Resource<Playlist> =
-        httpClient.execute<TopStoryResponse>(
-            audioburstV2Api.search(
-                query = query,
-                userId = userId,
-            )
-        ).map { topStoryResponse ->
-            topStoryResponseToPlaylist.map(
-                from = topStoryResponse,
-                userId = userId,
-                playlistId = "",
-                playlistName = topStoryResponse.actualQuery ?: query,
-                playerAction = PlayerAction(
-                    type = PlayerAction.Type.Search,
-                    value = query,
-                )
-            )
         }
 
     override suspend fun postEvent(playerEvent: PlayerEvent, name: String): Resource<Unit> =
@@ -141,6 +84,15 @@ internal class HttpUserRepository(
     override suspend fun getPromoteData(adUrl: Url): Resource<PromoteData> =
         httpClient.execute<AdvertisementResponse>(adUrl)
             .map(advertisementResponseToAdvertisementMapper::map)
+
+    override suspend fun getUserExperience(applicationKey: String, experienceId: String): Resource<UserExperience> =
+        httpClient.execute<UserExperienceResponse>(
+            audioburstApi.getUserExperience(
+                applicationKey = applicationKey,
+                experienceId = experienceId,
+                appKey = libraryConfiguration.libraryKey.value,
+            )
+        ).map(userExperienceMapper::map)
 
     companion object {
         private const val LOG_ONLY_DOWNLOAD_TYPE = 2

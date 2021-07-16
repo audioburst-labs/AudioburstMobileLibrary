@@ -6,7 +6,8 @@ class PlayerAction(
 ) {
 
     enum class Type(val id: String) {
-        Personalized("p_playlist"), Channel("channel"), Voice("Voice"), Search("search");
+        Personalized("p_playlist"), Channel("channel"), Voice("Voice"), Search("search"),
+        UserGenerated("ug_playlist"), Account("a_playlist"), Source("s_playlist");
     }
 
     override fun equals(other: Any?): Boolean {

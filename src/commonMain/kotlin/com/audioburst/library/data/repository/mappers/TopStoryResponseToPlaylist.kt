@@ -24,5 +24,6 @@ internal class TopStoryResponseToPlaylist constructor(
             } ?: emptyList(),
             playerSessionId = playerSessionIdGetter.get(),
             playerAction = playerAction,
+            intent = Playlist.Intent.create(from.intent),
         )
 }

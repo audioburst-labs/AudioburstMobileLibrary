@@ -61,6 +61,16 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
     }
 
     /**
+     * Use this function to get information about the [Playlist] for a given [PlaylistRequest].
+     *
+     * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it
+     * [Result.Error] will be returned with a proper error ([LibraryError]).
+     */
+    fun getPlaylist(playlistRequest: PlaylistRequest, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
+        delegate.getPlaylist(playlistRequest, onData, onError)
+    }
+
+    /**
      * In case you would like to play Burst's advertisement audio, you should use this function to get URL to play.
      * Note that only [Burst] whose [Burst.isAdAvailable] returns true will return correct URL. Otherwise you will get
      * [LibraryError.AdUrlNotFound] error in [Result.Error].
@@ -115,6 +125,16 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
      */
     fun setUserPreferences(userPreferences: UserPreferences, onData: (UserPreferences) -> Unit, onError: (LibraryError) -> Unit) {
         delegate.setUserPreferences(userPreferences, onData, onError)
+    }
+
+    /**
+     * Use this function to get information about user's [UserExperience].
+     *
+     * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it
+     * [Result.Error] will be returned with a proper error ([LibraryError]).
+     */
+    fun getUserExperience(applicationKey: String, experienceId: String, onData: (UserExperience) -> Unit, onError: (LibraryError) -> Unit) {
+        delegate.getUserExperience(applicationKey = applicationKey, experienceId = experienceId, onData, onError)
     }
 
     /**

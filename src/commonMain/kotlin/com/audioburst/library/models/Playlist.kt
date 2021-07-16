@@ -7,7 +7,21 @@ class Playlist(
     val bursts: List<Burst>,
     val playerSessionId: PlayerSessionId,
     internal val playerAction: PlayerAction,
+    val intent: Intent?,
 ) {
+
+    enum class Intent {
+        Playlists, News;
+
+        companion object {
+            fun create(intentName: String?): Intent? =
+                intentName?.let { name ->
+                    values().firstOrNull { intent ->
+                        intent.name.equals(name, ignoreCase = true)
+                    }
+                }
+        }
+    }
 
     internal fun copy(bursts: List<Burst>): Playlist =
         Playlist(
@@ -16,7 +30,8 @@ class Playlist(
             query = query,
             bursts = bursts,
             playerSessionId = playerSessionId,
-            playerAction = playerAction
+            playerAction = playerAction,
+            intent = intent,
         )
 
     override fun equals(other: Any?): Boolean {

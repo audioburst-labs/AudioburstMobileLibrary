@@ -19,15 +19,25 @@ class GetPlaylistTest {
     private val playlistStorage = InMemoryPlaylistStorage()
     private fun interactor(
         getPlaylistByPlaylistInfo: Resource<Playlist> = Resource.Data(playlistOf()),
-        userResource: Resource<User>,
+        channelReturns: Resource<Playlist> = Resource.Data(playlistOf()),
+        userGeneratedReturns: Resource<Playlist> = Resource.Data(playlistOf()),
+        sourceReturns: Resource<Playlist> = Resource.Data(playlistOf()),
+        accountReturns: Resource<Playlist> = Resource.Data(playlistOf()),
+        userRepositoryReturns: Resource<User>,
         postContentLoadEvent: PostContentLoadEvent = postContentLoadEventOf(),
         listenedBurstStorage: ListenedBurstStorage = listenedBurstsStorageOf(),
         userStorage: UserStorage = userStorageOf(),
     ): GetPlaylist =
         GetPlaylist(
-            getUser = getUserOf(userResource),
-            userRepository = userRepositoryOf(
-                returns = MockUserRepository.Returns(getPlaylistByPlaylistInfo = getPlaylistByPlaylistInfo)
+            getUser = getUserOf(userRepositoryReturns),
+            playlistRepository = playlistRepositoryOf(
+                returns = MockPlaylistRepository.Returns(
+                    getPlaylistByPlaylistInfo = getPlaylistByPlaylistInfo,
+                    channel = channelReturns,
+                    userGenerated = userGeneratedReturns,
+                    source = sourceReturns,
+                    account = accountReturns,
+                )
             ),
             postContentLoadEvent = postContentLoadEvent,
             playlistStorage = playlistStorage,
@@ -49,7 +59,7 @@ class GetPlaylistTest {
         // WHEN
         val resource = interactor(
             getPlaylistByPlaylistInfo = getPlaylistReturn,
-            userResource = userResource,
+            userRepositoryReturns = userResource,
         )(playlistInfoOf())
 
         // THEN
@@ -66,7 +76,7 @@ class GetPlaylistTest {
         // WHEN
         val resource = interactor(
             getPlaylistByPlaylistInfo = getPlaylistReturn,
-            userResource = userResource,
+            userRepositoryReturns = userResource,
         )(playlistInfoOf())
 
         // THEN
@@ -82,7 +92,7 @@ class GetPlaylistTest {
         // WHEN
         val resource = interactor(
             getPlaylistByPlaylistInfo = getPlaylistReturn,
-            userResource = userResource,
+            userRepositoryReturns = userResource,
         )(playlistInfoOf())
 
         // THEN
@@ -99,7 +109,7 @@ class GetPlaylistTest {
         // WHEN
         interactor(
             getPlaylistByPlaylistInfo = getPlaylistReturn,
-            userResource = userResource,
+            userRepositoryReturns = userResource,
             postContentLoadEvent = postContentLoadEventOf(
                 playbackEventHandler = playbackEventHandler
             )
@@ -115,7 +125,10 @@ class GetPlaylistTest {
         val listenedBurstIds = listOf("id1", "id2", "id3")
         val notListenedBurstId = "id4"
         val getPlaylistReturn = Resource.Data(
-            playlistOf(bursts = (listenedBurstIds + listOf(notListenedBurstId)).map { burstOf(id = it) })
+            playlistOf(
+                intent = Playlist.Intent.Playlists,
+                bursts = (listenedBurstIds + listOf(notListenedBurstId)).map { burstOf(id = it) }
+            )
         )
         val listenedBursts = listenedBurstIds.map { listenedBurstOf(id = it) }
         val userResource = Resource.Data(userOf())
@@ -126,7 +139,7 @@ class GetPlaylistTest {
         // WHEN
         val resource = interactor(
             getPlaylistByPlaylistInfo = getPlaylistReturn,
-            userResource = userResource,
+            userRepositoryReturns = userResource,
             listenedBurstStorage = listenedBurstStorage,
             userStorage = userStorageOf(filterListenedBursts = true)
         )(playlistInfoOf())
@@ -143,7 +156,10 @@ class GetPlaylistTest {
         val listenedBurstIds = listOf("id1", "id2", "id3")
         val notListenedBurstId = "id4"
         val getPlaylistReturn = Resource.Data(
-            playlistOf(bursts = (listenedBurstIds + listOf(notListenedBurstId)).map { burstOf(id = it) })
+            playlistOf(
+                intent = Playlist.Intent.Playlists,
+                bursts = (listenedBurstIds + listOf(notListenedBurstId)).map { burstOf(id = it) },
+            )
         )
         val listenedBursts = listenedBurstIds.map { listenedBurstOf(id = it) }
         val userResource = Resource.Data(userOf())
@@ -154,7 +170,7 @@ class GetPlaylistTest {
         // WHEN
         val resource = interactor(
             getPlaylistByPlaylistInfo = getPlaylistReturn,
-            userResource = userResource,
+            userRepositoryReturns = userResource,
             listenedBurstStorage = listenedBurstStorage,
             userStorage = userStorageOf(filterListenedBursts = false)
         )(playlistInfoOf())
@@ -169,7 +185,10 @@ class GetPlaylistTest {
         // GIVEN
         val listenedBurstIds = listOf("id1", "id2", "id3")
         val getPlaylistReturn = Resource.Data(
-            playlistOf(bursts = (listenedBurstIds).map { burstOf(id = it) })
+            playlistOf(
+                intent = Playlist.Intent.Playlists,
+                bursts = (listenedBurstIds).map { burstOf(id = it) },
+            )
         )
         val listenedBursts = listenedBurstIds.map { listenedBurstOf(id = it) }
         val userResource = Resource.Data(userOf())
@@ -178,7 +197,7 @@ class GetPlaylistTest {
         // WHEN
         val resource = interactor(
             getPlaylistByPlaylistInfo = getPlaylistReturn,
-            userResource = userResource,
+            userRepositoryReturns = userResource,
             listenedBurstStorage = listenedBurstStorage,
             userStorage = userStorageOf(filterListenedBursts = true)
         )(playlistInfoOf())
@@ -188,5 +207,79 @@ class GetPlaylistTest {
         assertEquals(expected = 2, resource.value.bursts.size)
         assertEquals(getPlaylistReturn.result.bursts[0], resource.value.bursts[0])
         assertEquals(getPlaylistReturn.result.bursts[1], resource.value.bursts[1])
+    }
+
+    @Test
+    fun `test if playlist is getting shuffled when shuffle is true in Request Options`() = runTest {
+        // GIVEN
+        val options = requestOptionsOf(shuffle = true)
+        val request = channelRequestOf(options = options)
+        val burstIds = listOf("id1", "id2", "id3", "id4", "id5", "id6")
+        val getPlaylistReturn = Resource.Data(
+            playlistOf(
+                intent = Playlist.Intent.Playlists,
+                bursts = (burstIds).map { burstOf(id = it) },
+            )
+        )
+
+        // WHEN
+        val resource = interactor(
+            channelReturns = getPlaylistReturn,
+            userRepositoryReturns = Resource.Data(userOf())
+        )(request)
+
+        // THEN
+        require(resource is Result.Data)
+        assertTrue(resource.value.bursts.map { it.id } != burstIds)
+    }
+
+    @Test
+    fun `test if Burst is not getting filtered out when we pass its Burst id as a firstBurstId in PlaylistRequest's Options`() = runTest {
+        // GIVEN
+        val firstBurstId = "id7"
+        val options = requestOptionsOf(firstBurstId = firstBurstId)
+        val request = channelRequestOf(options = options)
+        val listenedBurstIds = listOf("id1", "id2", "id3", "id4", "id5", "id6") + listOf(firstBurstId)
+        val getPlaylistReturn = Resource.Data(
+            playlistOf(
+                intent = Playlist.Intent.Playlists,
+                bursts = (listenedBurstIds).map { burstOf(id = it) },
+            )
+        )
+
+        // WHEN
+        val resource = interactor(
+            channelReturns = getPlaylistReturn,
+            userRepositoryReturns = Resource.Data(userOf())
+        )(request)
+
+        // THEN
+        require(resource is Result.Data)
+        assertEquals(firstBurstId, resource.value.bursts.map { it.id }.first())
+    }
+
+    @Test
+    fun `test if Burst is not getting filtered out when we pass its Burst id as a firstBurstId in PlaylistRequest's Options and shuffle is true`() = runTest {
+        // GIVEN
+        val firstBurstId = "id7"
+        val options = requestOptionsOf(firstBurstId = firstBurstId, shuffle = true)
+        val request = channelRequestOf(options = options)
+        val listenedBurstIds = listOf("id1", "id2", "id3", "id4", "id5", "id6") + listOf(firstBurstId)
+        val getPlaylistReturn = Resource.Data(
+            playlistOf(
+                intent = Playlist.Intent.Playlists,
+                bursts = (listenedBurstIds).map { burstOf(id = it) },
+            )
+        )
+
+        // WHEN
+        val resource = interactor(
+            channelReturns = getPlaylistReturn,
+            userRepositoryReturns = Resource.Data(userOf())
+        )(request)
+
+        // THEN
+        require(resource is Result.Data)
+        assertEquals(firstBurstId, resource.value.bursts.map { it.id }.first())
     }
 }

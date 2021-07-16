@@ -104,6 +104,47 @@ internal class AudioburstV2Api(private val json: Json) {
             method = Endpoint.Method.GET,
         )
 
+    fun getUserGeneratedPlaylist(id: String, userId: String, device: String): Endpoint =
+        endpoint(
+            path = "topstories/usergenerated/$id",
+            queryParams = mapOf(
+                "userId" to userId,
+                "device" to device,
+            ),
+            method = Endpoint.Method.GET,
+        )
+
+    fun getSourcePlaylist(id: String, userId: String, device: String): Endpoint =
+        endpoint(
+            path = "topstories/source/$id",
+            queryParams = mapOf(
+                "userId" to userId,
+                "device" to device,
+            ),
+            method = Endpoint.Method.GET,
+        )
+
+    fun getAccountPlaylist(id: String, userId: String, device: String): Endpoint =
+        endpoint(
+            path = "topstories/account/$id",
+            queryParams = mapOf(
+                "userId" to userId,
+                "device" to device,
+            ),
+            method = Endpoint.Method.GET,
+        )
+
+    fun getChannelPlaylist(id: Int, userId: String, device: String): Endpoint =
+        endpoint(
+            path = "topstories/category",
+            queryParams = mapOf(
+                "userId" to userId,
+                "device" to device,
+                "category" to id,
+            ),
+            method = Endpoint.Method.GET,
+        )
+
     companion object {
         private const val BASE_URL = "sapi.audioburst.com/v2"
     }

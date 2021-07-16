@@ -12,6 +12,7 @@ internal data class TopStoryResponse(
     val message: String?,
     val imageURL: String?,
     val nextPage: String?,
+    val intent: String?,
 )
 
 @Serializable

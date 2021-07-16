@@ -3,6 +3,7 @@ package com.audioburst.library.interactors
 import com.audioburst.library.data.ErrorType
 import com.audioburst.library.data.Resource
 import com.audioburst.library.data.repository.PersonalPlaylistRepository
+import com.audioburst.library.data.repository.PlaylistRepository
 import com.audioburst.library.data.repository.UserRepository
 import com.audioburst.library.data.repository.mappers.libraryConfigurationOf
 import com.audioburst.library.data.repository.mappers.playerActionOf
@@ -30,6 +31,7 @@ internal fun playlistOf(
     bursts: List<Burst> = emptyList(),
     playerSessionId: PlayerSessionId = PlayerSessionId(""),
     playerAction: PlayerAction = playerActionOf(),
+    intent: Playlist.Intent? = null,
 ): Playlist =
     Playlist(
         id = id,
@@ -38,6 +40,7 @@ internal fun playlistOf(
         bursts = bursts,
         playerSessionId = playerSessionId,
         playerAction = playerAction,
+        intent = intent,
     )
 
 internal fun playlistInfoOf(
@@ -217,6 +220,13 @@ internal fun userRepositoryOf(
         sentEvents = sentEvents
     )
 
+internal fun playlistRepositoryOf(
+    returns: MockPlaylistRepository.Returns = MockPlaylistRepository.Returns(),
+): PlaylistRepository =
+    MockPlaylistRepository(
+        returns = returns,
+    )
+
 internal class MockUserRepository(
     private val returns: Returns,
     private val sentEvents: MutableList<SentEvent>,
@@ -228,12 +238,6 @@ internal class MockUserRepository(
 
     override suspend fun getPlaylists(userId: String): Resource<List<PlaylistInfo>> = returns.getPlaylists
 
-    override suspend fun getPlaylist(userId: String, playlistInfo: PlaylistInfo): Resource<Playlist> = returns.getPlaylistByPlaylistInfo
-
-    override suspend fun getPlaylist(userId: String, byteArray: ByteArray): Resource<Playlist> = returns.getPlaylistByByteArray
-
-    override suspend fun search(userId: String, query: String): Resource<Playlist> = returns.search
-
     override suspend fun postEvent(playerEvent: PlayerEvent, name: String): Resource<Unit> = returns.postPlayerEvent.apply {
         sentEvents.add(SentEvent(name, playerEvent))
     }
@@ -244,22 +248,48 @@ internal class MockUserRepository(
 
     override suspend fun getPromoteData(adUrl: Url): Resource<PromoteData> = returns.getPromoteData
 
+    override suspend fun getUserExperience(applicationKey: String, experienceId: String): Resource<UserExperience> = returns.getUserExperience
+
     data class Returns(
         val registerUser: Resource<User> = Resource.Data(userOf()),
         val verifyUserId: Resource<User> = Resource.Data(userOf()),
         val getPlaylists: Resource<List<PlaylistInfo>> = Resource.Data(listOf()),
-        val getPlaylistByPlaylistInfo: Resource<Playlist> = Resource.Data(playlistOf()),
-        val getPlaylistByByteArray: Resource<Playlist> = Resource.Data(playlistOf()),
-        val search: Resource<Playlist> = Resource.Data(playlistOf()),
         val postPlayerEvent: Resource<Unit> = Resource.Data(Unit),
         val postReportingData: Resource<Unit> = Resource.Data(Unit),
         val postBurstPlayback: Resource<Unit> = Resource.Data(Unit),
         val getPromoteData: Resource<PromoteData> = Resource.Data(promoteDataOf()),
+        val getUserExperience: Resource<UserExperience> = Resource.Data(userExperienceOf())
     )
 
     data class SentEvent(
         val name: String,
         val playerEvent: PlayerEvent,
+    )
+}
+
+internal class MockPlaylistRepository(private val returns: Returns) : PlaylistRepository {
+    override suspend fun channel(playlistRequest: PlaylistRequest.Channel, userId: String): Resource<Playlist> = returns.channel
+
+    override suspend fun userGenerated(playlistRequest: PlaylistRequest.UserGenerated, userId: String): Resource<Playlist> = returns.userGenerated
+
+    override suspend fun source(playlistRequest: PlaylistRequest.Source, userId: String): Resource<Playlist> = returns.source
+
+    override suspend fun account(playlistRequest: PlaylistRequest.Account, userId: String): Resource<Playlist> = returns.account
+
+    override suspend fun getPlaylist(userId: String, playlistInfo: PlaylistInfo): Resource<Playlist> = returns.getPlaylistByPlaylistInfo
+
+    override suspend fun getPlaylist(userId: String, byteArray: ByteArray): Resource<Playlist> = returns.getPlaylistByByteArray
+
+    override suspend fun search(userId: String, query: String): Resource<Playlist> = returns.search
+
+    data class Returns(
+        val userGenerated: Resource<Playlist> = Resource.Data(playlistOf()),
+        val channel: Resource<Playlist> = Resource.Data(playlistOf()),
+        val source: Resource<Playlist> = Resource.Data(playlistOf()),
+        val account: Resource<Playlist> = Resource.Data(playlistOf()),
+        val getPlaylistByPlaylistInfo: Resource<Playlist> = Resource.Data(playlistOf()),
+        val getPlaylistByByteArray: Resource<Playlist> = Resource.Data(playlistOf()),
+        val search: Resource<Playlist> = Resource.Data(playlistOf()),
     )
 }
 
@@ -375,3 +405,82 @@ internal fun listenedBurstsStorageOf(
         override suspend fun addOrUpdate(listenedBurst: ListenedBurst) = Unit
         override suspend fun removeExpiredListenedBursts() = Unit
     }
+
+internal fun userExperienceOf(
+    id: String = "",
+    playerSettings: PlayerSettings = playerSettingsOf(),
+    request: PlaylistRequest = sourceRequestOf(),
+): UserExperience =
+    UserExperience(
+        id = id,
+        playerSettings = playerSettings,
+        request = request,
+    )
+
+internal fun playerSettingsOf(
+    mode: PlayerSettings.Mode = PlayerSettings.Mode.Banner,
+    autoplay: Boolean = false,
+    accentColor: String = "",
+    theme: PlayerSettings.Theme = PlayerSettings.Theme.Light,
+    isShuffleEnabled: Boolean = false,
+): PlayerSettings =
+    PlayerSettings(
+        mode = mode,
+        autoplay = autoplay,
+        accentColor = accentColor,
+        theme = theme,
+        isShuffleEnabled = isShuffleEnabled,
+    )
+
+internal fun userGeneratedRequestOf(
+    id: String = "",
+    name: String = "",
+    options: PlaylistRequest.Options = requestOptionsOf(),
+): PlaylistRequest.UserGenerated =
+    PlaylistRequest.UserGenerated(
+        id = id,
+        name = name,
+        options = options,
+    )
+
+internal fun sourceRequestOf(
+    id: String = "",
+    name: String = "",
+    options: PlaylistRequest.Options = requestOptionsOf(),
+): PlaylistRequest.Source =
+    PlaylistRequest.Source(
+        id = id,
+        name = name,
+        options = options,
+    )
+
+internal fun accountRequestOf(
+    id: String = "",
+    name: String = "",
+    options: PlaylistRequest.Options = requestOptionsOf(),
+): PlaylistRequest.Account =
+    PlaylistRequest.Account(
+        id = id,
+        name = name,
+        options = options,
+    )
+
+internal fun channelRequestOf(
+    id: Int = 0,
+    name: String = "",
+    options: PlaylistRequest.Options = requestOptionsOf(),
+): PlaylistRequest.Channel =
+    PlaylistRequest.Channel(
+        id = id,
+        name = name,
+        options = options,
+    )
+
+internal fun requestOptionsOf(
+    firstBurstId: String? = null,
+    shuffle: Boolean = false,
+): PlaylistRequest.Options =
+    PlaylistRequest.Options(
+        firstBurstId = firstBurstId,
+        shuffle = shuffle,
+    )

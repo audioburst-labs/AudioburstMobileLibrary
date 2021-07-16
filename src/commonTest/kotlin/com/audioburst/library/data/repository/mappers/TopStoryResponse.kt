@@ -11,6 +11,7 @@ internal fun topStoryResponseOf(
     message: String? = null,
     imageURL: String? = null,
     nextPage: String? = null,
+    intent: String? = null,
 ): TopStoryResponse =
     TopStoryResponse(
         type = type,
@@ -21,6 +22,7 @@ internal fun topStoryResponseOf(
         message = message,
         imageURL = imageURL,
         nextPage = nextPage,
+        intent = intent,
     )
 
 internal fun burstsResponseOf(

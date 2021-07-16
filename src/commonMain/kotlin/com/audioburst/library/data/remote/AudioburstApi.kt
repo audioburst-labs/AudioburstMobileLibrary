@@ -31,6 +31,16 @@ internal class AudioburstApi {
             )
         )
 
+    fun getUserExperience(applicationKey: String, experienceId: String, appKey: String): Endpoint =
+        endpoint(
+            path = "userexperience/$experienceId",
+            method = Endpoint.Method.GET,
+            queryParams = mapOf(
+                "token" to applicationKey,
+                "app" to appKey
+            )
+        )
+
     companion object {
         private const val BASE_URL = "sapi.audioburst.com"
     }

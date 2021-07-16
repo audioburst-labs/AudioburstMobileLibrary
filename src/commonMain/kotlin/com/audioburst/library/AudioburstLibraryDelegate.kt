@@ -21,6 +21,7 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
     internal lateinit var subscriptionKeySetter: SubscriptionKeySetter
     internal lateinit var postUserPreferences: PostUserPreferences
     internal lateinit var getUserPreferences: GetUserPreferences
+    internal lateinit var getUserExperience: GetUserExperience
     internal lateinit var getPlaylistsInfo: GetPlaylistsInfo
     internal lateinit var eventDetector: StrategyBasedEventDetector
     internal lateinit var updateUserId: UpdateUserId
@@ -75,6 +76,11 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
         return search.invoke(byteArray)
     }
 
+    suspend fun getPlaylist(playlistRequest: PlaylistRequest): Result<Playlist> {
+        Logger.i("getPlaylist")
+        return getPlaylist.invoke(playlistRequest)
+    }
+
     fun getPlaylist(playlistInfo: PlaylistInfo, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
         Logger.i("getPlaylist")
         scope.launch {
@@ -88,6 +94,15 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
         Logger.i("getPlaylist")
         scope.launch {
             search.invoke(byteArray)
+                .onData { onData(it) }
+                .onError { onError(it) }
+        }
+    }
+
+    fun getPlaylist(playlistRequest: PlaylistRequest, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
+        Logger.i("getPlaylist")
+        scope.launch {
+            getPlaylist.invoke(playlistRequest)
                 .onData { onData(it) }
                 .onError { onError(it) }
         }
@@ -174,6 +189,20 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
         Logger.i("setUserPreferences")
         scope.launch {
             postUserPreferences(userPreferences)
+                .onData { onData(it) }
+                .onError { onError(it) }
+        }
+    }
+
+    suspend fun getUserExperience(applicationKey: String, experienceId: String): Result<UserExperience> {
+        Logger.i("getUserExperience")
+        return getUserExperience.invoke(applicationKey = applicationKey, experienceId = experienceId)
+    }
+
+    fun getUserExperience(applicationKey: String, experienceId: String, onData: (UserExperience) -> Unit, onError: (LibraryError) -> Unit) {
+        Logger.i("getUserExperience")
+        scope.launch {
+            getUserExperience.invoke(applicationKey = applicationKey, experienceId = experienceId)
                 .onData { onData(it) }
                 .onError { onError(it) }
         }

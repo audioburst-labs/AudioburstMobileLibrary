@@ -89,6 +89,14 @@ internal object Injector {
             advertisementEventToAdvertisementEventRequestMapper = advertisementEventToAdvertisementEventRequestProvider.get(),
         )
     }
+    private val experiencePlaylistRequestCreatorProvider: Provider<ExperiencePlaylistRequestCreator> = provider {
+        ExperiencePlaylistRequestCreator()
+    }
+    private val userExperienceMapperProvider: Provider<UserExperienceResponseToUserExperienceMapper> = provider {
+        UserExperienceResponseToUserExperienceMapper(
+            experiencePlaylistRequestCreator = experiencePlaylistRequestCreatorProvider.get(),
+        )
+    }
     private val playlistStorageProvider: Provider<PlaylistStorage> = singleton { InMemoryPlaylistStorage() }
     private val userRepositoryProvider: Provider<UserRepository> = provider {
         HttpUserRepository(
@@ -102,6 +110,15 @@ internal object Injector {
             topStoryResponseToPlaylist = topStoryResponseToPlaylistProvider.get(),
             advertisementResponseToAdvertisementMapper = advertisementResponseToAdvertisementMapperProvider.get(),
             playerEventToEventRequestMapper = playerEventToEventRequestProvider.get(),
+            userExperienceMapper = userExperienceMapperProvider.get(),
+        )
+    }
+    private val playlistRepositoryProvider: Provider<PlaylistRepository> = provider {
+        HttpPlaylistRepository(
+            httpClient = httpClientProvider.get(),
+            audioburstV2Api = audioburstV2ApiProvider.get(),
+            libraryConfiguration = libraryConfigurationProvider.get(),
+            topStoryResponseToPlaylist = topStoryResponseToPlaylistProvider.get(),
         )
     }
     private val currentAdsProvider: Provider<CurrentAdsProvider> = provider {
@@ -191,7 +208,7 @@ internal object Injector {
     private val getPlaylistProvider: Provider<GetPlaylist> = provider {
         GetPlaylist(
             getUser = getUserProvider.get(),
-            userRepository = userRepositoryProvider.get(),
+            playlistRepository = playlistRepositoryProvider.get(),
             postContentLoadEvent = postContentLoadEventProvider.get(),
             playlistStorage = playlistStorageProvider.get(),
             listenedBurstStorage = listenedBurstStorageProvider.get(),
@@ -201,7 +218,7 @@ internal object Injector {
     private val searchProvider: Provider<Search> = provider {
         Search(
             getUser = getUserProvider.get(),
-            userRepository = userRepositoryProvider.get(),
+            playlistRepository = playlistRepositoryProvider.get(),
             postContentLoadEvent = postContentLoadEventProvider.get(),
             playlistStorage = playlistStorageProvider.get(),
         )
@@ -272,6 +289,12 @@ internal object Injector {
         )
     }
 
+    private val getUserExperienceProvider: Provider<GetUserExperience> = provider {
+        GetUserExperience(
+            userRepository = userRepositoryProvider.get(),
+        )
+    }
+
     private val postUserPreferencesProvider: Provider<PostUserPreferences> = provider {
         PostUserPreferences(
             getUser = getUserProvider.get(),
@@ -333,6 +356,7 @@ internal object Injector {
             subscriptionKeySetter = subscriptionKeySetterProvider.get()
             postUserPreferences = postUserPreferencesProvider.get()
             getUserPreferences = getUserPreferencesProvider.get()
+            getUserExperience = getUserExperienceProvider.get()
             getPlaylistsInfo = getPlaylistsInfoProvider.get()
             eventDetector = eventDetectorProvider.get()
             updateUserId = updateUserIdProvider.get()

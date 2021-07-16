@@ -18,13 +18,13 @@ class SearchTest {
     private fun interactor(
         search: Resource<Playlist> = Resource.Data(playlistOf()),
         getPlaylistByByteArray: Resource<Playlist> = Resource.Data(playlistOf()),
-        userResource: Resource<User>,
+        playlistRepository: Resource<User>,
         postContentLoadEvent: PostContentLoadEvent = postContentLoadEventOf(),
     ): Search =
         Search(
-            getUser = getUserOf(userResource),
-            userRepository = userRepositoryOf(
-                returns = MockUserRepository.Returns(
+            getUser = getUserOf(playlistRepository),
+            playlistRepository = playlistRepositoryOf(
+                returns = MockPlaylistRepository.Returns(
                     search = search,
                     getPlaylistByByteArray = getPlaylistByByteArray,
                 )
@@ -47,7 +47,7 @@ class SearchTest {
         // WHEN
         val resource = interactor(
             search = getPlaylistReturn,
-            userResource = userResource,
+            playlistRepository = userResource,
         )(query = "")
 
         // THEN
@@ -64,7 +64,7 @@ class SearchTest {
         // WHEN
         val resource = interactor(
             getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
+            playlistRepository = userResource,
         )(byteArrayOf())
 
         // THEN
@@ -81,7 +81,7 @@ class SearchTest {
         // WHEN
         val resource = interactor(
             search = getPlaylistReturn,
-            userResource = userResource,
+            playlistRepository = userResource,
         )(query = "")
 
         // THEN
@@ -99,7 +99,7 @@ class SearchTest {
         // WHEN
         val resource = interactor(
             getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
+            playlistRepository = userResource,
         )(byteArrayOf())
 
         // THEN
@@ -117,7 +117,7 @@ class SearchTest {
         // WHEN
         val resource = interactor(
             getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
+            playlistRepository = userResource,
         )(query = "")
 
         // THEN
@@ -134,7 +134,7 @@ class SearchTest {
         // WHEN
         val resource = interactor(
             getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
+            playlistRepository = userResource,
         )(byteArrayOf())
 
         // THEN
@@ -151,7 +151,7 @@ class SearchTest {
         // WHEN
         val resource = interactor(
             getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
+            playlistRepository = userResource,
         )(query = "")
 
         // THEN
@@ -168,7 +168,7 @@ class SearchTest {
         // WHEN
         val resource = interactor(
             getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
+            playlistRepository = userResource,
         )(byteArrayOf())
 
         // THEN
@@ -186,7 +186,7 @@ class SearchTest {
         // WHEN
         interactor(
             search = getPlaylistReturn,
-            userResource = userResource,
+            playlistRepository = userResource,
             postContentLoadEvent = postContentLoadEventOf(
                 playbackEventHandler = playbackEventHandler
             )
@@ -206,7 +206,7 @@ class SearchTest {
         // WHEN
         interactor(
             getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
+            playlistRepository = userResource,
             postContentLoadEvent = postContentLoadEventOf(
                 playbackEventHandler = playbackEventHandler
             )
