@@ -3,6 +3,7 @@ package com.audioburst.library.utils
 import com.audioburst.library.interactors.CurrentAdsProvider
 import com.audioburst.library.interactors.CurrentPlaylist
 import com.audioburst.library.interactors.PlaybackEventHandler
+import com.audioburst.library.interactors.UiEventHandler
 import com.audioburst.library.models.*
 import com.audioburst.library.utils.strategies.CtaClickStrategy
 import com.audioburst.library.utils.strategies.ListenedStrategy
@@ -24,6 +25,8 @@ internal interface EventDetector {
 
     fun getPlaylists()
 
+    fun report(uiEvent: UiEvent, burstId: String, isPlaying: Boolean)
+
     fun setPlaybackStateListener(listener: PlaybackStateListener)
 
     fun removePlaybackStateListener(listener: PlaybackStateListener)
@@ -41,6 +44,7 @@ internal class StrategyBasedEventDetector(
     private val appDispatchers: AppDispatchers,
     private val ctaClickStrategy: CtaClickStrategy,
     private val playPauseStrategy: PlayPauseStrategy,
+    private val uiEventHandler: UiEventHandler,
 ) : EventDetector {
 
     private val previousStates: Queue<InternalPlaybackState> = FixedSizeQueue(NUMBER_OF_CACHED_STATES)
@@ -78,6 +82,19 @@ internal class StrategyBasedEventDetector(
 
     override fun getPlaylists() {
         handle(GeneralEvent.GetPlaylists())
+    }
+
+    override fun report(uiEvent: UiEvent, burstId: String, isPlaying: Boolean) {
+        val playbackState = currentPlaybackStateListener?.getPlaybackState() ?: PlaybackState.DEFAULT
+        val input = input(playbackState) ?: return
+        scope.launch {
+            uiEventHandler.handle(
+                uiEvent = uiEvent,
+                analysisInput = input,
+                burstId = burstId,
+                isPlaying = isPlaying,
+            )
+        }
     }
 
     private fun requestNewState() {

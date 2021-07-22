@@ -223,6 +223,11 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
         eventDetector.ctaButtonClick(burstId)
     }
 
+    fun report(uiEvent: UiEvent, burstId: String, isPlaying: Boolean) {
+        Logger.i("report: ${uiEvent.eventName}")
+        eventDetector.report(uiEvent, burstId, isPlaying)
+    }
+
     fun setPlaybackStateListener(listener: PlaybackStateListener) {
         Logger.i("setPlaybackStateListener")
         eventDetector.setPlaybackStateListener(listener)

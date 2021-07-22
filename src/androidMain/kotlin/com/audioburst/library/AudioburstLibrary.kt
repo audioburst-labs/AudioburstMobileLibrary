@@ -160,6 +160,17 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
     }
 
     /**
+     * Use this function to report any of the [UiEvent]s.
+     *
+     * @param uiEvent [UiEvent] you would like to report.
+     * @param burstId id of the [Burst] that is currently loaded in the player.
+     * @param isPlaying whether player is currently playing Audioburst content.
+     */
+    fun report(uiEvent: UiEvent, burstId: String, isPlaying: Boolean) {
+        delegate.report(uiEvent, burstId, isPlaying)
+    }
+
+    /**
      * Use this function to register new [PlaybackStateListener]. Library will call this interface everytime we need
      * information about what is currently being played. Note that at the same time you can have only one [PlaybackStateListener]
      * registered.

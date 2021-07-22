@@ -35,4 +35,5 @@ internal sealed class PlaybackEvent(override val actionName: String, val eventPa
 
 internal sealed class GeneralEvent(override val actionName: String) : Event() {
     class GetPlaylists : GeneralEvent("getPlaylists")
+    class UiEvent(override val actionName: String, val playerEvent: PlayerEvent) : GeneralEvent(actionName)
 }

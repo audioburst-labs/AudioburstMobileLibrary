@@ -26,6 +26,11 @@ class PlaybackState(
     override fun toString(): String {
         return "PlaybackState(url='$url', positionMillis=$positionMillis)"
     }
+
+    internal companion object {
+        internal val DEFAULT: PlaybackState
+            get() = PlaybackState(url = "", positionMillis = 0)
+    }
 }
 
 internal data class InternalPlaybackState(

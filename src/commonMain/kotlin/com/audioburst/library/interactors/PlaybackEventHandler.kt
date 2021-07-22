@@ -32,6 +32,7 @@ internal class PlaybackEventHandlerInteractor(
                 else -> postPlayerEvent(event)
             }
             is GeneralEvent.GetPlaylists -> postGeneralEvent(event)
+            is GeneralEvent.UiEvent -> postEvent(playerEvent = event.playerEvent, eventName = event.actionName)
         }
     }
 
@@ -184,4 +185,5 @@ private val Event.logMessage: String
     get() = when (this) {
         is GeneralEvent.GetPlaylists -> ""
         is PlaybackEvent -> ", ${eventPayload.burst.id}"
+        is GeneralEvent.UiEvent -> ", ${playerEvent.burstId}"
     }

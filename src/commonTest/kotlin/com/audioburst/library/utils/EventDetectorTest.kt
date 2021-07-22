@@ -1,5 +1,7 @@
 package com.audioburst.library.utils
 
+import com.audioburst.library.data.repository.mappers.libraryConfigurationOf
+import com.audioburst.library.data.repository.mappers.userStorageOf
 import com.audioburst.library.interactors.*
 import com.audioburst.library.models.*
 import com.audioburst.library.utils.strategies.*
@@ -82,7 +84,12 @@ internal fun eventDetectorOf(
     checkInterval: Duration = 1.0.toDuration(DurationUnit.Seconds),
     listenedStrategy: ListenedStrategy = listenedStrategyOf(),
     ctaClickStrategy: CtaClickStrategy = CtaClickStrategy(),
-    playPauseStrategy: PlayPauseStrategy = PlayPauseStrategy()
+    playPauseStrategy: PlayPauseStrategy = PlayPauseStrategy(),
+    uiEventHandler: UiEventHandler = UiEventHandler(
+        userStorage = userStorageOf(),
+        libraryConfiguration = libraryConfigurationOf(),
+        playbackEventHandler = playbackEventHandlerInteractorOf(),
+    ),
 ): StrategyBasedEventDetector =
     StrategyBasedEventDetector(
         currentPlaylist = currentPlaylistOf(playlist),
@@ -100,6 +107,7 @@ internal fun eventDetectorOf(
         scope = scope,
         ctaClickStrategy = ctaClickStrategy,
         playPauseStrategy = playPauseStrategy,
+        uiEventHandler = uiEventHandler,
     )
 
 internal fun playbackPeriodsCreatorOf(

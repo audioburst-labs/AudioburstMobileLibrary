@@ -237,6 +237,13 @@ internal object Injector {
     }
     private val ctaClickStrategyProvider: Provider<CtaClickStrategy> = provider { CtaClickStrategy() }
     private val playPauseStrategyProvider: Provider<PlayPauseStrategy> = provider { PlayPauseStrategy() }
+    private val uiEventHandlerProvider: Provider<UiEventHandler> = provider {
+        UiEventHandler(
+            userStorage = userStorageProvider.get(),
+            libraryConfiguration = libraryConfigurationProvider.get(),
+            playbackEventHandler = playbackEventHandlerProvider.get(),
+        )
+    }
     private val eventDetectorProvider: Provider<StrategyBasedEventDetector> = singleton {
         StrategyBasedEventDetector(
             currentPlaylist = currentPlaylistProvider.get(),
@@ -250,6 +257,7 @@ internal object Injector {
             scope = libraryScopeProvider.get(),
             ctaClickStrategy = ctaClickStrategyProvider.get(),
             playPauseStrategy = playPauseStrategyProvider.get(),
+            uiEventHandler = uiEventHandlerProvider.get(),
         )
     }
 
