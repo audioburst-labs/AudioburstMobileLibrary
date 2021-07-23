@@ -23,6 +23,7 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
     internal lateinit var getUserPreferences: GetUserPreferences
     internal lateinit var getUserExperience: GetUserExperience
     internal lateinit var getPlaylistsInfo: GetPlaylistsInfo
+    internal lateinit var getShareOptions: GetShareOptions
     internal lateinit var eventDetector: StrategyBasedEventDetector
     internal lateinit var updateUserId: UpdateUserId
     internal lateinit var getPlaylist: GetPlaylist
@@ -205,6 +206,18 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
             getUserExperience.invoke(applicationKey = applicationKey, experienceId = experienceId)
                 .onData { onData(it) }
                 .onError { onError(it) }
+        }
+    }
+
+    suspend fun getShareOptions(burstId: String): ShareOptions? {
+        Logger.i("getShareOptions")
+        return getShareOptions.invoke(burstId)
+    }
+
+    fun getShareOptions(burstId: String, onData: (ShareOptions?) -> Unit) {
+        Logger.i("getShareOptions")
+        scope.launch {
+            onData(getShareOptions.invoke(burstId))
         }
     }
 

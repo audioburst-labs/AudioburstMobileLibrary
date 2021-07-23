@@ -9,6 +9,7 @@ import com.audioburst.library.data.remote.AudioburstStorageApi
 import com.audioburst.library.data.remote.AudioburstV2Api
 import com.audioburst.library.data.repository.*
 import com.audioburst.library.data.repository.cache.AppSettingsCache
+import com.audioburst.library.data.repository.cache.BurstShareUrlCache
 import com.audioburst.library.data.repository.mappers.*
 import com.audioburst.library.data.storage.*
 import com.audioburst.library.data.storage.commons.DateTimeStringAdapter
@@ -98,6 +99,7 @@ internal object Injector {
         )
     }
     private val playlistStorageProvider: Provider<PlaylistStorage> = singleton { InMemoryPlaylistStorage() }
+    private val shortenerResponseToBurstShareUrlMapperProvider: Provider<ShortenerResponseToBurstShareUrlMapper> = provider { ShortenerResponseToBurstShareUrlMapper() }
     private val userRepositoryProvider: Provider<UserRepository> = provider {
         HttpUserRepository(
             httpClient = httpClientProvider.get(),
@@ -107,10 +109,11 @@ internal object Injector {
             libraryConfiguration = libraryConfigurationProvider.get(),
             userResponseToUserMapper = userResponseToUserProvider.get(),
             playlistResponseToPlaylistInfoMapper = playlistResponseToPlaylistInfoProvider.get(),
-            topStoryResponseToPlaylist = topStoryResponseToPlaylistProvider.get(),
             advertisementResponseToAdvertisementMapper = advertisementResponseToAdvertisementMapperProvider.get(),
             playerEventToEventRequestMapper = playerEventToEventRequestProvider.get(),
             userExperienceMapper = userExperienceMapperProvider.get(),
+            shortenerResponseToBurstShareUrlMapper = shortenerResponseToBurstShareUrlMapperProvider.get(),
+            burstShareUrlCache = burstShareUrlCacheProvider.get(),
         )
     }
     private val playlistRepositoryProvider: Provider<PlaylistRepository> = provider {
@@ -331,6 +334,8 @@ internal object Injector {
 
     private val appSettingsCacheProvider: Provider<AppSettingsCache> = singleton { AppSettingsCache() }
 
+    private val burstShareUrlCacheProvider: Provider<BurstShareUrlCache> = singleton { BurstShareUrlCache() }
+
     private val appSettingsResponseToAppSettingsMapperProvider: Provider<AppSettingsResponseToAppSettingsMapper> = provider {
         AppSettingsResponseToAppSettingsMapper()
     }
@@ -356,6 +361,16 @@ internal object Injector {
         )
     }
 
+    private val getShareOptionsProvider: Provider<GetShareOptions> = provider {
+        GetShareOptions(
+            userStorage = userStorageProvider.get(),
+            currentPlaylist = currentPlaylistProvider.get(),
+            appSettingsRepository = appSettingsRepositoryProvider.get(),
+            userRepository = userRepositoryProvider.get(),
+            playlistRepository = playlistRepositoryProvider.get(),
+        )
+    }
+
     fun inject(audioburstLibrary: AudioburstLibraryDelegate) {
         with(audioburstLibrary) {
             enableListenedBurstFiltering = enableListenedBurstFilteringProvider.get()
@@ -366,6 +381,7 @@ internal object Injector {
             getUserPreferences = getUserPreferencesProvider.get()
             getUserExperience = getUserExperienceProvider.get()
             getPlaylistsInfo = getPlaylistsInfoProvider.get()
+            getShareOptions = getShareOptionsProvider.get()
             eventDetector = eventDetectorProvider.get()
             updateUserId = updateUserIdProvider.get()
             getPlaylist = getPlaylistProvider.get()

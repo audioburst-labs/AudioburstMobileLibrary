@@ -3,17 +3,19 @@ package com.audioburst.library.data.repository
 import com.audioburst.library.data.Resource
 import com.audioburst.library.data.execute
 import com.audioburst.library.data.map
+import com.audioburst.library.data.onData
 import com.audioburst.library.data.remote.AbAiRouterApi
 import com.audioburst.library.data.remote.AudioburstApi
 import com.audioburst.library.data.remote.AudioburstV2Api
+import com.audioburst.library.data.repository.cache.BurstShareUrlCache
 import com.audioburst.library.data.repository.mappers.*
-import com.audioburst.library.data.repository.models.AdvertisementResponse
-import com.audioburst.library.data.repository.models.PlaylistsResponse
-import com.audioburst.library.data.repository.models.UserExperienceResponse
-import com.audioburst.library.data.repository.models.UserResponse
+import com.audioburst.library.data.repository.models.*
 import com.audioburst.library.models.*
+import com.audioburst.library.models.Url
 import com.audioburst.library.utils.LibraryConfiguration
 import io.ktor.client.*
+import io.ktor.http.*
+import io.ktor.util.*
 
 internal interface UserRepository {
     suspend fun registerUser(userId: String): Resource<User>
@@ -31,6 +33,8 @@ internal interface UserRepository {
     suspend fun getPromoteData(adUrl: Url): Resource<PromoteData>
 
     suspend fun getUserExperience(applicationKey: String, experienceId: String): Resource<UserExperience>
+
+    suspend fun getBurstShareUrl(burst: Burst): Resource<BurstShareUrl>
 }
 
 internal class HttpUserRepository(
@@ -41,10 +45,11 @@ internal class HttpUserRepository(
     private val libraryConfiguration: LibraryConfiguration,
     private val userResponseToUserMapper: UserResponseToUserMapper,
     private val playlistResponseToPlaylistInfoMapper: PlaylistResponseToPlaylistInfoMapper,
-    private val topStoryResponseToPlaylist: TopStoryResponseToPlaylist,
     private val advertisementResponseToAdvertisementMapper: AdvertisementResponseToPromoteDataMapper,
     private val playerEventToEventRequestMapper: PlayerEventToEventRequestMapper,
     private val userExperienceMapper: UserExperienceResponseToUserExperienceMapper,
+    private val shortenerResponseToBurstShareUrlMapper: ShortenerResponseToBurstShareUrlMapper,
+    private val burstShareUrlCache: BurstShareUrlCache,
 ) : UserRepository {
 
     override suspend fun registerUser(userId: String): Resource<User> =
@@ -93,6 +98,21 @@ internal class HttpUserRepository(
                 appKey = libraryConfiguration.libraryKey.value,
             )
         ).map(userExperienceMapper::map)
+
+    override suspend fun getBurstShareUrl(burst: Burst): Resource<BurstShareUrl> {
+        val cached = burstShareUrlCache.get(burst.id)
+        if (cached != null) {
+            return Resource.Data(cached)
+        }
+        val queryParams = URLBuilder(burst.shareUrl).parameters.build().flattenEntries().toMap()
+        return httpClient.execute<ShortenerResponse>(
+            audioburstV2Api.getShareUrl(
+                burstId = burst.id,
+                queryParams = queryParams,
+            )
+        ).map(shortenerResponseToBurstShareUrlMapper::map)
+            .onData { burstShareUrlCache.set(burst.id, it) }
+    }
 
     companion object {
         private const val LOG_ONLY_DOWNLOAD_TYPE = 2

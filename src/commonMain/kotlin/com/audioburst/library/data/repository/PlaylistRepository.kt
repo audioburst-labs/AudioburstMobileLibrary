@@ -5,6 +5,7 @@ import com.audioburst.library.data.execute
 import com.audioburst.library.data.map
 import com.audioburst.library.data.remote.AudioburstV2Api
 import com.audioburst.library.data.remote.Endpoint
+import com.audioburst.library.data.remote.buildUrl
 import com.audioburst.library.data.repository.mappers.TopStoryResponseToPlaylist
 import com.audioburst.library.data.repository.models.TopStoryResponse
 import com.audioburst.library.models.*
@@ -26,6 +27,8 @@ internal interface PlaylistRepository {
     suspend fun getPlaylist(userId: String, byteArray: ByteArray): Resource<Playlist>
 
     suspend fun search(userId: String, query: String): Resource<Playlist>
+
+    fun url(userId: String, playerAction: PlayerAction): Url?
 }
 
 internal class HttpPlaylistRepository(
@@ -147,6 +150,33 @@ internal class HttpPlaylistRepository(
                 )
             )
         }
+
+    override fun url(userId: String, playerAction: PlayerAction): Url? =
+        when (playerAction.type) {
+            PlayerAction.Type.Channel -> playerAction.value.toIntOrNull()?.let { id ->
+                audioburstV2Api.getChannelPlaylist(
+                    id = id,
+                    userId = userId,
+                    device = DEVICE,
+                )
+            }
+            PlayerAction.Type.UserGenerated -> audioburstV2Api.getUserGeneratedPlaylist(
+                userId = userId,
+                device = DEVICE,
+                id = playerAction.value,
+            )
+            PlayerAction.Type.Account -> audioburstV2Api.getSourcePlaylist(
+                userId = userId,
+                device = DEVICE,
+                id = playerAction.value,
+            )
+            PlayerAction.Type.Source -> audioburstV2Api.getAccountPlaylist(
+                userId = userId,
+                device = DEVICE,
+                id = playerAction.value,
+            )
+            PlayerAction.Type.Personalized, PlayerAction.Type.Voice, PlayerAction.Type.Search -> null
+        }?.buildUrl()
 
     companion object {
         private const val DEVICE = "mobile"

@@ -145,6 +145,13 @@ internal class AudioburstV2Api(private val json: Json) {
             method = Endpoint.Method.GET,
         )
 
+    fun getShareUrl(burstId: String, queryParams: Map<String, String>): Endpoint =
+        endpoint(
+            path = "share/burst/shortener/$burstId",
+            queryParams = queryParams,
+            method = Endpoint.Method.GET,
+        )
+
     companion object {
         private const val BASE_URL = "sapi.audioburst.com/v2"
     }

@@ -1,5 +1,6 @@
 package com.audioburst.library.data.remote
 
+import com.audioburst.library.models.Url
 import io.ktor.client.request.*
 import io.ktor.content.*
 import io.ktor.http.*
@@ -56,3 +57,5 @@ internal inline fun Endpoint.toHttpRequest(): HttpRequestBuilder =
             }
         }
     }
+
+internal inline fun Endpoint.buildUrl(): Url = Url(toHttpRequest().build().url.toString())

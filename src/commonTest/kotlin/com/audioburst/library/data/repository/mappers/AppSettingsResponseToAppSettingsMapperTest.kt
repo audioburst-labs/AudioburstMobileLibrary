@@ -2,6 +2,8 @@ package com.audioburst.library.data.repository.mappers
 
 import com.audioburst.library.data.repository.models.AppSettingsResponse
 import com.audioburst.library.data.repository.models.PreferenceImageResponse
+import com.audioburst.library.data.repository.models.Share
+import com.audioburst.library.data.repository.models.Texts
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -35,9 +37,26 @@ class AppSettingsResponseToAppSettingsMapperTest {
 }
 
 internal fun appSettingsResponseOf(
-    preferences: List<PreferenceImageResponse> = emptyList()
-): AppSettingsResponse =
-    AppSettingsResponse(preferences = preferences)
+    preferences: List<PreferenceImageResponse> = emptyList(),
+    texts: Texts = textsOf(),
+): AppSettingsResponse = AppSettingsResponse(
+    preferences = preferences,
+    texts = texts,
+)
+
+internal fun textsOf(
+    share: Share = shareOf(),
+): Texts = Texts(
+    share = share,
+)
+
+internal fun shareOf(
+    burst: String = "",
+    playlist: String = "",
+): Share = Share(
+    burst = burst,
+    playlist = playlist,
+)
 
 internal fun preferenceImageResponseOf(
     name: String = "",

@@ -138,6 +138,13 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
     }
 
     /**
+     * Use this function to get detailed information about how to share [Burst] or [Playlist].
+     */
+    fun getShareOptions(burstId: String, onData: (ShareOptions?) -> Unit) {
+        delegate.getShareOptions(burstId, onData)
+    }
+
+    /**
      * Call [start] after playback started.
      */
     fun start() {

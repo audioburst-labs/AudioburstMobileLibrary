@@ -10,6 +10,7 @@ import com.audioburst.library.data.repository.models.AppSettingsResponse
 import com.audioburst.library.interactors.resourceErrorOf
 import com.audioburst.library.models.AppSettings
 import com.audioburst.library.models.PreferenceImage
+import com.audioburst.library.models.ShareTexts
 import com.audioburst.library.models.Url
 import com.audioburst.library.runTest
 import io.ktor.client.*
@@ -94,9 +95,12 @@ internal fun <KEY, VALUE> cacheOf(value: VALUE?): Cache<KEY, VALUE> =
     }
 
 internal fun appSettingsOf(
-    preferences: List<PreferenceImage> = emptyList()
-): AppSettings =
-    AppSettings(preferenceImages = preferences)
+    preferences: List<PreferenceImage> = emptyList(),
+    shareTexts: ShareTexts = shareTextsOf(),
+): AppSettings = AppSettings(
+    preferenceImages = preferences,
+    shareTexts = shareTexts,
+)
 
 internal fun preferenceImageOf(
     name: String = "",

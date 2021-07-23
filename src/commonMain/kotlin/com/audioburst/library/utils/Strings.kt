@@ -14,4 +14,16 @@ internal object Strings {
     const val errorNoKeysSelected = "To be able to request personal playlist, you need to select at least one topic before."
 
     const val errorNoSearchResults = "No Bursts found for the query."
+
+    const val namePlaceholder = "<<NAME>>"
+
+    const val urlPlaceholder = "<<URL>>"
+
+    const val defaultShareBurstText = "Listen to: $namePlaceholder\n$urlPlaceholder"
+
+    const val defaultSharePlaylistText = "Listen to: $namePlaceholder playlist\n$urlPlaceholder"
+
+    fun shareBurstMessage(title: String): String = "Listen to $title"
+
+    fun sharePlaylistMessage(title: String): String = "Listen to $title playlist"
 }

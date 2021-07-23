@@ -250,6 +250,8 @@ internal class MockUserRepository(
 
     override suspend fun getUserExperience(applicationKey: String, experienceId: String): Resource<UserExperience> = returns.getUserExperience
 
+    override suspend fun getBurstShareUrl(burst: Burst): Resource<BurstShareUrl> = returns.getBurstShareUrl
+
     data class Returns(
         val registerUser: Resource<User> = Resource.Data(userOf()),
         val verifyUserId: Resource<User> = Resource.Data(userOf()),
@@ -258,7 +260,8 @@ internal class MockUserRepository(
         val postReportingData: Resource<Unit> = Resource.Data(Unit),
         val postBurstPlayback: Resource<Unit> = Resource.Data(Unit),
         val getPromoteData: Resource<PromoteData> = Resource.Data(promoteDataOf()),
-        val getUserExperience: Resource<UserExperience> = Resource.Data(userExperienceOf())
+        val getUserExperience: Resource<UserExperience> = Resource.Data(userExperienceOf()),
+        val getBurstShareUrl: Resource<BurstShareUrl> = Resource.Data(burstShareUrlOf()),
     )
 
     data class SentEvent(
@@ -282,6 +285,8 @@ internal class MockPlaylistRepository(private val returns: Returns) : PlaylistRe
 
     override suspend fun search(userId: String, query: String): Resource<Playlist> = returns.search
 
+    override fun url(userId: String, playerAction: PlayerAction): Url? = returns.url
+
     data class Returns(
         val userGenerated: Resource<Playlist> = Resource.Data(playlistOf()),
         val channel: Resource<Playlist> = Resource.Data(playlistOf()),
@@ -290,6 +295,7 @@ internal class MockPlaylistRepository(private val returns: Returns) : PlaylistRe
         val getPlaylistByPlaylistInfo: Resource<Playlist> = Resource.Data(playlistOf()),
         val getPlaylistByByteArray: Resource<Playlist> = Resource.Data(playlistOf()),
         val search: Resource<Playlist> = Resource.Data(playlistOf()),
+        val url: Url? = null
     )
 }
 
@@ -484,3 +490,5 @@ internal fun requestOptionsOf(
         firstBurstId = firstBurstId,
         shuffle = shuffle,
     )
+
+internal fun burstShareUrlOf(shortUrl: String = ""): BurstShareUrl = BurstShareUrl(shortUrl)

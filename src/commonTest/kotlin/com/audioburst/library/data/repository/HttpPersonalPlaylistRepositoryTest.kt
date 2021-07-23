@@ -13,6 +13,7 @@ import com.audioburst.library.interactors.userOf
 import com.audioburst.library.models.AppSettings
 import com.audioburst.library.models.PendingPlaylist
 import com.audioburst.library.models.PersonalPlaylistQueryId
+import com.audioburst.library.models.ShareTexts
 import com.audioburst.library.runTest
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
@@ -183,10 +184,20 @@ class HttpPersonalPlaylistRepositoryTest {
 }
 
 internal fun appSettingsRepositoryOf(
-    resource: Resource<AppSettings>
+    resource: Resource<AppSettings> = Resource.Data(appSettingsOf()),
+    shareTexts: ShareTexts = shareTextsOf()
 ): AppSettingsRepository =
     object : AppSettingsRepository {
         override suspend fun getAppSettings(): Resource<AppSettings> = resource
+        override suspend fun getShareTexts(): ShareTexts = shareTexts
     }
+
+internal fun shareTextsOf(
+    burst: String = "",
+    playlist: String = "",
+): ShareTexts = ShareTexts(
+    burst = burst,
+    playlist = playlist,
+)
 
 internal fun audioburstV2ApiOf(json: Json = Json {  }): AudioburstV2Api = AudioburstV2Api(json)
