@@ -3,10 +3,7 @@ package com.audioburst.library
 import com.audioburst.library.di.Injector
 import com.audioburst.library.interactors.*
 import com.audioburst.library.models.*
-import com.audioburst.library.utils.Logger
-import com.audioburst.library.utils.PlaybackStateListener
-import com.audioburst.library.utils.StrategyBasedEventDetector
-import com.audioburst.library.utils.SubscriptionKeySetter
+import com.audioburst.library.utils.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.launchIn
@@ -25,6 +22,7 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
     internal lateinit var getPlaylistsInfo: GetPlaylistsInfo
     internal lateinit var getShareOptions: GetShareOptions
     internal lateinit var eventDetector: StrategyBasedEventDetector
+    internal lateinit var sdkInfoSetter: SdkInfoSetter
     internal lateinit var updateUserId: UpdateUserId
     internal lateinit var getPlaylist: GetPlaylist
     internal lateinit var getAdUrl: GetAdUrl
@@ -254,5 +252,10 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
     fun filterListenedBursts(enabled: Boolean) {
         Logger.i("filterListenedBursts")
         enableListenedBurstFiltering(enabled)
+    }
+
+    fun setSdkInfo(level: SdkLevel, version: String) {
+        Logger.i("setSdkInformation")
+        sdkInfoSetter.set(SdkInfo(level = level, version = version))
     }
 }

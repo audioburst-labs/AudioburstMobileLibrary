@@ -198,4 +198,8 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
     fun filterListenedBursts(enabled: Boolean) {
         delegate.filterListenedBursts(enabled)
     }
+
+    fun setSdkInfo(level: SdkLevel, version: String) {
+        delegate.setSdkInfo(level = level, version = version)
+    }
 }

@@ -46,6 +46,8 @@ internal class PlayerEventToEventRequestMapper(
             referrer_url = EMPTY_STRING,
             cta_title = from.ctaButtonText ?: EMPTY_STRING,
             cta_link = from.ctaUrl ?: EMPTY_STRING,
+            SDK_level = from.libraryConfiguration.sdkInfo?.level?.levelName,
+            SDK_version = from.libraryConfiguration.sdkInfo?.version,
         )
 
     companion object {

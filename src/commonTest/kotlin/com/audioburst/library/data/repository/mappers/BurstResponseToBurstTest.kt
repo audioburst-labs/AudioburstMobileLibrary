@@ -1,9 +1,6 @@
 package com.audioburst.library.data.repository.mappers
 
-import com.audioburst.library.models.LibraryKey
-import com.audioburst.library.models.LibraryVersion
-import com.audioburst.library.models.SessionId
-import com.audioburst.library.models.SubscriptionKey
+import com.audioburst.library.models.*
 import com.audioburst.library.utils.LibraryConfiguration
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -191,10 +188,12 @@ internal fun libraryConfigurationOf(
     libraryKey: String = "",
     libraryVersion: String = "",
     subscriptionKey: String = "",
+    sdkInfo: SdkInfo? = null,
 ): LibraryConfiguration =
     object : LibraryConfiguration {
         override val sessionId: SessionId = SessionId(sessionId)
         override val libraryKey: LibraryKey = LibraryKey(libraryKey)
         override val libraryVersion: LibraryVersion = LibraryVersion(libraryVersion)
         override val subscriptionKey: SubscriptionKey = SubscriptionKey(subscriptionKey)
+        override val sdkInfo: SdkInfo? = sdkInfo
     }

@@ -28,6 +28,8 @@ internal data class EventRequest(
     val referrer_url: String,
     val cta_title: String,
     val cta_link: String,
+    val SDK_level: String?,
+    val SDK_version: String?,
 )
 
 @Serializable

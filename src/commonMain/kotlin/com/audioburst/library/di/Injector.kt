@@ -189,6 +189,7 @@ internal object Injector {
         )
     }
     private val subscriptionKeySetterProvider: Provider<SubscriptionKeySetter> = provider { libraryConfigurationProvider.get() as SubscriptionKeySetter }
+    private val sdkInfoSetterProvider: Provider<SdkInfoSetter> = provider { libraryConfigurationProvider.get() as SdkInfoSetter }
     private val getUserProvider: Provider<GetUser> = provider {
         GetUserInteractor(
             uuidFactory = uuidFactoryProvider.get(),
@@ -383,6 +384,7 @@ internal object Injector {
             getPlaylistsInfo = getPlaylistsInfoProvider.get()
             getShareOptions = getShareOptionsProvider.get()
             eventDetector = eventDetectorProvider.get()
+            sdkInfoSetter = sdkInfoSetterProvider.get()
             updateUserId = updateUserIdProvider.get()
             getPlaylist = getPlaylistProvider.get()
             getAdUrl = getAdDataProvider.get()
