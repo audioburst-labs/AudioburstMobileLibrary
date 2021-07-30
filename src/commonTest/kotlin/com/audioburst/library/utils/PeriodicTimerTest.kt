@@ -28,7 +28,7 @@ class PeriodicTimerTest {
             timer.start()
             delay(timeMillis = interval.milliseconds.toLong())
             timer.pause()
-            assertEquals(PeriodicTimer.Tick, expectItem())
+            assertEquals(PeriodicTimer.Tick, awaitItem())
         }
     }
 
@@ -41,7 +41,7 @@ class PeriodicTimerTest {
             timer.start()
             delay(timeMillis = interval.milliseconds.toLong() + MINIMAL_OFFSET)
             timer.pause()
-            assertEquals(PeriodicTimer.Tick, expectItem())
+            assertEquals(PeriodicTimer.Tick, awaitItem())
         }
     }
 
@@ -56,7 +56,7 @@ class PeriodicTimerTest {
             delay(timeMillis = interval.milliseconds.toLong() * expectedItems + MINIMAL_OFFSET)
             timer.pause()
             repeat(times = expectedItems) {
-                assertEquals(PeriodicTimer.Tick, expectItem())
+                assertEquals(PeriodicTimer.Tick, awaitItem())
             }
         }
     }
@@ -72,7 +72,7 @@ class PeriodicTimerTest {
             timer.start()
             delay(timeMillis = interval.milliseconds.toLong())
             timer.pause()
-            assertEquals(PeriodicTimer.Tick, expectItem())
+            assertEquals(PeriodicTimer.Tick, awaitItem())
         }
     }
 

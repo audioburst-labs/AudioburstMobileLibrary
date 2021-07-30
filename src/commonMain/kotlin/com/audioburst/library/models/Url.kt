@@ -1,3 +1,6 @@
 package com.audioburst.library.models
 
-internal inline class Url(val value: String)
+import kotlin.jvm.JvmInline
+
+@JvmInline
+internal value class Url(val value: String)

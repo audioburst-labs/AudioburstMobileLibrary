@@ -1,3 +1,6 @@
 package com.audioburst.library.models
 
-internal inline class SubscriptionKey(val value: String)
+import kotlin.jvm.JvmInline
+
+@JvmInline
+internal value class SubscriptionKey(val value: String)

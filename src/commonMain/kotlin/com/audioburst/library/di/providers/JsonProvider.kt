@@ -8,5 +8,6 @@ internal class JsonProvider : Provider<Json> {
         Json {
             ignoreUnknownKeys = true
             isLenient = false
+            useAlternativeNames = false
         }
 }

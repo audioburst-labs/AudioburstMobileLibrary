@@ -18,8 +18,8 @@ object Constants {
 }
 
 object Dependencies {
-    const val kotlinVersion = "1.4.31"
-    const val sqlDelightVersion = "1.4.4"
+    const val kotlinVersion = "1.5.21"
+    const val sqlDelightVersion = "1.5.1"
 
     private fun kotlin(dependency: String): String = "org.jetbrains.kotlin:$dependency:$kotlinVersion"
 
@@ -36,18 +36,18 @@ object Dependencies {
     }
 
     object Coroutines {
-        private const val version = "1.4.3-native-mt"
+        private const val version = "1.5.0-native-mt"
         const val commonMain = "org.jetbrains.kotlinx:kotlinx-coroutines-core:$version"
         const val androidMain = "org.jetbrains.kotlinx:kotlinx-coroutines-android:$version"
     }
 
     object Serialization {
-        private const val version = "1.0.0"
+        private const val version = "1.2.1"
         const val commonMain = "org.jetbrains.kotlinx:kotlinx-serialization-json:$version"
     }
 
     object Ktor {
-        private const val version = "1.4.2"
+        private const val version = "1.6.0"
         const val core = "io.ktor:ktor-client-core:$version"
         const val json = "io.ktor:ktor-client-json:$version"
         const val logging = "io.ktor:ktor-client-logging:$version"
@@ -59,7 +59,7 @@ object Dependencies {
     }
 
     object Turbine {
-        private const val version = "0.4.1"
+        private const val version = "0.6.0"
         const val turbine = "app.cash.turbine:turbine:$version"
     }
 
@@ -73,9 +73,9 @@ object Dependencies {
     }
 
     object Stately {
-        const val concurrency =  "co.touchlab:stately-concurrency:1.1.1"
-        const val isoCollections =  "co.touchlab:stately-iso-collections:1.1.1-a1"
-        const val isolate =  "co.touchlab:stately-isolate:1.1.1-a1"
+        const val concurrency =  "co.touchlab:stately-concurrency:1.1.7"
+        const val isoCollections =  "co.touchlab:stately-iso-collections:1.1.4-a1"
+        const val isolate =  "co.touchlab:stately-isolate:1.1.4-a1"
     }
 
     object Android {

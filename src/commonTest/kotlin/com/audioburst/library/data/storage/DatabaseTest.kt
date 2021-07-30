@@ -16,7 +16,7 @@ internal abstract class DatabaseTest {
     private lateinit var driver: SqlDriver
     private lateinit var database: Database
 
-    protected val listenedBurstQueries: ListenedBurstModelQueries by lazy { database!!.listenedBurstModelQueries }
+    protected val listenedBurstQueries: ListenedBurstModelQueries by lazy { database.listenedBurstModelQueries }
 
     @BeforeTest
     fun setup() {

@@ -2,7 +2,7 @@ import com.audioburst.library.models.DateTime;
 
 CREATE TABLE listenedBurstModel (
     id TEXT PRIMARY KEY,
-    date_text TEXT as DateTime NOT NULL
+    date_text TEXT AS DateTime NOT NULL
 );
 
 insertListenedBurst:

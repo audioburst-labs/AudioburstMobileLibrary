@@ -17,7 +17,7 @@ internal class PlayerEventToEventRequestMapper(
                 AudioStateRequest(
                     burst_id = from.burstId,
                     burst_length = from.burstLength,
-                    player_status = from.playerStatus?.name?.toLowerCase() ?: EMPTY_STRING,
+                    player_status = from.playerStatus?.name?.lowercase() ?: EMPTY_STRING,
                     position_in_burst = from.positionInBurst,
                     stream = from.stream,
                     total_play_time = from.totalPlayTime

@@ -1,3 +1,6 @@
 package com.audioburst.library.models
 
-internal inline class LibraryVersion(val value: String)
+import kotlin.jvm.JvmInline
+
+@JvmInline
+internal value class LibraryVersion(val value: String)

@@ -15,7 +15,6 @@ version = Constants.Library.version
 repositories {
     gradlePluginPortal()
     google()
-    jcenter()
     mavenCentral()
 }
 kotlin {
@@ -104,7 +103,7 @@ android {
         consumerProguardFile("proguard-rules.pro")
     }
     compileOptions {
-        coreLibraryDesugaringEnabled = true
+        isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }

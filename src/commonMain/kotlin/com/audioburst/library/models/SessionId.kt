@@ -1,3 +1,6 @@
 package com.audioburst.library.models
 
-internal inline class SessionId(val value: String)
+import kotlin.jvm.JvmInline
+
+@JvmInline
+internal value class SessionId(val value: String)

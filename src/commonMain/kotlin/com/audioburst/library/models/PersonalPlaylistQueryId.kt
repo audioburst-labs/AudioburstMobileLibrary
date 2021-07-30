@@ -1,3 +1,6 @@
 package com.audioburst.library.models
 
-internal inline class PersonalPlaylistQueryId(val value: Long)
+import kotlin.jvm.JvmInline
+
+@JvmInline
+internal value class PersonalPlaylistQueryId(val value: Long)

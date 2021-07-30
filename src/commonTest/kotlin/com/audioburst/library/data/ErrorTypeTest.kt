@@ -42,7 +42,7 @@ class ErrorTypeTest {
     @Test
     fun testIfErrorIsHttpErrorBadRequestExceptionWhenThereIsAnException() {
         // GIVEN
-        val response = ResponseException(response = httpResponseOf(status = 400))
+        val response = responseExceptionOf(response = httpResponseOf(status = 400))
 
         // WHEN
         val error = ErrorType.createFrom(response)
@@ -54,7 +54,7 @@ class ErrorTypeTest {
     @Test
     fun testIfErrorIsHttpErrorUnauthorizedExceptionWhenThereIsAnException() {
         // GIVEN
-        val response = ResponseException(response = httpResponseOf(status = 401))
+        val response = responseExceptionOf(response = httpResponseOf(status = 401))
 
         // WHEN
         val error = ErrorType.createFrom(response)
@@ -66,7 +66,7 @@ class ErrorTypeTest {
     @Test
     fun testIfErrorIsHttpErrorForbiddenExceptionWhenThereIsAnException() {
         // GIVEN
-        val response = ResponseException(response = httpResponseOf(status = 403))
+        val response = responseExceptionOf(response = httpResponseOf(status = 403))
 
         // WHEN
         val error = ErrorType.createFrom(response)
@@ -78,7 +78,7 @@ class ErrorTypeTest {
     @Test
     fun testIfErrorIsHttpErrorNotFoundExceptionWhenThereIsAnException() {
         // GIVEN
-        val response = ResponseException(response = httpResponseOf(status = 404))
+        val response = responseExceptionOf(response = httpResponseOf(status = 404))
 
         // WHEN
         val error = ErrorType.createFrom(response)
@@ -90,7 +90,7 @@ class ErrorTypeTest {
     @Test
     fun testIfErrorIsHttpErrorInternalServerErrorExceptionWhenThereIsStatusCodeFrom500To599() {
         // GIVEN
-        val response = ResponseException(response = httpResponseOf(status = (500..599).random()))
+        val response = responseExceptionOf(response = httpResponseOf(status = (500..599).random()))
 
         // WHEN
         val error = ErrorType.createFrom(response)
@@ -183,6 +183,14 @@ class ErrorTypeTest {
         assertEquals(libraryError, LibraryError.Unexpected)
     }
 }
+
+internal fun responseExceptionOf(
+    response: HttpResponse,
+    cachedResponseText: String = "",
+): ResponseException = ResponseException(
+    response = response,
+    cachedResponseText = cachedResponseText
+)
 
 class MockedHttpResponse(private val statusCode: HttpStatusCode) : HttpResponse() {
     override val call: HttpClientCall

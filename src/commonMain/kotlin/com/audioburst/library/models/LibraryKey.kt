@@ -1,5 +1,8 @@
 package com.audioburst.library.models
 
-internal inline class LibraryKey(val value: String)
+import kotlin.jvm.JvmInline
+
+@JvmInline
+internal value class LibraryKey(val value: String)
 
 internal expect val platformLibraryKey: LibraryKey

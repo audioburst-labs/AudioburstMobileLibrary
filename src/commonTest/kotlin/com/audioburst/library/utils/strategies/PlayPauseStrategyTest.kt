@@ -45,7 +45,7 @@ class PlayPauseStrategyTest {
             strategy.play(payload)
 
             // THEN
-            require(expectItem() is PlaybackEvent.Play)
+            require(awaitItem() is PlaybackEvent.Play)
         }
     }
 
@@ -61,8 +61,8 @@ class PlayPauseStrategyTest {
             delay(timeMillis = (minimumWaitTime + offset).milliseconds.toLong())
 
             // THEN
-            require(expectItem() is PlaybackEvent.Play)
-            require(expectItem() is PlaybackEvent.Pause)
+            require(awaitItem() is PlaybackEvent.Play)
+            require(awaitItem() is PlaybackEvent.Pause)
         }
     }
 
@@ -79,9 +79,9 @@ class PlayPauseStrategyTest {
             strategy.play(payload)
 
             // THEN
-            require(expectItem() is PlaybackEvent.Play)
-            require(expectItem() is PlaybackEvent.Pause)
-            require(expectItem() is PlaybackEvent.Play)
+            require(awaitItem() is PlaybackEvent.Play)
+            require(awaitItem() is PlaybackEvent.Pause)
+            require(awaitItem() is PlaybackEvent.Play)
         }
     }
 
@@ -97,7 +97,7 @@ class PlayPauseStrategyTest {
             strategy.play(payload)
 
             // THEN
-            require(expectItem() is PlaybackEvent.Play)
+            require(awaitItem() is PlaybackEvent.Play)
         }
     }
 }
