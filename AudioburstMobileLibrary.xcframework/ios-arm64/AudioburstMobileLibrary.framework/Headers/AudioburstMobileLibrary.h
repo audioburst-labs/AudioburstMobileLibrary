@@ -6,9 +6,9 @@
 #import <Foundation/NSString.h>
 #import <Foundation/NSValue.h>
 
-@class AMLListenedBurstModelAdapter, AMLBurst, AMLLibraryError, AMLPendingPlaylist, AMLPlaylistInfo, AMLPlaylist, NSData, AMLUserPreferences, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLCtaData, AMLDateTime, AMLDurationUnit, AMLKotlinEnum<E>, AMLKotlinArray<T>, AMLKey, AMLPlayerActionType, AMLPlayerAction, AMLPreference, AMLResult<__covariant T>, AMLKotlinNothing, AMLListenedBurstModel, AMLRuntimeQuery<__covariant RowType>, AMLRuntimeTransacterTransaction, AMLKotlinByteArray, AMLKotlinByteIterator;
+@class AMLListenedBurstModelAdapter, AMLBurst, AMLLibraryError, AMLPendingPlaylist, AMLPlaylistInfo, AMLPlaylist, AMLPlaylistRequest, NSData, AMLShareOptions, AMLUserExperience, AMLUserPreferences, AMLUiEvent, AMLSdkLevel, AMLPlaybackState, AMLDuration, AMLBurstSource, AMLCtaData, AMLDateTime, AMLDurationUnit, AMLKotlinEnum<E>, AMLKotlinArray<T>, AMLKey, AMLPlayerActionType, AMLPlayerSettingsMode, AMLPlayerSettingsTheme, AMLPlayerAction, AMLPlaylistIntent, AMLPreference, AMLResult<__covariant T>, AMLKotlinNothing, AMLSdkInfo, AMLShareData, AMLPlayerSettings, AMLListenedBurstModel, AMLRuntimeQuery<__covariant RowType>, AMLShare, AMLRuntimeTransacterTransaction, AMLKotlinByteArray, AMLKotlinx_serialization_coreSerializersModule, AMLKotlinx_serialization_coreSerialKind, AMLKotlinByteIterator;
 
-@protocol AMLListenedBurstModelQueries, AMLRuntimeTransactionWithoutReturn, AMLRuntimeTransactionWithReturn, AMLRuntimeTransacter, AMLDatabase, AMLRuntimeSqlDriver, AMLRuntimeSqlDriverSchema, AMLPlaybackStateListener, AMLKotlinComparable, AMLRuntimeColumnAdapter, AMLRuntimeTransactionCallbacks, AMLRuntimeSqlPreparedStatement, AMLRuntimeSqlCursor, AMLRuntimeCloseable, AMLKotlinIterator, AMLRuntimeQueryListener;
+@protocol AMLListenedBurstModelQueries, AMLRuntimeTransactionWithoutReturn, AMLRuntimeTransactionWithReturn, AMLRuntimeTransacter, AMLDatabase, AMLRuntimeSqlDriver, AMLRuntimeSqlDriverSchema, AMLPlaybackStateListener, AMLKotlinComparable, AMLRuntimeColumnAdapter, AMLKotlinx_serialization_coreKSerializer, AMLRuntimeTransactionCallbacks, AMLRuntimeSqlPreparedStatement, AMLRuntimeSqlCursor, AMLRuntimeCloseable, AMLKotlinIterator, AMLRuntimeQueryListener, AMLKotlinx_serialization_coreEncoder, AMLKotlinx_serialization_coreSerialDescriptor, AMLKotlinx_serialization_coreSerializationStrategy, AMLKotlinx_serialization_coreDecoder, AMLKotlinx_serialization_coreDeserializationStrategy, AMLKotlinx_serialization_coreCompositeEncoder, AMLKotlinAnnotation, AMLKotlinx_serialization_coreCompositeDecoder, AMLKotlinx_serialization_coreSerializersModuleCollector, AMLKotlinKClass, AMLKotlinKDeclarationContainer, AMLKotlinKAnnotatedElement, AMLKotlinKClassifier;
 
 NS_ASSUME_NONNULL_BEGIN
 #pragma clang diagnostic push
@@ -171,13 +171,18 @@ __attribute__((swift_name("AudioburstLibrary")))
 - (void)getAdUrlBurstId:(NSString *)burstId onData:(void (^)(NSString *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getAdUrl(burstId:onData:onError:)")));
 - (void)getPersonalPlaylistOnData:(void (^)(AMLPendingPlaylist *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPersonalPlaylist(onData:onError:)")));
 - (void)getPlaylistPlaylistInfo:(AMLPlaylistInfo *)playlistInfo onData:(void (^)(AMLPlaylist *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPlaylist(playlistInfo:onData:onError:)")));
+- (void)getPlaylistPlaylistRequest:(AMLPlaylistRequest *)playlistRequest onData:(void (^)(AMLPlaylist *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPlaylist(playlistRequest:onData:onError:)")));
 - (void)getPlaylistData:(NSData *)data onData:(void (^)(AMLPlaylist *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPlaylist(data:onData:onError:)")));
 - (void)getPlaylistsOnData:(void (^)(NSArray<AMLPlaylistInfo *> *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getPlaylists(onData:onError:)")));
+- (void)getShareOptionsBurstId:(NSString *)burstId onData:(void (^)(AMLShareOptions * _Nullable))onData __attribute__((swift_name("getShareOptions(burstId:onData:)")));
+- (void)getUserExperienceApplicationKey:(NSString *)applicationKey experienceId:(NSString *)experienceId onData:(void (^)(AMLUserExperience *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getUserExperience(applicationKey:experienceId:onData:onError:)")));
 - (void)getUserPreferencesOnData:(void (^)(AMLUserPreferences *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("getUserPreferences(onData:onError:)")));
 - (void)removePlaybackStateListenerListener:(id<AMLPlaybackStateListener>)listener __attribute__((swift_name("removePlaybackStateListener(listener:)")));
+- (void)reportUiEvent:(AMLUiEvent *)uiEvent burstId:(NSString *)burstId isPlaying:(BOOL)isPlaying __attribute__((swift_name("report(uiEvent:burstId:isPlaying:)")));
 - (void)searchQuery:(NSString *)query onData:(void (^)(AMLPlaylist *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("search(query:onData:onError:)")));
 - (void)setAudioburstUserIDUserId:(NSString *)userId onData:(void (^)(AMLBoolean *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("setAudioburstUserID(userId:onData:onError:)")));
 - (void)setPlaybackStateListenerListener:(id<AMLPlaybackStateListener>)listener __attribute__((swift_name("setPlaybackStateListener(listener:)")));
+- (void)setSdkInfoLevel:(AMLSdkLevel *)level version:(NSString *)version __attribute__((swift_name("setSdkInfo(level:version:)")));
 - (void)setUserPreferencesUserPreferences:(AMLUserPreferences *)userPreferences onData:(void (^)(AMLUserPreferences *))onData onError:(void (^)(AMLLibraryError *))onError __attribute__((swift_name("setUserPreferences(userPreferences:onData:onError:)")));
 - (void)start __attribute__((swift_name("start()")));
 - (void)stop __attribute__((swift_name("stop()")));
@@ -390,22 +395,101 @@ __attribute__((swift_name("PlayerAction.Type_")))
 @property (class, readonly) AMLPlayerActionType *channel __attribute__((swift_name("channel")));
 @property (class, readonly) AMLPlayerActionType *voice __attribute__((swift_name("voice")));
 @property (class, readonly) AMLPlayerActionType *search __attribute__((swift_name("search")));
+@property (class, readonly) AMLPlayerActionType *usergenerated __attribute__((swift_name("usergenerated")));
+@property (class, readonly) AMLPlayerActionType *account __attribute__((swift_name("account")));
+@property (class, readonly) AMLPlayerActionType *source __attribute__((swift_name("source")));
 + (AMLKotlinArray<AMLPlayerActionType *> *)values __attribute__((swift_name("values()")));
 @property (readonly) NSString *id __attribute__((swift_name("id")));
 @end;
 
 __attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("PlayerSettings")))
+@interface AMLPlayerSettings : AMLBase
+- (instancetype)initWithMode:(AMLPlayerSettingsMode *)mode autoplay:(BOOL)autoplay accentColor:(NSString *)accentColor theme:(AMLPlayerSettingsTheme *)theme isShuffleEnabled:(BOOL)isShuffleEnabled __attribute__((swift_name("init(mode:autoplay:accentColor:theme:isShuffleEnabled:)"))) __attribute__((objc_designated_initializer));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@property (readonly) NSString *accentColor __attribute__((swift_name("accentColor")));
+@property (readonly) BOOL autoplay __attribute__((swift_name("autoplay")));
+@property (readonly) BOOL isShuffleEnabled __attribute__((swift_name("isShuffleEnabled")));
+@property (readonly) AMLPlayerSettingsMode *mode __attribute__((swift_name("mode")));
+@property (readonly) AMLPlayerSettingsTheme *theme __attribute__((swift_name("theme")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("PlayerSettings.Mode")))
+@interface AMLPlayerSettingsMode : AMLKotlinEnum<AMLPlayerSettingsMode *>
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@property (class, readonly) AMLPlayerSettingsMode *banner __attribute__((swift_name("banner")));
+@property (class, readonly) AMLPlayerSettingsMode *button __attribute__((swift_name("button")));
++ (AMLKotlinArray<AMLPlayerSettingsMode *> *)values __attribute__((swift_name("values()")));
+@property (readonly) NSString *primaryName __attribute__((swift_name("primaryName")));
+@property (readonly) NSString *secondaryName __attribute__((swift_name("secondaryName")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("PlayerSettings.ModeCompanion")))
+@interface AMLPlayerSettingsModeCompanion : AMLBase
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)companion __attribute__((swift_name("init()")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("PlayerSettings.Theme")))
+@interface AMLPlayerSettingsTheme : AMLKotlinEnum<AMLPlayerSettingsTheme *>
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@property (class, readonly) AMLPlayerSettingsTheme *light __attribute__((swift_name("light")));
+@property (class, readonly) AMLPlayerSettingsTheme *dark __attribute__((swift_name("dark")));
++ (AMLKotlinArray<AMLPlayerSettingsTheme *> *)values __attribute__((swift_name("values()")));
+@property (readonly) NSString *themeName __attribute__((swift_name("themeName")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("PlayerSettings.ThemeCompanion")))
+@interface AMLPlayerSettingsThemeCompanion : AMLBase
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)companion __attribute__((swift_name("init()")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("Playlist")))
 @interface AMLPlaylist : AMLBase
-- (instancetype)initWithId:(NSString *)id name:(NSString *)name query:(NSString *)query bursts:(NSArray<AMLBurst *> *)bursts playerSessionId:(id)playerSessionId playerAction:(AMLPlayerAction *)playerAction __attribute__((swift_name("init(id:name:query:bursts:playerSessionId:playerAction:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithId:(NSString *)id name:(NSString *)name query:(NSString *)query bursts:(NSArray<AMLBurst *> *)bursts playerSessionId:(id)playerSessionId playerAction:(AMLPlayerAction *)playerAction intent:(AMLPlaylistIntent * _Nullable)intent __attribute__((swift_name("init(id:name:query:bursts:playerSessionId:playerAction:intent:)"))) __attribute__((objc_designated_initializer));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
 @property (readonly) NSArray<AMLBurst *> *bursts __attribute__((swift_name("bursts")));
 @property (readonly) NSString *id __attribute__((swift_name("id")));
+@property (readonly) AMLPlaylistIntent * _Nullable intent __attribute__((swift_name("intent")));
 @property (readonly) NSString *name __attribute__((swift_name("name")));
 @property (readonly) id playerSessionId __attribute__((swift_name("playerSessionId")));
 @property (readonly) NSString *query __attribute__((swift_name("query")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("Playlist.Intent")))
+@interface AMLPlaylistIntent : AMLKotlinEnum<AMLPlaylistIntent *>
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@property (class, readonly) AMLPlaylistIntent *playlists __attribute__((swift_name("playlists")));
+@property (class, readonly) AMLPlaylistIntent *news __attribute__((swift_name("news")));
++ (AMLKotlinArray<AMLPlaylistIntent *> *)values __attribute__((swift_name("values()")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("Playlist.IntentCompanion")))
+@interface AMLPlaylistIntentCompanion : AMLBase
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)companion __attribute__((swift_name("init()")));
+- (AMLPlaylistIntent * _Nullable)createIntentName:(NSString * _Nullable)intentName __attribute__((swift_name("create(intentName:)")));
 @end;
 
 __attribute__((objc_subclassing_restricted))
@@ -422,6 +506,39 @@ __attribute__((swift_name("PlaylistInfo")))
 @property (readonly) NSString *section __attribute__((swift_name("section")));
 @property (readonly) NSString *squareImage __attribute__((swift_name("squareImage")));
 @property (readonly) NSString *url __attribute__((swift_name("url")));
+@end;
+
+__attribute__((swift_name("PlaylistRequest")))
+@interface AMLPlaylistRequest : AMLBase
+- (instancetype)initWithRequestOptions:(id)requestOptions playlistName:(NSString *)playlistName __attribute__((swift_name("init(requestOptions:playlistName:)"))) __attribute__((objc_designated_initializer));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("PlaylistRequest.Account")))
+@interface AMLPlaylistRequestAccount : AMLPlaylistRequest
+- (instancetype)initWithId:(NSString *)id __attribute__((swift_name("init(id:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithRequestOptions:(id)requestOptions playlistName:(NSString *)playlistName __attribute__((swift_name("init(requestOptions:playlistName:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("PlaylistRequest.Channel")))
+@interface AMLPlaylistRequestChannel : AMLPlaylistRequest
+- (instancetype)initWithId:(int32_t)id __attribute__((swift_name("init(id:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithRequestOptions:(id)requestOptions playlistName:(NSString *)playlistName __attribute__((swift_name("init(requestOptions:playlistName:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("PlaylistRequest.Source")))
+@interface AMLPlaylistRequestSource : AMLPlaylistRequest
+- (instancetype)initWithId:(NSString *)id __attribute__((swift_name("init(id:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithRequestOptions:(id)requestOptions playlistName:(NSString *)playlistName __attribute__((swift_name("init(requestOptions:playlistName:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("PlaylistRequest.UserGenerated")))
+@interface AMLPlaylistRequestUserGenerated : AMLPlaylistRequest
+- (instancetype)initWithId:(NSString *)id __attribute__((swift_name("init(id:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)initWithRequestOptions:(id)requestOptions playlistName:(NSString *)playlistName __attribute__((swift_name("init(requestOptions:playlistName:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
 @end;
 
 __attribute__((objc_subclassing_restricted))
@@ -442,12 +559,16 @@ __attribute__((swift_name("Preference")))
 
 __attribute__((swift_name("Result")))
 @interface AMLResult<__covariant T> : AMLBase
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
++ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
 @end;
 
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("ResultData")))
 @interface AMLResultData<__covariant T> : AMLResult<T>
 - (instancetype)initWithValue:(T _Nullable)value __attribute__((swift_name("init(value:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
++ (instancetype)new __attribute__((unavailable));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
@@ -458,10 +579,94 @@ __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("ResultError")))
 @interface AMLResultError : AMLResult<AMLKotlinNothing *>
 - (instancetype)initWithError:(AMLLibraryError *)error __attribute__((swift_name("init(error:)"))) __attribute__((objc_designated_initializer));
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
++ (instancetype)new __attribute__((unavailable));
 - (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
 - (NSUInteger)hash __attribute__((swift_name("hash()")));
 - (NSString *)description __attribute__((swift_name("description()")));
 @property (readonly) AMLLibraryError *error __attribute__((swift_name("error")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("SdkInfo")))
+@interface AMLSdkInfo : AMLBase
+- (instancetype)initWithLevel:(AMLSdkLevel *)level version:(NSString *)version __attribute__((swift_name("init(level:version:)"))) __attribute__((objc_designated_initializer));
+- (AMLSdkLevel *)component1 __attribute__((swift_name("component1()")));
+- (NSString *)component2 __attribute__((swift_name("component2()")));
+- (AMLSdkInfo *)doCopyLevel:(AMLSdkLevel *)level version:(NSString *)version __attribute__((swift_name("doCopy(level:version:)")));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@property (readonly) AMLSdkLevel *level __attribute__((swift_name("level")));
+@property (readonly) NSString *version __attribute__((swift_name("version")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("SdkLevel")))
+@interface AMLSdkLevel : AMLKotlinEnum<AMLSdkLevel *>
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@property (class, readonly) AMLSdkLevel *core __attribute__((swift_name("core")));
+@property (class, readonly) AMLSdkLevel *controller __attribute__((swift_name("controller")));
+@property (class, readonly) AMLSdkLevel *full __attribute__((swift_name("full")));
+@property (class, readonly) AMLSdkLevel *banner __attribute__((swift_name("banner")));
+@property (class, readonly) AMLSdkLevel *button __attribute__((swift_name("button")));
+@property (class, readonly) AMLSdkLevel *player __attribute__((swift_name("player")));
++ (AMLKotlinArray<AMLSdkLevel *> *)values __attribute__((swift_name("values()")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("ShareData")))
+@interface AMLShareData : AMLBase
+- (instancetype)initWithTitle:(NSString *)title message:(NSString *)message url:(NSString *)url __attribute__((swift_name("init(title:message:url:)"))) __attribute__((objc_designated_initializer));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@property (readonly) NSString *message __attribute__((swift_name("message")));
+@property (readonly) NSString *title __attribute__((swift_name("title")));
+@property (readonly) NSString *url __attribute__((swift_name("url")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("ShareOptions")))
+@interface AMLShareOptions : AMLBase
+- (instancetype)initWithBurst:(AMLShareData *)burst playlist:(AMLShareData * _Nullable)playlist __attribute__((swift_name("init(burst:playlist:)"))) __attribute__((objc_designated_initializer));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@property (readonly) AMLShareData *burst __attribute__((swift_name("burst")));
+@property (readonly) AMLShareData * _Nullable playlist __attribute__((swift_name("playlist")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("UiEvent")))
+@interface AMLUiEvent : AMLKotlinEnum<AMLUiEvent *>
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
+- (instancetype)initWithName:(NSString *)name ordinal:(int32_t)ordinal __attribute__((swift_name("init(name:ordinal:)"))) __attribute__((objc_designated_initializer)) __attribute__((unavailable));
+@property (class, readonly) AMLUiEvent *playlistclick __attribute__((swift_name("playlistclick")));
+@property (class, readonly) AMLUiEvent *playlistclose __attribute__((swift_name("playlistclose")));
+@property (class, readonly) AMLUiEvent *selectiteminplaylist __attribute__((swift_name("selectiteminplaylist")));
+@property (class, readonly) AMLUiEvent *thumbsup __attribute__((swift_name("thumbsup")));
+@property (class, readonly) AMLUiEvent *thumbsdown __attribute__((swift_name("thumbsdown")));
+@property (class, readonly) AMLUiEvent *playeractivation __attribute__((swift_name("playeractivation")));
+@property (class, readonly) AMLUiEvent *skipadclick __attribute__((swift_name("skipadclick")));
+@property (class, readonly) AMLUiEvent *playerremoved __attribute__((swift_name("playerremoved")));
+@property (class, readonly) AMLUiEvent *shareburst __attribute__((swift_name("shareburst")));
++ (AMLKotlinArray<AMLUiEvent *> *)values __attribute__((swift_name("values()")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("UserExperience")))
+@interface AMLUserExperience : AMLBase
+- (instancetype)initWithId:(NSString *)id playerSettings:(AMLPlayerSettings *)playerSettings request:(AMLPlaylistRequest *)request __attribute__((swift_name("init(id:playerSettings:request:)"))) __attribute__((objc_designated_initializer));
+- (BOOL)isEqual:(id _Nullable)other __attribute__((swift_name("isEqual(_:)")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@property (readonly) NSString *id __attribute__((swift_name("id")));
+@property (readonly) AMLPlayerSettings *playerSettings __attribute__((swift_name("playerSettings")));
+@property (readonly) AMLPlaylistRequest *request __attribute__((swift_name("request")));
 @end;
 
 __attribute__((objc_subclassing_restricted))
@@ -510,6 +715,39 @@ __attribute__((swift_name("ListenedBurstModelQueries")))
 - (AMLRuntimeQuery<id> *)selectAllMapper:(id (^)(NSString *, AMLDateTime *))mapper __attribute__((swift_name("selectAll(mapper:)")));
 - (AMLRuntimeQuery<AMLListenedBurstModel *> *)selectAllFromLast30Days __attribute__((swift_name("selectAllFromLast30Days()")));
 - (AMLRuntimeQuery<id> *)selectAllFromLast30DaysMapper:(id (^)(NSString *, AMLDateTime *))mapper __attribute__((swift_name("selectAllFromLast30Days(mapper:)")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("Share")))
+@interface AMLShare : AMLBase
+- (instancetype)initWithBurst:(NSString *)burst playlist:(NSString *)playlist __attribute__((swift_name("init(burst:playlist:)"))) __attribute__((objc_designated_initializer));
+@property (readonly) NSString *burst __attribute__((swift_name("burst")));
+@property (readonly) NSString *playlist __attribute__((swift_name("playlist")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("Share.Companion")))
+@interface AMLShareCompanion : AMLBase
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)companion __attribute__((swift_name("init()")));
+- (id<AMLKotlinx_serialization_coreKSerializer>)serializer __attribute__((swift_name("serializer()")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("Texts")))
+@interface AMLTexts : AMLBase
+- (instancetype)initWithShare:(AMLShare *)share __attribute__((swift_name("init(share:)"))) __attribute__((objc_designated_initializer));
+@property (readonly) AMLShare *share __attribute__((swift_name("share")));
+@end;
+
+__attribute__((objc_subclassing_restricted))
+__attribute__((swift_name("Texts.Companion")))
+@interface AMLTextsCompanion : AMLBase
++ (instancetype)alloc __attribute__((unavailable));
++ (instancetype)allocWithZone:(struct _NSZone *)zone __attribute__((unavailable));
++ (instancetype)companion __attribute__((swift_name("init()")));
+- (id<AMLKotlinx_serialization_coreKSerializer>)serializer __attribute__((swift_name("serializer()")));
 @end;
 
 @interface AMLResult (Extensions)
@@ -607,6 +845,25 @@ __attribute__((swift_name("RuntimeQuery")))
 @property (readonly) RowType (^mapper)(id<AMLRuntimeSqlCursor>) __attribute__((swift_name("mapper")));
 @end;
 
+__attribute__((swift_name("Kotlinx_serialization_coreSerializationStrategy")))
+@protocol AMLKotlinx_serialization_coreSerializationStrategy
+@required
+- (void)serializeEncoder:(id<AMLKotlinx_serialization_coreEncoder>)encoder value:(id _Nullable)value __attribute__((swift_name("serialize(encoder:value:)")));
+@property (readonly) id<AMLKotlinx_serialization_coreSerialDescriptor> descriptor __attribute__((swift_name("descriptor")));
+@end;
+
+__attribute__((swift_name("Kotlinx_serialization_coreDeserializationStrategy")))
+@protocol AMLKotlinx_serialization_coreDeserializationStrategy
+@required
+- (id _Nullable)deserializeDecoder:(id<AMLKotlinx_serialization_coreDecoder>)decoder __attribute__((swift_name("deserialize(decoder:)")));
+@property (readonly) id<AMLKotlinx_serialization_coreSerialDescriptor> descriptor __attribute__((swift_name("descriptor")));
+@end;
+
+__attribute__((swift_name("Kotlinx_serialization_coreKSerializer")))
+@protocol AMLKotlinx_serialization_coreKSerializer <AMLKotlinx_serialization_coreSerializationStrategy, AMLKotlinx_serialization_coreDeserializationStrategy>
+@required
+@end;
+
 __attribute__((swift_name("RuntimeTransacterTransaction")))
 @interface AMLRuntimeTransacterTransaction : AMLBase <AMLRuntimeTransactionCallbacks>
 - (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
@@ -649,6 +906,67 @@ __attribute__((swift_name("RuntimeQueryListener")))
 - (void)queryResultsChanged __attribute__((swift_name("queryResultsChanged()")));
 @end;
 
+__attribute__((swift_name("Kotlinx_serialization_coreEncoder")))
+@protocol AMLKotlinx_serialization_coreEncoder
+@required
+- (id<AMLKotlinx_serialization_coreCompositeEncoder>)beginCollectionDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor collectionSize:(int32_t)collectionSize __attribute__((swift_name("beginCollection(descriptor:collectionSize:)")));
+- (id<AMLKotlinx_serialization_coreCompositeEncoder>)beginStructureDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor __attribute__((swift_name("beginStructure(descriptor:)")));
+- (void)encodeBooleanValue:(BOOL)value __attribute__((swift_name("encodeBoolean(value:)")));
+- (void)encodeByteValue:(int8_t)value __attribute__((swift_name("encodeByte(value:)")));
+- (void)encodeCharValue:(unichar)value __attribute__((swift_name("encodeChar(value:)")));
+- (void)encodeDoubleValue:(double)value __attribute__((swift_name("encodeDouble(value:)")));
+- (void)encodeEnumEnumDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)enumDescriptor index:(int32_t)index __attribute__((swift_name("encodeEnum(enumDescriptor:index:)")));
+- (void)encodeFloatValue:(float)value __attribute__((swift_name("encodeFloat(value:)")));
+- (id<AMLKotlinx_serialization_coreEncoder>)encodeInlineInlineDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)inlineDescriptor __attribute__((swift_name("encodeInline(inlineDescriptor:)")));
+- (void)encodeIntValue:(int32_t)value __attribute__((swift_name("encodeInt(value:)")));
+- (void)encodeLongValue:(int64_t)value __attribute__((swift_name("encodeLong(value:)")));
+- (void)encodeNotNullMark __attribute__((swift_name("encodeNotNullMark()")));
+- (void)encodeNull __attribute__((swift_name("encodeNull()")));
+- (void)encodeNullableSerializableValueSerializer:(id<AMLKotlinx_serialization_coreSerializationStrategy>)serializer value:(id _Nullable)value __attribute__((swift_name("encodeNullableSerializableValue(serializer:value:)")));
+- (void)encodeSerializableValueSerializer:(id<AMLKotlinx_serialization_coreSerializationStrategy>)serializer value:(id _Nullable)value __attribute__((swift_name("encodeSerializableValue(serializer:value:)")));
+- (void)encodeShortValue:(int16_t)value __attribute__((swift_name("encodeShort(value:)")));
+- (void)encodeStringValue:(NSString *)value __attribute__((swift_name("encodeString(value:)")));
+@property (readonly) AMLKotlinx_serialization_coreSerializersModule *serializersModule __attribute__((swift_name("serializersModule")));
+@end;
+
+__attribute__((swift_name("Kotlinx_serialization_coreSerialDescriptor")))
+@protocol AMLKotlinx_serialization_coreSerialDescriptor
+@required
+- (NSArray<id<AMLKotlinAnnotation>> *)getElementAnnotationsIndex:(int32_t)index __attribute__((swift_name("getElementAnnotations(index:)")));
+- (id<AMLKotlinx_serialization_coreSerialDescriptor>)getElementDescriptorIndex:(int32_t)index __attribute__((swift_name("getElementDescriptor(index:)")));
+- (int32_t)getElementIndexName:(NSString *)name __attribute__((swift_name("getElementIndex(name:)")));
+- (NSString *)getElementNameIndex:(int32_t)index __attribute__((swift_name("getElementName(index:)")));
+- (BOOL)isElementOptionalIndex:(int32_t)index __attribute__((swift_name("isElementOptional(index:)")));
+@property (readonly) NSArray<id<AMLKotlinAnnotation>> *annotations __attribute__((swift_name("annotations")));
+@property (readonly) int32_t elementsCount __attribute__((swift_name("elementsCount")));
+@property (readonly) BOOL isInline __attribute__((swift_name("isInline")));
+@property (readonly) BOOL isNullable __attribute__((swift_name("isNullable")));
+@property (readonly) AMLKotlinx_serialization_coreSerialKind *kind __attribute__((swift_name("kind")));
+@property (readonly) NSString *serialName __attribute__((swift_name("serialName")));
+@end;
+
+__attribute__((swift_name("Kotlinx_serialization_coreDecoder")))
+@protocol AMLKotlinx_serialization_coreDecoder
+@required
+- (id<AMLKotlinx_serialization_coreCompositeDecoder>)beginStructureDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor __attribute__((swift_name("beginStructure(descriptor:)")));
+- (BOOL)decodeBoolean __attribute__((swift_name("decodeBoolean()")));
+- (int8_t)decodeByte __attribute__((swift_name("decodeByte()")));
+- (unichar)decodeChar __attribute__((swift_name("decodeChar()")));
+- (double)decodeDouble __attribute__((swift_name("decodeDouble()")));
+- (int32_t)decodeEnumEnumDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)enumDescriptor __attribute__((swift_name("decodeEnum(enumDescriptor:)")));
+- (float)decodeFloat __attribute__((swift_name("decodeFloat()")));
+- (id<AMLKotlinx_serialization_coreDecoder>)decodeInlineInlineDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)inlineDescriptor __attribute__((swift_name("decodeInline(inlineDescriptor:)")));
+- (int32_t)decodeInt __attribute__((swift_name("decodeInt()")));
+- (int64_t)decodeLong __attribute__((swift_name("decodeLong()")));
+- (BOOL)decodeNotNullMark __attribute__((swift_name("decodeNotNullMark()")));
+- (AMLKotlinNothing * _Nullable)decodeNull __attribute__((swift_name("decodeNull()")));
+- (id _Nullable)decodeNullableSerializableValueDeserializer:(id<AMLKotlinx_serialization_coreDeserializationStrategy>)deserializer __attribute__((swift_name("decodeNullableSerializableValue(deserializer:)")));
+- (id _Nullable)decodeSerializableValueDeserializer:(id<AMLKotlinx_serialization_coreDeserializationStrategy>)deserializer __attribute__((swift_name("decodeSerializableValue(deserializer:)")));
+- (int16_t)decodeShort __attribute__((swift_name("decodeShort()")));
+- (NSString *)decodeString __attribute__((swift_name("decodeString()")));
+@property (readonly) AMLKotlinx_serialization_coreSerializersModule *serializersModule __attribute__((swift_name("serializersModule")));
+@end;
+
 __attribute__((objc_subclassing_restricted))
 __attribute__((swift_name("KotlinByteArray")))
 @interface AMLKotlinByteArray : AMLBase
@@ -662,12 +980,109 @@ __attribute__((swift_name("KotlinByteArray")))
 @property (readonly) int32_t size __attribute__((swift_name("size")));
 @end;
 
+__attribute__((swift_name("Kotlinx_serialization_coreCompositeEncoder")))
+@protocol AMLKotlinx_serialization_coreCompositeEncoder
+@required
+- (void)encodeBooleanElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index value:(BOOL)value __attribute__((swift_name("encodeBooleanElement(descriptor:index:value:)")));
+- (void)encodeByteElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index value:(int8_t)value __attribute__((swift_name("encodeByteElement(descriptor:index:value:)")));
+- (void)encodeCharElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index value:(unichar)value __attribute__((swift_name("encodeCharElement(descriptor:index:value:)")));
+- (void)encodeDoubleElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index value:(double)value __attribute__((swift_name("encodeDoubleElement(descriptor:index:value:)")));
+- (void)encodeFloatElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index value:(float)value __attribute__((swift_name("encodeFloatElement(descriptor:index:value:)")));
+- (id<AMLKotlinx_serialization_coreEncoder>)encodeInlineElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index __attribute__((swift_name("encodeInlineElement(descriptor:index:)")));
+- (void)encodeIntElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index value:(int32_t)value __attribute__((swift_name("encodeIntElement(descriptor:index:value:)")));
+- (void)encodeLongElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index value:(int64_t)value __attribute__((swift_name("encodeLongElement(descriptor:index:value:)")));
+- (void)encodeNullableSerializableElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index serializer:(id<AMLKotlinx_serialization_coreSerializationStrategy>)serializer value:(id _Nullable)value __attribute__((swift_name("encodeNullableSerializableElement(descriptor:index:serializer:value:)")));
+- (void)encodeSerializableElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index serializer:(id<AMLKotlinx_serialization_coreSerializationStrategy>)serializer value:(id _Nullable)value __attribute__((swift_name("encodeSerializableElement(descriptor:index:serializer:value:)")));
+- (void)encodeShortElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index value:(int16_t)value __attribute__((swift_name("encodeShortElement(descriptor:index:value:)")));
+- (void)encodeStringElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index value:(NSString *)value __attribute__((swift_name("encodeStringElement(descriptor:index:value:)")));
+- (void)endStructureDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor __attribute__((swift_name("endStructure(descriptor:)")));
+- (BOOL)shouldEncodeElementDefaultDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index __attribute__((swift_name("shouldEncodeElementDefault(descriptor:index:)")));
+@property (readonly) AMLKotlinx_serialization_coreSerializersModule *serializersModule __attribute__((swift_name("serializersModule")));
+@end;
+
+__attribute__((swift_name("Kotlinx_serialization_coreSerializersModule")))
+@interface AMLKotlinx_serialization_coreSerializersModule : AMLBase
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
++ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
+- (void)dumpToCollector:(id<AMLKotlinx_serialization_coreSerializersModuleCollector>)collector __attribute__((swift_name("dumpTo(collector:)")));
+- (id<AMLKotlinx_serialization_coreKSerializer> _Nullable)getContextualKClass:(id<AMLKotlinKClass>)kClass typeArgumentsSerializers:(NSArray<id<AMLKotlinx_serialization_coreKSerializer>> *)typeArgumentsSerializers __attribute__((swift_name("getContextual(kClass:typeArgumentsSerializers:)")));
+- (id<AMLKotlinx_serialization_coreSerializationStrategy> _Nullable)getPolymorphicBaseClass:(id<AMLKotlinKClass>)baseClass value:(id)value __attribute__((swift_name("getPolymorphic(baseClass:value:)")));
+- (id<AMLKotlinx_serialization_coreDeserializationStrategy> _Nullable)getPolymorphicBaseClass:(id<AMLKotlinKClass>)baseClass serializedClassName:(NSString * _Nullable)serializedClassName __attribute__((swift_name("getPolymorphic(baseClass:serializedClassName:)")));
+@end;
+
+__attribute__((swift_name("KotlinAnnotation")))
+@protocol AMLKotlinAnnotation
+@required
+@end;
+
+__attribute__((swift_name("Kotlinx_serialization_coreSerialKind")))
+@interface AMLKotlinx_serialization_coreSerialKind : AMLBase
+- (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
++ (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
+- (NSUInteger)hash __attribute__((swift_name("hash()")));
+- (NSString *)description __attribute__((swift_name("description()")));
+@end;
+
+__attribute__((swift_name("Kotlinx_serialization_coreCompositeDecoder")))
+@protocol AMLKotlinx_serialization_coreCompositeDecoder
+@required
+- (BOOL)decodeBooleanElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index __attribute__((swift_name("decodeBooleanElement(descriptor:index:)")));
+- (int8_t)decodeByteElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index __attribute__((swift_name("decodeByteElement(descriptor:index:)")));
+- (unichar)decodeCharElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index __attribute__((swift_name("decodeCharElement(descriptor:index:)")));
+- (int32_t)decodeCollectionSizeDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor __attribute__((swift_name("decodeCollectionSize(descriptor:)")));
+- (double)decodeDoubleElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index __attribute__((swift_name("decodeDoubleElement(descriptor:index:)")));
+- (int32_t)decodeElementIndexDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor __attribute__((swift_name("decodeElementIndex(descriptor:)")));
+- (float)decodeFloatElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index __attribute__((swift_name("decodeFloatElement(descriptor:index:)")));
+- (id<AMLKotlinx_serialization_coreDecoder>)decodeInlineElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index __attribute__((swift_name("decodeInlineElement(descriptor:index:)")));
+- (int32_t)decodeIntElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index __attribute__((swift_name("decodeIntElement(descriptor:index:)")));
+- (int64_t)decodeLongElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index __attribute__((swift_name("decodeLongElement(descriptor:index:)")));
+- (id _Nullable)decodeNullableSerializableElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index deserializer:(id<AMLKotlinx_serialization_coreDeserializationStrategy>)deserializer previousValue:(id _Nullable)previousValue __attribute__((swift_name("decodeNullableSerializableElement(descriptor:index:deserializer:previousValue:)")));
+- (BOOL)decodeSequentially __attribute__((swift_name("decodeSequentially()")));
+- (id _Nullable)decodeSerializableElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index deserializer:(id<AMLKotlinx_serialization_coreDeserializationStrategy>)deserializer previousValue:(id _Nullable)previousValue __attribute__((swift_name("decodeSerializableElement(descriptor:index:deserializer:previousValue:)")));
+- (int16_t)decodeShortElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index __attribute__((swift_name("decodeShortElement(descriptor:index:)")));
+- (NSString *)decodeStringElementDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor index:(int32_t)index __attribute__((swift_name("decodeStringElement(descriptor:index:)")));
+- (void)endStructureDescriptor:(id<AMLKotlinx_serialization_coreSerialDescriptor>)descriptor __attribute__((swift_name("endStructure(descriptor:)")));
+@property (readonly) AMLKotlinx_serialization_coreSerializersModule *serializersModule __attribute__((swift_name("serializersModule")));
+@end;
+
 __attribute__((swift_name("KotlinByteIterator")))
 @interface AMLKotlinByteIterator : AMLBase <AMLKotlinIterator>
 - (instancetype)init __attribute__((swift_name("init()"))) __attribute__((objc_designated_initializer));
 + (instancetype)new __attribute__((availability(swift, unavailable, message="use object initializers instead")));
 - (AMLByte *)next_ __attribute__((swift_name("next_()")));
 - (int8_t)nextByte __attribute__((swift_name("nextByte()")));
+@end;
+
+__attribute__((swift_name("Kotlinx_serialization_coreSerializersModuleCollector")))
+@protocol AMLKotlinx_serialization_coreSerializersModuleCollector
+@required
+- (void)contextualKClass:(id<AMLKotlinKClass>)kClass provider:(id<AMLKotlinx_serialization_coreKSerializer> (^)(NSArray<id<AMLKotlinx_serialization_coreKSerializer>> *))provider __attribute__((swift_name("contextual(kClass:provider:)")));
+- (void)contextualKClass:(id<AMLKotlinKClass>)kClass serializer:(id<AMLKotlinx_serialization_coreKSerializer>)serializer __attribute__((swift_name("contextual(kClass:serializer:)")));
+- (void)polymorphicBaseClass:(id<AMLKotlinKClass>)baseClass actualClass:(id<AMLKotlinKClass>)actualClass actualSerializer:(id<AMLKotlinx_serialization_coreKSerializer>)actualSerializer __attribute__((swift_name("polymorphic(baseClass:actualClass:actualSerializer:)")));
+- (void)polymorphicDefaultBaseClass:(id<AMLKotlinKClass>)baseClass defaultSerializerProvider:(id<AMLKotlinx_serialization_coreDeserializationStrategy> _Nullable (^)(NSString * _Nullable))defaultSerializerProvider __attribute__((swift_name("polymorphicDefault(baseClass:defaultSerializerProvider:)")));
+@end;
+
+__attribute__((swift_name("KotlinKDeclarationContainer")))
+@protocol AMLKotlinKDeclarationContainer
+@required
+@end;
+
+__attribute__((swift_name("KotlinKAnnotatedElement")))
+@protocol AMLKotlinKAnnotatedElement
+@required
+@end;
+
+__attribute__((swift_name("KotlinKClassifier")))
+@protocol AMLKotlinKClassifier
+@required
+@end;
+
+__attribute__((swift_name("KotlinKClass")))
+@protocol AMLKotlinKClass <AMLKotlinKDeclarationContainer, AMLKotlinKAnnotatedElement, AMLKotlinKClassifier>
+@required
+- (BOOL)isInstanceValue:(id _Nullable)value __attribute__((swift_name("isInstance(value:)")));
+@property (readonly) NSString * _Nullable qualifiedName __attribute__((swift_name("qualifiedName")));
+@property (readonly) NSString * _Nullable simpleName __attribute__((swift_name("simpleName")));
 @end;
 
 #pragma clang diagnostic pop
