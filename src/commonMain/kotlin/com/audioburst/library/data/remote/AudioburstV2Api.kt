@@ -37,7 +37,7 @@ internal class AudioburstV2Api(private val json: Json) {
             path = "users/verify",
             method = Endpoint.Method.GET,
             queryParams = mapOf(
-                "userId" to userId
+                USER_ID_QUERY_PARAM to userId
             )
         )
 
@@ -55,7 +55,7 @@ internal class AudioburstV2Api(private val json: Json) {
             path = "user/preferences",
             method = Endpoint.Method.GET,
             queryParams = mapOf(
-                "userId" to userId
+                USER_ID_QUERY_PARAM to userId
             )
         )
 
@@ -64,7 +64,7 @@ internal class AudioburstV2Api(private val json: Json) {
             path = "user/preferences",
             method = Endpoint.Method.POST,
             queryParams = mapOf(
-                "userId" to userId
+                USER_ID_QUERY_PARAM to userId
             ),
             body = Endpoint.Body.Plain(json.encodeToString(userPreferences))
         )
@@ -74,7 +74,7 @@ internal class AudioburstV2Api(private val json: Json) {
             path = "personal",
             method = Endpoint.Method.GET,
             queryParams = mapOf(
-                "userId" to userId,
+                USER_ID_QUERY_PARAM to userId,
                 "async" to true,
                 "nocache" to false,
                 "prefix" to false,
@@ -99,7 +99,7 @@ internal class AudioburstV2Api(private val json: Json) {
             path = "search/keyword",
             queryParams = mapOf(
                 "q" to query,
-                "userId" to userId,
+                USER_ID_QUERY_PARAM to userId,
             ),
             method = Endpoint.Method.GET,
         )
@@ -108,8 +108,8 @@ internal class AudioburstV2Api(private val json: Json) {
         endpoint(
             path = "topstories/usergenerated/$id",
             queryParams = mapOf(
-                "userId" to userId,
-                "device" to device,
+                USER_ID_QUERY_PARAM to userId,
+                DEVICE_QUERY_PARAM to device,
             ),
             method = Endpoint.Method.GET,
         )
@@ -118,8 +118,8 @@ internal class AudioburstV2Api(private val json: Json) {
         endpoint(
             path = "topstories/source/$id",
             queryParams = mapOf(
-                "userId" to userId,
-                "device" to device,
+                USER_ID_QUERY_PARAM to userId,
+                DEVICE_QUERY_PARAM to device,
             ),
             method = Endpoint.Method.GET,
         )
@@ -128,8 +128,8 @@ internal class AudioburstV2Api(private val json: Json) {
         endpoint(
             path = "topstories/account/$id",
             queryParams = mapOf(
-                "userId" to userId,
-                "device" to device,
+                USER_ID_QUERY_PARAM to userId,
+                DEVICE_QUERY_PARAM to device,
             ),
             method = Endpoint.Method.GET,
         )
@@ -138,8 +138,8 @@ internal class AudioburstV2Api(private val json: Json) {
         endpoint(
             path = "topstories/category",
             queryParams = mapOf(
-                "userId" to userId,
-                "device" to device,
+                USER_ID_QUERY_PARAM to userId,
+                DEVICE_QUERY_PARAM to device,
                 "category" to id,
             ),
             method = Endpoint.Method.GET,
@@ -154,5 +154,7 @@ internal class AudioburstV2Api(private val json: Json) {
 
     companion object {
         private const val BASE_URL = "sapi.audioburst.com/v2"
+        private const val USER_ID_QUERY_PARAM = "userId"
+        private const val DEVICE_QUERY_PARAM = "device"
     }
 }

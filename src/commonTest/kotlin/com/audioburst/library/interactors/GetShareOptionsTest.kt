@@ -173,7 +173,7 @@ class GetShareOptionsTest {
     @Test
     fun `test that urlPlaceholder is getting replaced in shareOptions burst's title with shortUrl`() = runTest {
         // GIVEN
-        val shareTexts = shareTextsOf(burst = "Burst ${Strings.urlPlaceholder}")
+        val shareTexts = shareTextsOf(burst = "Burst ${Strings.URL_PLACEHOLDER}")
         val shortUrl = "shortUrl"
 
         // WHEN
@@ -189,7 +189,7 @@ class GetShareOptionsTest {
     @Test
     fun `test that namePlaceholder is getting replaced in shareOptions burst's title with burstTitle`() = runTest {
         // GIVEN
-        val shareTexts = shareTextsOf(burst = "Burst ${Strings.urlPlaceholder}, ${Strings.namePlaceholder}")
+        val shareTexts = shareTextsOf(burst = "Burst ${Strings.URL_PLACEHOLDER}, ${Strings.NAME_PLACEHOLDER}")
         val shortUrl = "shortUrl"
         val burstTitle = "burstTitle"
 
@@ -247,7 +247,7 @@ class GetShareOptionsTest {
     @Test
     fun `test that urlPlaceholder is getting replaced in shareOptions playlist's title with shareUrl`() = runTest {
         // GIVEN
-        val shareTexts = shareTextsOf(burst = "Playlist ${Strings.urlPlaceholder}")
+        val shareTexts = shareTextsOf(burst = "Playlist ${Strings.URL_PLACEHOLDER}")
         val playlistShareUrl = "playlistShareUrl"
 
         // WHEN
@@ -263,7 +263,7 @@ class GetShareOptionsTest {
     @Test
     fun `test that namePlaceholder is getting replaced in shareOptions playlist's title with playlistName`() = runTest {
         // GIVEN
-        val shareTexts = shareTextsOf(playlist = "Playlist ${Strings.urlPlaceholder}, ${Strings.namePlaceholder}")
+        val shareTexts = shareTextsOf(playlist = "Playlist ${Strings.URL_PLACEHOLDER}, ${Strings.NAME_PLACEHOLDER}")
         val shortUrl = "shortUrl"
         val playlistName = "playlistName"
 

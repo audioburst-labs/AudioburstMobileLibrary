@@ -54,7 +54,7 @@ internal class GetShareOptions(
     private fun String.containsUrlPlaceholder(): Boolean = contains(URL_PLACEHOLDER)
 
     companion object {
-        private const val NAME_PLACEHOLDER = Strings.namePlaceholder
-        private const val URL_PLACEHOLDER = Strings.urlPlaceholder
+        private const val NAME_PLACEHOLDER = Strings.NAME_PLACEHOLDER
+        private const val URL_PLACEHOLDER = Strings.URL_PLACEHOLDER
     }
 }

@@ -50,13 +50,13 @@ sealed class Result<out T> {
 }
 
 enum class LibraryError(val message: String) {
-    Network(Strings.errorNetwork),
-    Server(Strings.errorServer),
-    Unexpected(Strings.errorUnexpected),
-    WrongApplicationKey(Strings.errorWrongApplicationKey),
-    AdUrlNotFound(Strings.errorAdUrlNotFound),
-    NoKeysSelected(Strings.errorNoKeysSelected),
-    NoSearchResults(Strings.errorNoSearchResults),
+    Network(Strings.ERROR_NETWORK),
+    Server(Strings.ERROR_SERVER),
+    Unexpected(Strings.ERROR_UNEXPECTED),
+    WrongApplicationKey(Strings.ERROR_WRONG_APPLICATION_KEY),
+    AdUrlNotFound(Strings.ERROR_AD_URL_NOT_FOUND),
+    NoKeysSelected(Strings.ERROR_NO_KEYS_SELECTED),
+    NoSearchResults(Strings.ERROR_NO_SEARCH_RESULTS),
 }
 
 inline fun <T, U> Result<T>.map(f: (T) -> U): Result<U> = when (this) {

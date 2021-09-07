@@ -18,9 +18,9 @@ internal inline fun <T, U> Resource<T>.map(f: (T) -> U): Resource<U> = when (thi
     is Resource.Error -> this
 }
 
-internal inline fun <T> Resource<T>.mapErrorToData(default: () -> T): Resource.Data<T> = when (this) {
+internal inline fun <T> Resource<T>.onErrorReturns(default: (ErrorType) -> T): Resource.Data<T> = when (this) {
     is Resource.Data -> this
-    is Resource.Error -> Resource.Data(default())
+    is Resource.Error -> Resource.Data(default(errorType))
 }
 
 internal inline infix fun <T> Resource<T>.onData(f: (T) -> Unit): Resource<T> = when (this) {

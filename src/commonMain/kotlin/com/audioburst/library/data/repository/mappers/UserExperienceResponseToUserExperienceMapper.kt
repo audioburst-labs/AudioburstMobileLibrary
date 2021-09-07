@@ -2,8 +2,8 @@ package com.audioburst.library.data.repository.mappers
 
 import com.audioburst.library.data.repository.models.PlayerSettingsResponse
 import com.audioburst.library.data.repository.models.UserExperienceResponse
-import com.audioburst.library.models.UserExperience
 import com.audioburst.library.models.PlayerSettings
+import com.audioburst.library.models.UserExperience
 
 internal class UserExperienceResponseToUserExperienceMapper(
     private val experiencePlaylistRequestCreator: ExperiencePlaylistRequestCreator,
@@ -28,7 +28,8 @@ internal class UserExperienceResponseToUserExperienceMapper(
     /**
      * Because of how the API works, it sends the color String with transparency characters at the
      * end, so we agreed we will fix it on apps side by moving last two characters to the beginning
-     * when the text length is equal to 8
+     * when the text length is equal to 8.
+     * Example backend's color notion: "#112233ff"
      */
     private fun String.moveTransparencyCharacterAtTheBeginning(): String {
         val withoutColorPrefix = removePrefix(COLOR_PREFIX)

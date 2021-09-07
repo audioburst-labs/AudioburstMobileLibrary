@@ -68,11 +68,7 @@ internal class UiEventHandler(
 
     private fun AnalysisInput.stream(burstFromId: Burst): Boolean? =
         if (!isDefaultState() && burstFromId == currentBurst()) {
-            when {
-                currentState.url.contains("mp3") -> false
-                currentState.url.contains("m3u8") -> true
-                else -> false
-            }
+            !currentState.url.contains("mp3") && currentState.url.contains("m3u8")
         } else {
             null
         }

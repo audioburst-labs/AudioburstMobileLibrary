@@ -32,7 +32,7 @@ internal class CachedAppSettingsRepository(
     override suspend fun getShareTexts(): ShareTexts =
         getAppSettings()
             .map { it.shareTexts }
-            .mapErrorToData {
+            .onErrorReturns {
                 ShareTexts(
                     burst = DEFAULT_SHARE_BURST_TEXT,
                     playlist = DEFAULT_SHARE_PLAYLIST_TEXT,
@@ -44,7 +44,7 @@ internal class CachedAppSettingsRepository(
             .map(appSettingsResponseToAppSettingsMapper::map)
 
     companion object {
-        private const val DEFAULT_SHARE_BURST_TEXT = Strings.defaultShareBurstText
-        private const val DEFAULT_SHARE_PLAYLIST_TEXT = Strings.defaultSharePlaylistText
+        private const val DEFAULT_SHARE_BURST_TEXT = Strings.DEFAULT_SHARE_BURST_TEXT
+        private const val DEFAULT_SHARE_PLAYLIST_TEXT = Strings.DEFAULT_SHARE_PLAYLIST_TEXT
     }
 }
