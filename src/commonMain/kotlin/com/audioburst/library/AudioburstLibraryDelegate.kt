@@ -70,8 +70,8 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
         return getPlaylist.invoke(playlistInfo)
     }
 
-    suspend fun getPlaylist(byteArray: ByteArray): Result<Playlist> {
-        Logger.i("getPlaylist")
+    fun search(byteArray: ByteArray): Flow<Result<PendingPlaylist>> {
+        Logger.i("search")
         return search.invoke(byteArray)
     }
 
@@ -89,13 +89,15 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
         }
     }
 
-    fun getPlaylist(byteArray: ByteArray, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
-        Logger.i("getPlaylist")
-        scope.launch {
-            search.invoke(byteArray)
-                .onData { onData(it) }
-                .onError { onError(it) }
-        }
+    fun search(byteArray: ByteArray, onData: (PendingPlaylist) -> Unit, onError: (LibraryError) -> Unit) {
+        Logger.i("search")
+        search.invoke(byteArray)
+            .onEach { result ->
+                result
+                    .onData { onData(it) }
+                    .onError { onError(it) }
+            }
+            .launchIn(scope)
     }
 
     fun getPlaylist(playlistRequest: PlaylistRequest, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
@@ -151,18 +153,20 @@ internal class AudioburstLibraryDelegate(applicationKey: String) {
             .launchIn(scope)
     }
 
-    suspend fun search(query: String): Result<Playlist> {
+    fun search(query: String): Flow<Result<PendingPlaylist>> {
         Logger.i("search")
         return search.invoke(query)
     }
 
-    fun search(query: String, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
+    fun search(query: String, onData: (PendingPlaylist) -> Unit, onError: (LibraryError) -> Unit) {
         Logger.i("search")
-        scope.launch {
-            search.invoke(query)
-                .onData { onData(it) }
-                .onError { onError(it) }
-        }
+        search.invoke(query)
+            .onEach { result ->
+                result
+                    .onData { onData(it) }
+                    .onError { onError(it) }
+            }
+            .launchIn(scope)
     }
 
     suspend fun getUserPreferences(): Result<UserPreferences> {

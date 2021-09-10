@@ -51,16 +51,6 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
     }
 
     /**
-     * You can use this function to pass previously recorded and converted to ByteArray search query.
-     *
-     * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it
-     * [Result.Error] will be returned with a proper error ([LibraryError]).
-     */
-    fun getPlaylist(data: NSData, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
-        delegate.getPlaylist(data.toByteArray(), onData, onError)
-    }
-
-    /**
      * Use this function to get information about the [Playlist] for a given [PlaylistRequest].
      *
      * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it
@@ -100,13 +90,28 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
     }
 
     /**
-     * You can use this function to pass search query and search for [Burst]s.
+     * You can use this function to pass previously recorded and converted to [NSData] search query. [onData] callback
+     * will be called every time there are new [Burst]`s in the playlist until playlist is ready. You can check whether
+     * playlist is ready by querying [PendingPlaylist.isReady] value.
      *
      * Returns [Result.Data] when it was possible to get requested resource. When the API returned an empty list of [Burst]s
      * you will get [LibraryError.NoSearchResults]. In case there was a problem getting it [Result.Error] will be returned
      * with a proper error ([LibraryError]).
      */
-    fun search(query: String, onData: (Playlist) -> Unit, onError: (LibraryError) -> Unit) {
+    fun search(data: NSData, onData: (PendingPlaylist) -> Unit, onError: (LibraryError) -> Unit) {
+        delegate.search(data.toByteArray(), onData, onError)
+    }
+
+    /**
+     * You can use this function to pass search query and search for [Burst]s. [onData] callback will be called every
+     * time there are new [Burst]`s in the playlist until playlist is ready. You can check whether playlist is ready by
+     * querying [PendingPlaylist.isReady] value.
+     *
+     * Returns [Result.Data] when it was possible to get requested resource. When the API returned an empty list of [Burst]s
+     * you will get [LibraryError.NoSearchResults]. In case there was a problem getting it [Result.Error] will be returned
+     * with a proper error ([LibraryError]).
+     */
+    fun search(query: String, onData: (PendingPlaylist) -> Unit, onError: (LibraryError) -> Unit) {
         delegate.search(query, onData, onError)
     }
 

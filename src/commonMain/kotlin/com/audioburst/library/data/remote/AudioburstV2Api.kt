@@ -2,7 +2,7 @@ package com.audioburst.library.data.remote
 
 import com.audioburst.library.data.repository.models.UserPreferenceResponse
 import com.audioburst.library.models.LibraryKey
-import com.audioburst.library.models.PersonalPlaylistQueryId
+import com.audioburst.library.models.PlaylistQueryId
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -81,9 +81,9 @@ internal class AudioburstV2Api(private val json: Json) {
             ),
         )
 
-    fun getPersonalPlaylist(personalPlaylistQueryId: PersonalPlaylistQueryId): Endpoint =
+    fun getPersonalPlaylist(playlistQueryId: PlaylistQueryId): Endpoint =
         endpoint(
-            path = "personal/async/${personalPlaylistQueryId.value}?format=v2",
+            path = "personal/async/${playlistQueryId.value}?format=v2",
             method = Endpoint.Method.GET,
         )
 

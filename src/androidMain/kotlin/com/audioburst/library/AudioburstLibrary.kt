@@ -48,15 +48,6 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
         delegate.getPlaylist(playlistInfo)
 
     /**
-     * You can use this function to pass previously recorded and converted to ByteArray search query.
-     *
-     * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it
-     * [Result.Error] will be returned with a proper error ([LibraryError]).
-     */
-    suspend fun getPlaylist(byteArray: ByteArray): Result<Playlist> =
-        delegate.getPlaylist(byteArray)
-
-    /**
      * Use this function to get information about the [Playlist] for a given [PlaylistRequest].
      *
      * Returns [Result.Data] when it was possible to get requested resource. In case there was a problem getting it
@@ -94,17 +85,34 @@ actual class AudioburstLibrary actual constructor(applicationKey: String) {
      * to personal playlist. By subscribing you will be notified every time there are new [Burst]`s in the playlist until
      * playlist is ready. You can check whether playlist is ready by querying [PendingPlaylist.isReady] value.
      */
-    suspend fun getPersonalPlaylist(): Flow<Result<PendingPlaylist>> =
+    fun getPersonalPlaylist(): Flow<Result<PendingPlaylist>> =
         delegate.getPersonalPlaylist()
 
     /**
-     * You can use this function to pass search query and search for [Burst]s.
+     * You can use this function to pass previously recorded and converted to [ByteArray] search query.
+     * Sometimes it may take more time to prepare a playlist in response to the searched query that is why library
+     * exposes an ability to "subscribe" to ongoing changes to personal playlist. By subscribing you will be notified
+     * every time there are new [Burst]`s in the playlist until playlist is ready. You can check whether playlist is
+     * ready by querying [PendingPlaylist.isReady] value.
      *
-     * Returns [Result.Data] when it was possible to get requested resource. When the API returned an empty list of [Burst]s
-     * you will get [LibraryError.NoSearchResults]. In case there was a problem getting it [Result.Error] will be returned
-     * with a proper error ([LibraryError]).
+     * Returns a [Flow] of the ongoing changes to the Playlist. When the API returned an empty list of [Burst]s you will
+     * get [LibraryError.NoSearchResults]. In case there was a problem getting it [Result.Error] will be returned with
+     * a proper error ([LibraryError]).
      */
-    suspend fun search(query: String): Result<Playlist> =
+    fun search(byteArray: ByteArray): Flow<Result<PendingPlaylist>> =
+        delegate.search(byteArray)
+
+    /**
+     * You can use this function to pass search query and search for [Burst]s. Sometimes it may take more time to prepare a
+     * playlist in response to the searched query that is why library exposes an ability to "subscribe" to ongoing
+     * changes to personal playlist. By subscribing you will be notified every time there are new [Burst]`s in the
+     * playlist until playlist is ready. You can check whether playlist is ready by querying [PendingPlaylist.isReady] value.
+     *
+     * Returns a [Flow] of the ongoing changes to the Playlist. When the API returned an empty list of [Burst]s you will
+     * get [LibraryError.NoSearchResults]. In case there was a problem getting it [Result.Error] will be returned with
+     * a proper error ([LibraryError]).
+     */
+    fun search(query: String): Flow<Result<PendingPlaylist>> =
         delegate.search(query)
 
     /**

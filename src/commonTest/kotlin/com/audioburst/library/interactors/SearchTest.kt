@@ -1,218 +1,126 @@
 package com.audioburst.library.interactors
 
 import com.audioburst.library.data.Resource
-import com.audioburst.library.data.storage.InMemoryPlaylistStorage
 import com.audioburst.library.models.LibraryError
-import com.audioburst.library.models.Playlist
+import com.audioburst.library.models.PendingPlaylist
+import com.audioburst.library.models.PlaylistResult
 import com.audioburst.library.models.Result
-import com.audioburst.library.models.User
 import com.audioburst.library.runTest
-import kotlin.test.BeforeTest
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.flowOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 class SearchTest {
 
-    private lateinit var playlistStorage: InMemoryPlaylistStorage
     private fun interactor(
-        search: Resource<Playlist> = Resource.Data(playlistOf()),
-        getPlaylistByByteArray: Resource<Playlist> = Resource.Data(playlistOf()),
-        userResource: Resource<User>,
-        postContentLoadEvent: PostContentLoadEvent = postContentLoadEventOf(),
+        searchByQuery: Resource<PlaylistResult> = Resource.Data(playlistResultFinishedOf()),
+        searchByByteArray: Resource<PlaylistResult> = Resource.Data(playlistResultFinishedOf()),
+        requestPlaylistAsyncReturns: Flow<Result<PendingPlaylist>> = flowOf(),
     ): Search =
         Search(
-            getUser = getUserOf(userResource),
             playlistRepository = playlistRepositoryOf(
                 returns = MockPlaylistRepository.Returns(
-                    search = search,
-                    getPlaylistByByteArray = getPlaylistByByteArray,
+                    searchByQuery = searchByQuery,
+                    searchByByteArray = searchByByteArray,
                 )
             ),
-            postContentLoadEvent = postContentLoadEvent,
-            playlistStorage = playlistStorage,
+            requestPlaylistAsync = requestPlaylistAsyncOf(getPlaylistCall = requestPlaylistAsyncReturns),
         )
 
-    @BeforeTest
-    fun setup() {
-        playlistStorage = InMemoryPlaylistStorage()
-    }
-
     @Test
-    fun testIfResultDataIsReturnedWhenSearchReturnsPlaylistWithAtLeastOneBurst() = runTest {
+    fun `test that Error is returned when requestPlaylistAsyncReturns returns Error when searching with query`() = runTest {
         // GIVEN
-        val getPlaylistReturn = Resource.Data(playlistOf(bursts = listOf(burstOf())))
-        val userResource = Resource.Data(userOf())
+        val requestPlaylistAsyncReturns = flowOf(resultErrorOf())
 
         // WHEN
-        val resource = interactor(
-            search = getPlaylistReturn,
-            userResource = userResource,
-        )(query = "")
+        val result = interactor(requestPlaylistAsyncReturns = requestPlaylistAsyncReturns)("")
 
         // THEN
-        assertTrue(resource is Result.Data)
-        assertTrue(playlistStorage.currentPlaylist != null)
+        assertTrue(result.first() is Result.Error)
     }
 
     @Test
-    fun testIfResultDataIsReturnedWhenSearchWithByteArrayReturnsPlaylistWithAtLeastOneBurst() = runTest {
+    fun `test that Error is returned when requestPlaylistAsyncReturns returns Error when searching with byteArray`() = runTest {
         // GIVEN
-        val getPlaylistReturn = Resource.Data(playlistOf(bursts = listOf(burstOf())))
-        val userResource = Resource.Data(userOf())
+        val requestPlaylistAsyncReturns = flowOf(resultErrorOf())
 
         // WHEN
-        val resource = interactor(
-            getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
-        )(byteArrayOf())
+        val result = interactor(requestPlaylistAsyncReturns = requestPlaylistAsyncReturns)(byteArrayOf())
 
         // THEN
-        assertTrue(resource is Result.Data)
-        assertTrue(playlistStorage.currentPlaylist != null)
+        assertTrue(result.first() is Result.Error)
     }
 
     @Test
-    fun testIfNoSearchResultsIsReturnedWhenSearchReturnsPlaylistWithoutBursts() = runTest {
+    fun `test that NoSearchResults is returned when requestPlaylistAsyncReturns returns empty Playlist when searching with byteArray`() = runTest {
         // GIVEN
-        val getPlaylistReturn = Resource.Data(playlistOf())
-        val userResource = Resource.Data(userOf())
+        val requestPlaylistAsyncReturns = flowOf(Result.Data(pendingPlaylistOf(isReady = true, playlist = playlistOf(bursts = emptyList()))))
 
         // WHEN
-        val resource = interactor(
-            search = getPlaylistReturn,
-            userResource = userResource,
-        )(query = "")
+        val result = interactor(requestPlaylistAsyncReturns = requestPlaylistAsyncReturns)(byteArrayOf())
 
         // THEN
-        require(resource is Result.Error)
-        assertEquals(LibraryError.NoSearchResults, resource.error)
-        assertTrue(playlistStorage.currentPlaylist == null)
+        val first = result.first()
+        assertTrue(first is Result.Error)
+        assertEquals(LibraryError.NoSearchResults, first.error)
     }
 
     @Test
-    fun testIfNoSearchResultsIsReturnedWhenSearchWithByteArrayReturnsPlaylistWithoutBursts() = runTest {
+    fun `test that NoSearchResults is returned when requestPlaylistAsyncReturns returns empty Playlist when searching with query`() = runTest {
         // GIVEN
-        val getPlaylistReturn = Resource.Data(playlistOf())
-        val userResource = Resource.Data(userOf())
+        val requestPlaylistAsyncReturns = flowOf(Result.Data(pendingPlaylistOf(isReady = true, playlist = playlistOf(bursts = emptyList()))))
 
         // WHEN
-        val resource = interactor(
-            getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
-        )(byteArrayOf())
+        val result = interactor(requestPlaylistAsyncReturns = requestPlaylistAsyncReturns)("")
 
         // THEN
-        require(resource is Result.Error)
-        assertEquals(LibraryError.NoSearchResults, resource.error)
-        assertTrue(playlistStorage.currentPlaylist == null)
+        val first = result.first()
+        assertTrue(first is Result.Error)
+        assertEquals(LibraryError.NoSearchResults, first.error)
     }
 
     @Test
-    fun testIfGetUserReturnsErrorThenErrorIsReturnedSearchIsCalled() = runTest {
+    fun `test that PendingPlaylist is returned when requestPlaylistAsyncReturns returns not empty Playlist when searching with query`() = runTest {
         // GIVEN
-        val getPlaylistReturn = Resource.Data(playlistOf())
-        val userResource = resourceErrorOf()
-
-        // WHEN
-        val resource = interactor(
-            getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
-        )(query = "")
-
-        // THEN
-        assertTrue(resource is Result.Error)
-        assertTrue(playlistStorage.currentPlaylist == null)
-    }
-
-    @Test
-    fun testIfGetUserReturnsErrorThenErrorIsReturnedSearchWithByteArrayIsCalled() = runTest {
-        // GIVEN
-        val getPlaylistReturn = Resource.Data(playlistOf())
-        val userResource = resourceErrorOf()
-
-        // WHEN
-        val resource = interactor(
-            getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
-        )(byteArrayOf())
-
-        // THEN
-        assertTrue(resource is Result.Error)
-        assertTrue(playlistStorage.currentPlaylist == null)
-    }
-
-    @Test
-    fun testIfGetUserReturnsUserAndSearchReturnsErrorThenErrorIsReturned() = runTest {
-        // GIVEN
-        val getPlaylistReturn = resourceErrorOf()
-        val userResource = Resource.Data(userOf())
-
-        // WHEN
-        val resource = interactor(
-            getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
-        )(query = "")
-
-        // THEN
-        assertTrue(resource is Result.Error)
-        assertTrue(playlistStorage.currentPlaylist == null)
-    }
-
-    @Test
-    fun testIfGetUserReturnsUserAndSearchWithByteArrayReturnsErrorThenErrorIsReturned() = runTest {
-        // GIVEN
-        val getPlaylistReturn = resourceErrorOf()
-        val userResource = Resource.Data(userOf())
-
-        // WHEN
-        val resource = interactor(
-            getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
-        )(byteArrayOf())
-
-        // THEN
-        assertTrue(resource is Result.Error)
-        assertTrue(playlistStorage.currentPlaylist == null)
-    }
-
-    @Test
-    fun testIfContentLoadEventIsGettingSentWhenSearchIsSuccessful() = runTest {
-        // GIVEN
-        val getPlaylistReturn = Resource.Data(playlistOf(bursts = listOf(burstOf())))
-        val userResource = Resource.Data(userOf())
-        val playbackEventHandler = MemorablePlaybackEventHandler()
-
-        // WHEN
-        interactor(
-            search = getPlaylistReturn,
-            userResource = userResource,
-            postContentLoadEvent = postContentLoadEventOf(
-                playbackEventHandler = playbackEventHandler
+        val requestPlaylistAsyncReturns = flowOf(
+            Result.Data(
+                pendingPlaylistOf(
+                    isReady = true,
+                    playlist = playlistOf(
+                        bursts = listOf(burstOf())
+                    )
+                )
             )
-        )(query = "")
+        )
+
+        // WHEN
+        val result = interactor(requestPlaylistAsyncReturns = requestPlaylistAsyncReturns)("")
 
         // THEN
-        assertTrue(playbackEventHandler.sentEvents.isNotEmpty())
+        assertTrue(result.first() is Result.Data)
     }
 
     @Test
-    fun testIfContentLoadEventIsGettingSentWhenSearchWithByteArrayIsSuccessful() = runTest {
+    fun `test that PendingPlaylist is returned when requestPlaylistAsyncReturns returns not empty Playlist when searching with byteArray`() = runTest {
         // GIVEN
-        val getPlaylistReturn = Resource.Data(playlistOf(bursts = listOf(burstOf())))
-        val userResource = Resource.Data(userOf())
-        val playbackEventHandler = MemorablePlaybackEventHandler()
+        val requestPlaylistAsyncReturns = flowOf(
+            Result.Data(
+                pendingPlaylistOf(
+                    isReady = true,
+                    playlist = playlistOf(
+                        bursts = listOf(burstOf())
+                    )
+                )
+            )
+        )
 
         // WHEN
-        interactor(
-            getPlaylistByByteArray = getPlaylistReturn,
-            userResource = userResource,
-            postContentLoadEvent = postContentLoadEventOf(
-                playbackEventHandler = playbackEventHandler
-            )
-        )(byteArrayOf())
+        val result = interactor(requestPlaylistAsyncReturns = requestPlaylistAsyncReturns)(byteArrayOf())
 
         // THEN
-        assertTrue(playbackEventHandler.sentEvents.isNotEmpty())
+        assertTrue(result.first() is Result.Data)
     }
 }

@@ -1,41 +1,28 @@
 package com.audioburst.library.interactors
 
 import com.audioburst.library.data.Resource
-import com.audioburst.library.data.asResult
 import com.audioburst.library.data.repository.PlaylistRepository
-import com.audioburst.library.data.storage.PlaylistStorage
-import com.audioburst.library.models.LibraryError
-import com.audioburst.library.models.Playlist
-import com.audioburst.library.models.Result
-import com.audioburst.library.models.User
+import com.audioburst.library.models.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 
 internal class Search(
-    private val getUser: GetUser,
     private val playlistRepository: PlaylistRepository,
-    private val postContentLoadEvent: PostContentLoadEvent,
-    private val playlistStorage: PlaylistStorage,
+    private val requestPlaylistAsync: RequestPlaylistAsync,
 ) {
 
-    suspend operator fun invoke(byteArray: ByteArray): Result<Playlist> =
-        getPlaylist { playlistRepository.getPlaylist(userId = it.userId, byteArray = byteArray) }
+    operator fun invoke(byteArray: ByteArray): Flow<Result<PendingPlaylist>> =
+        getPlaylist { playlistRepository.search(userId = it.userId, byteArray = byteArray) }
 
-    suspend operator fun invoke(query: String): Result<Playlist> =
+    operator fun invoke(query: String): Flow<Result<PendingPlaylist>> =
         getPlaylist { playlistRepository.search(userId = it.userId, query = query) }
 
-    private suspend fun getPlaylist(getPlaylistCall: suspend (User) -> Resource<Playlist>): Result<Playlist> =
-        when (val getUserResult = getUser()) {
-            is Resource.Data -> when (val resource = getPlaylistCall(getUserResult.result)) {
-                is Resource.Data -> {
-                    if (resource.result.bursts.isNotEmpty()) {
-                        postContentLoadEvent(resource.result)
-                        playlistStorage.setPlaylist(resource.result)
-                        resource.asResult()
-                    } else {
-                        Result.Error(LibraryError.NoSearchResults)
-                    }
-                }
-                is Resource.Error -> resource.asResult()
+    private fun getPlaylist(getPlaylistCall: suspend (User) -> Resource<PlaylistResult>): Flow<Result<PendingPlaylist>> =
+        requestPlaylistAsync { getPlaylistCall(it) }.map { result ->
+            if (result is Result.Data && result.value.isReady && result.value.playlist.bursts.isEmpty()) {
+                Result.Error(LibraryError.NoSearchResults)
+            } else {
+                result
             }
-            is Resource.Error -> getUserResult.asResult()
         }
 }

@@ -26,4 +26,12 @@ class PendingPlaylist(
     override fun toString(): String {
         return "PendingPlaylist(isReady=$isReady, playlist=$playlist)"
     }
+
+    internal companion object {
+        fun ready(playlist: Playlist): PendingPlaylist =
+            PendingPlaylist(
+                isReady = true,
+                playlist = playlist,
+            )
+    }
 }

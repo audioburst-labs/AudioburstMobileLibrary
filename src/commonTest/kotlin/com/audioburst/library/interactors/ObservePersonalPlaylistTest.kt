@@ -5,83 +5,34 @@ import com.audioburst.library.data.repository.mappers.userStorageOf
 import com.audioburst.library.data.storage.UserStorage
 import com.audioburst.library.models.*
 import com.audioburst.library.runTest
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.flowOf
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class ObservePersonalPlaylistTest {
 
     private fun interactor(
-        getPersonalPlaylistQueryId: Resource<PersonalPlaylistQueryId>,
-        getPersonalPlaylist: List<Resource<PendingPlaylist>>,
-        getUserReturns: Resource<User>,
-        postContentLoadEvent: PostContentLoadEvent = postContentLoadEventOf(),
+        getPersonalPlaylistQueryId: Resource<PlaylistResult> = Resource.Data(playlistResultAsyncOf()),
         userStorage: UserStorage = userStorageOf(),
+        requestPlaylistAsyncReturns: Flow<Result<PendingPlaylist>> = flowOf(),
     ): ObservePersonalPlaylist =
         ObservePersonalPlaylist(
-            getUser = getUserOf(getUserReturns),
             personalPlaylistRepository = personalPlaylistRepositoryOf(
-                MockPersonalPlaylistRepository.Returns(
-                    getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
-                    getPersonalPlaylist = getPersonalPlaylist,
-                )
+                MockPersonalPlaylistRepository.Returns(getPersonalPlaylistQueryId = getPersonalPlaylistQueryId)
             ),
-            postContentLoadEvent = postContentLoadEvent,
             userStorage = userStorage,
+            requestPlaylistAsync = requestPlaylistAsyncOf(getPlaylistCall = requestPlaylistAsyncReturns),
         )
 
     @Test
-    fun testWhenGetUserReturnsError()= runTest {
+    fun `test when userStorage returns zero selectedKeysCount`()= runTest {
         // GIVEN
-        val getUserReturns = resourceErrorOf()
-        val getPersonalPlaylistQueryId = Resource.Data(personalPlaylistQueryIdOf())
-        val getPersonalPlaylist = listOf(Resource.Data(pendingPlaylistOf()))
-
-        // WHEN
-        val result = interactor(
-            getUserReturns = getUserReturns,
-            getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId
-        )()
-
-        // THEN
-        assertTrue(result.first() is Result.Error)
-    }
-
-    @Test
-    fun testWhenGetUserReturnsDataAndGetPersonalPlaylistQueryIdReturnsError()= runTest {
-        // GIVEN
-        val getUserReturns = Resource.Data(userOf())
-        val getPersonalPlaylistQueryId = resourceErrorOf()
-        val getPersonalPlaylist = listOf(Resource.Data(pendingPlaylistOf()))
-
-        // WHEN
-        val result = interactor(
-            getUserReturns = getUserReturns,
-            getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId
-        )()
-
-        // THEN
-        assertTrue(result.first() is Result.Error)
-    }
-
-    @Test
-    fun testWhenUserStorageReturnsZeroSelectedKeysCount()= runTest {
-        // GIVEN
-        val getUserReturns = Resource.Data(userOf())
-        val getPersonalPlaylistQueryId = Resource.Data(personalPlaylistQueryIdOf())
-        val playlist = pendingPlaylistOf(isReady = true)
-        val getPersonalPlaylist = listOf(Resource.Data(playlist))
         val selectedKeysCount = 0
 
         // WHEN
         val result = interactor(
-            getUserReturns = getUserReturns,
-            getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
             userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
         )()
 
@@ -91,152 +42,34 @@ class ObservePersonalPlaylistTest {
     }
 
     @Test
-    fun testWhenGetPersonalPlaylistReturnsReadyPlaylist()= runTest {
+    fun `test when requestPlaylistAsyncReturns returns flow with Error`()= runTest {
         // GIVEN
-        val getUserReturns = Resource.Data(userOf())
-        val getPersonalPlaylistQueryId = Resource.Data(personalPlaylistQueryIdOf())
-        val playlist = pendingPlaylistOf(isReady = true)
-        val getPersonalPlaylist = listOf(Resource.Data(playlist))
         val selectedKeysCount = 1
+        val requestPlaylistAsyncReturns = flowOf(resultErrorOf())
 
         // WHEN
         val result = interactor(
-            getUserReturns = getUserReturns,
-            getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
-            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
+            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount),
+            requestPlaylistAsyncReturns = requestPlaylistAsyncReturns
         )()
 
         // THEN
-        assertTrue(result.first() is Result.Data)
+        require(result.first() is Result.Error)
     }
 
     @Test
-    fun testIfEmissionIsCompletedWhenThereIsAnErrorInTheMiddle()= runTest {
+    fun `test when requestPlaylistAsyncReturns returns flow with Data`()= runTest {
         // GIVEN
-        val getUserReturns = Resource.Data(userOf())
-        val getPersonalPlaylistQueryId = Resource.Data(personalPlaylistQueryIdOf())
-        val getPersonalPlaylist = listOf(
-            Resource.Data(pendingPlaylistOf(isReady = false)),
-            resourceErrorOf(),
-            Resource.Data(pendingPlaylistOf(isReady = false)),
-            Resource.Data(pendingPlaylistOf(isReady = false)),
-            Resource.Data(pendingPlaylistOf(isReady = true)),
-        )
         val selectedKeysCount = 1
+        val requestPlaylistAsyncReturns = flowOf(Result.Data(pendingPlaylistOf()))
 
         // WHEN
         val result = interactor(
-            getUserReturns = getUserReturns,
-            getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
-            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
+            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount),
+            requestPlaylistAsyncReturns = requestPlaylistAsyncReturns
         )()
 
         // THEN
-        val values = result.toList()
-        assertTrue(values.size == 2)
-        assertTrue(values.last() is Result.Error)
-    }
-
-    @Test
-    fun testIfEmissionIsCompletedWhenThereIsAReadyPlaylistInTheMiddle()= runTest {
-        // GIVEN
-        val getUserReturns = Resource.Data(userOf())
-        val getPersonalPlaylistQueryId = Resource.Data(personalPlaylistQueryIdOf())
-        val getPersonalPlaylist = listOf(
-            Resource.Data(pendingPlaylistOf(isReady = false)),
-            Resource.Data(pendingPlaylistOf(isReady = true)),
-            Resource.Data(pendingPlaylistOf(isReady = false)),
-            Resource.Data(pendingPlaylistOf(isReady = false)),
-        )
-        val selectedKeysCount = 1
-
-        // WHEN
-        val result = interactor(
-            getUserReturns = getUserReturns,
-            getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
-            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
-        )()
-
-        // THEN
-        val values = result.toList()
-        assertTrue(values.size == 2)
-        assertTrue(values.last() is Result.Data)
-    }
-
-    @Test
-    fun testWhenGetPersonalPlaylistKeepsReturnTheSamePlaylistTheEmittedValueIsOnlyOne()= runTest {
-        // GIVEN
-        val getUserReturns = Resource.Data(userOf())
-        val getPersonalPlaylistQueryId = Resource.Data(personalPlaylistQueryIdOf())
-        val getPersonalPlaylist = listOf(
-            Resource.Data(pendingPlaylistOf(isReady = false)),
-            Resource.Data(pendingPlaylistOf(isReady = false)),
-            Resource.Data(pendingPlaylistOf(isReady = true)),
-        )
-        val selectedKeysCount = 1
-
-        // WHEN
-        val result = interactor(
-            getUserReturns = getUserReturns,
-            getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
-            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
-        )()
-
-        // THEN
-        assertTrue(result.toList().size == 2)
-    }
-
-    @Test
-    fun testIfOnlyUniqueBurstsAreEmitted()= runTest {
-        // GIVEN
-        val getUserReturns = Resource.Data(userOf())
-        val getPersonalPlaylistQueryId = Resource.Data(personalPlaylistQueryIdOf())
-        val getPersonalPlaylist = listOf(
-            Resource.Data(pendingPlaylistOf(isReady = false, playlistOf(bursts = listOf(burstOf(id = "id1"))))),
-            Resource.Data(pendingPlaylistOf(isReady = false, playlistOf(bursts = listOf(burstOf(id = "id1"))))),
-            Resource.Data(pendingPlaylistOf(isReady = true, playlistOf(bursts = listOf(burstOf(id = "id1"), burstOf(id = "id2"))))),
-        )
-        val selectedKeysCount = 1
-
-        // WHEN
-        val result = interactor(
-            getUserReturns = getUserReturns,
-            getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
-            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
-        )()
-
-        // THEN
-        assertTrue(result.toList().size == 2)
-    }
-
-    @Test
-    fun testIfContentLoadEventIsGettingSentWhenThereIsReadyPlaylist()= runTest {
-        // GIVEN
-        val getUserReturns = Resource.Data(userOf())
-        val getPersonalPlaylistQueryId = Resource.Data(personalPlaylistQueryIdOf())
-        val getPersonalPlaylist = listOf(
-            Resource.Data(pendingPlaylistOf(isReady = true, playlistOf(bursts = listOf(burstOf())))),
-        )
-        val playbackEventHandler = MemorablePlaybackEventHandler()
-        val selectedKeysCount = 1
-
-        // WHEN
-        interactor(
-            getUserReturns = getUserReturns,
-            getPersonalPlaylist = getPersonalPlaylist,
-            getPersonalPlaylistQueryId = getPersonalPlaylistQueryId,
-            postContentLoadEvent = postContentLoadEventOf(
-                playbackEventHandler = playbackEventHandler
-            ),
-            userStorage = userStorageOf(selectedKeysCount = selectedKeysCount)
-        )().toList()
-
-        // THEN
-        assertTrue(playbackEventHandler.sentEvents.isNotEmpty())
+        require(result.first() is Result.Data)
     }
 }

@@ -91,17 +91,52 @@ audioburstLibrary.getPlaylist(playlistItem)
     }
 ```
 
-## Search for a query
-The Library exposes an ability to search for a text query. The response will either be a `Playlist` with the list of `Bursts` found OR a `NoSearchResults` error.  
+## Search
+As search might take some more time, the library exposes the ability to "subscribe" to ongoing changes in the playlist. Subscribing enables notifications every time new `Burst`s are added to the playlist and the ability to check if the playlist is ready.
+The response will either be a `Playlist` with the list of `Bursts` found OR a `NoSearchResults` error.
+
+### Text
+The Library exposes an ability to search for a text query.  
 ```kotlin
-audioburstLibrary.search(query)
-    .onData { playlist ->
-        // Build your playback queue by using list of Bursts
+audioburstLibrary
+    .search(query)
+    .collect { result ->
+        result
+            .onData { pendingPlaylist ->
+                if (pendingPlaylist.isReady) {
+                    // Your playlist is ready
+                } else {
+                    // Your playlist is still being prepared
+                }
+            }
+            .onError { error ->
+                // Handle error
+            }
     }
-    .onError { error -> 
-        // Handle error
+```  
+
+### Voice
+The Library is able to process raw audio files that contain a recorded request of what should be played. You can record a voice command stating what you would like to listen to and then upload it to your device and use AudioburstLibrary to get bursts on this topic.
+
+```kotlin
+audioburstLibrary
+    .search(byteArray)
+    .collect { result ->
+        result
+            .onData { pendingPlaylist ->
+                if (pendingPlaylist.isReady) {
+                    // Your playlist is ready
+                } else {
+                    // Your playlist is still being prepared
+                }
+            }
+            .onError { error ->
+                // Handle error
+            }
     }
-```
+```  
+
+The `getPlaylist` function accepts `ByteArray` as an argument. A request included in the PCM file will be processed and a playlist of the bursts will be returned.
 
 ## Get advertisement url
 You can also play advertisements before playlist items (bursts.)
@@ -168,21 +203,6 @@ When the user clicks this button, you should call the following function to info
 ```kotlin
 audioburstLibrary.ctaButtonClick(burstId)
 ```
-
-## Pass recorded PCM file
-`AudioburstLibrary` is able to process raw audio files that contain a recorded request of what should be played. You can record a voice command stating what you would like to listen to and then upload it to your device and use AudioburstLibrary to get bursts on this topic.
-
-```kotlin
-audioburstLibrary.getPlaylist(byteArray)
-    .onData { playlist ->
-        // Build your playback queue by using list of Bursts
-    }
-    .onError { error ->
-        // Handle error
-    }
-```
-
-The `getPlaylist` function accepts `ByteArray` as an argument. A request included in the PCM file will be processed and a playlist of the bursts will be returned.
 
 ## Filter out listened Bursts
 By default, Library will filter-out all Bursts that user already listened to. Use `filterListenedBursts` function to change this behaviour.
@@ -331,12 +351,35 @@ audioburstLibrary.getPlaylist(playlistInfo: playlistInfo) { playlist in
 }
 ```
 
-## Search for a query
-The Library exposes an ability to search for a text query. The response will either be a `Playlist` with the list of `Bursts` found OR a `NoSearchResults` error.
+## Search
+As search might take some more time, the library exposes the ability to "subscribe" to ongoing changes in the playlist. Subscribing enables notifications every time new `Burst`s are added to the playlist and the ability to check if the playlist is ready.
+The response will either be a `Playlist` with the list of `Bursts` found OR a `NoSearchResults` error.
+
+### Text
+The Library exposes an ability to search for a text query.
 ```swift
-audioburstLibrary.search(query: query) { playlist in
-    // Build your playback queue by using list of Bursts
-} onError: { errorType in
+audioburstLibrary.search(query: query) { pendingPlaylist in
+    if (pendingPlaylist.isReady) {
+        // Your playlist is ready
+    } else {
+        // Your playlist is still being prepared
+    }
+} onError: { error in
+    // Handle error
+}
+```
+
+### Voice
+The Library is able to process raw audio files that contain a recorded request of what should be played. You can record a voice command stating what you would like to listen to and then upload it to your device and use AudioburstLibrary to get bursts on this topic.
+
+```swift
+audioburstLibrary.search(data: data) { pendingPlaylist in
+    if (pendingPlaylist.isReady) {
+        // Your playlist is ready
+    } else {
+        // Your playlist is still being prepared
+    }
+} onError: { error in
     // Handle error
 }
 ```
@@ -393,17 +436,6 @@ The CtaData, when available, provides the text to be shown on the button (`butto
 When the user clicks this button, you should call the following function to inform the library about this:
 ```kotlin
 audioburstLibrary.ctaButtonClick(burstId)
-```
-
-## Pass recorded PCM file
-`AudioburstLibrary` is able to process raw audio files that contain a recorded request of what should be played. You can record a voice command stating what you would like to listen to and then upload it to your device and use AudioburstLibrary to get bursts on this topic.
-
-```swift
-audioburstLibrary.getPlaylist(data: data) { playlist in
-    // Build your playback queue by using list of Bursts
-} onError: { errorType in
-    // Handle error
-}
 ```
 
 ## Filter out listened Bursts

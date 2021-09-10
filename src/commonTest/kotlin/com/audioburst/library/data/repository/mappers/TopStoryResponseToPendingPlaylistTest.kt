@@ -1,5 +1,6 @@
 package com.audioburst.library.data.repository.mappers
 
+import com.audioburst.library.interactors.playerSessionIdOf
 import com.audioburst.library.utils.LibraryConfiguration
 import com.audioburst.library.utils.PlayerSessionIdGetter
 import kotlin.test.Test
@@ -8,13 +9,14 @@ import kotlin.test.assertTrue
 
 class TopStoryResponseToPendingPlaylistTest {
 
-    private val playerSessionId: String = ""
+    private val playerSessionId = playerSessionIdOf()
     private val userId = ""
+    private val playerAction = playerActionOf()
 
     private val mapper = topStoryResponseToPendingPlaylistOf(
         topStoryResponseToPlaylist = topStoryResponseToPlaylistOf(
             playerSessionIdGetter = playerSessionIdGetterOf(
-                playerSessionId = playerSessionId,
+                playerSessionId = playerSessionId.value,
             )
         )
     )
@@ -29,7 +31,7 @@ class TopStoryResponseToPendingPlaylistTest {
         )
 
         // WHEN
-        val mapped = mapper.map(response, userId)
+        val mapped = mapper.map(response, userId, playerAction, playerSessionId = playerSessionId)
 
         // THEN
         assertEquals(mapped.playlist.name, query)
@@ -42,7 +44,7 @@ class TopStoryResponseToPendingPlaylistTest {
         val response = topStoryResponseOf(actualQuery = actualQuery)
 
         // WHEN
-        val mapped = mapper.map(response, userId)
+        val mapped = mapper.map(response, userId, playerAction, playerSessionId = playerSessionId)
 
         // THEN
         assertEquals(mapped.playlist.name, actualQuery)
@@ -57,7 +59,7 @@ class TopStoryResponseToPendingPlaylistTest {
         )
 
         // WHEN
-        val mapped = mapper.map(response, userId)
+        val mapped = mapper.map(response, userId, playerAction, playerSessionId = playerSessionId)
 
         // THEN
         assertEquals(mapped.playlist.name, "")
@@ -70,7 +72,7 @@ class TopStoryResponseToPendingPlaylistTest {
         val response = topStoryResponseOf(queryID = queryId)
 
         // WHEN
-        val mapped = mapper.map(response, userId)
+        val mapped = mapper.map(response, userId, playerAction, playerSessionId = playerSessionId)
 
         // THEN
         assertEquals(mapped.playlist.id, queryId.toString())
@@ -84,7 +86,7 @@ class TopStoryResponseToPendingPlaylistTest {
         )
 
         // WHEN
-        val mapped = mapper.map(response, userId)
+        val mapped = mapper.map(response, userId, playerAction, playerSessionId = playerSessionId)
 
         // THEN
         assertTrue(mapped.isReady)
@@ -98,7 +100,7 @@ class TopStoryResponseToPendingPlaylistTest {
         )
 
         // WHEN
-        val mapped = mapper.map(response, userId)
+        val mapped = mapper.map(response, userId, playerAction, playerSessionId = playerSessionId)
 
         // THEN
         assertTrue(!mapped.isReady)
@@ -112,7 +114,7 @@ class TopStoryResponseToPendingPlaylistTest {
         )
 
         // WHEN
-        val mapped = mapper.map(response, userId)
+        val mapped = mapper.map(response, userId, playerAction, playerSessionId = playerSessionId)
 
         // THEN
         assertTrue(!mapped.isReady)
@@ -123,6 +125,11 @@ internal fun topStoryResponseToPendingPlaylistOf(
     topStoryResponseToPlaylist: TopStoryResponseToPlaylist = topStoryResponseToPlaylistOf()
 ): TopStoryResponseToPendingPlaylist =
     TopStoryResponseToPendingPlaylist(topStoryResponseToPlaylist = topStoryResponseToPlaylist,)
+
+internal fun topStoryResponseToPlaylistResultOf(
+    topStoryResponseToPlaylist: TopStoryResponseToPlaylist = topStoryResponseToPlaylistOf()
+): TopStoryResponseToPlaylistResult =
+    TopStoryResponseToPlaylistResult(topStoryResponseToPlaylist = topStoryResponseToPlaylist)
 
 internal fun topStoryResponseToPlaylistOf(
     burstResponseToBurstMapper: BurstResponseToBurstMapper = burstResponseToBurstMapperOf(),

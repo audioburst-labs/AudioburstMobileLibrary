@@ -4,17 +4,18 @@ import com.audioburst.library.data.Resource
 import com.audioburst.library.data.httpClientOf
 import com.audioburst.library.data.remote.AudioburstV2Api
 import com.audioburst.library.data.repository.mappers.*
-import com.audioburst.library.data.repository.models.AsyncQueryIdResponse
 import com.audioburst.library.data.repository.models.PostUserPreferenceResponse
 import com.audioburst.library.data.repository.models.UserPreferenceResponse
-import com.audioburst.library.interactors.playlistStorageOf
+import com.audioburst.library.interactors.personalPlaylistQueryIdOf
+import com.audioburst.library.interactors.playerSessionIdOf
 import com.audioburst.library.interactors.resourceErrorOf
 import com.audioburst.library.interactors.userOf
 import com.audioburst.library.models.AppSettings
 import com.audioburst.library.models.PendingPlaylist
-import com.audioburst.library.models.PersonalPlaylistQueryId
+import com.audioburst.library.models.PlaylistQueryId
 import com.audioburst.library.models.ShareTexts
 import com.audioburst.library.runTest
+import com.audioburst.library.utils.PlayerSessionIdGetter
 import kotlinx.serialization.json.Json
 import kotlin.test.Test
 
@@ -27,6 +28,8 @@ class HttpPersonalPlaylistRepositoryTest {
         userPreferenceResponseToPreferenceMapper: UserPreferenceResponseToPreferenceMapper = UserPreferenceResponseToPreferenceMapper(),
         preferenceToUserPreferenceResponseMapper: PreferenceToUserPreferenceResponseMapper = PreferenceToUserPreferenceResponseMapper(),
         topStoryResponseToPendingPlaylist: TopStoryResponseToPendingPlaylist = topStoryResponseToPendingPlaylistOf(),
+        playerSessionIdGetter: PlayerSessionIdGetter = playerSessionIdGetterOf(),
+        topStoryResponseToPlaylistResult: TopStoryResponseToPlaylistResult = topStoryResponseToPlaylistResultOf(),
     ): HttpPersonalPlaylistRepository =
         HttpPersonalPlaylistRepository(
             httpClient = httpClientOf(httpClientReturns),
@@ -35,7 +38,8 @@ class HttpPersonalPlaylistRepositoryTest {
             preferenceToUserPreferenceResponseMapper = preferenceToUserPreferenceResponseMapper,
             topStoryResponseToPendingPlaylist = topStoryResponseToPendingPlaylist,
             appSettingsRepository = appSettingsRepositoryOf(appSettingsRepositoryReturns),
-            playlistStorage = playlistStorageOf(),
+            playerSessionIdGetter = playerSessionIdGetter,
+            topStoryResponseToPlaylistResult = topStoryResponseToPlaylistResult,
         )
 
     @Test
@@ -44,7 +48,7 @@ class HttpPersonalPlaylistRepositoryTest {
         val response = resourceErrorOf()
 
         // WHEN
-        val resource = repository<PersonalPlaylistQueryId>(
+        val resource = repository<PlaylistQueryId>(
             httpClientReturns = response
         ).getPersonalPlaylistQueryId(userOf())
 
@@ -55,7 +59,7 @@ class HttpPersonalPlaylistRepositoryTest {
     @Test
     fun testIfGetPersonalPlaylistQueryIdReturnsDataWhenHttpClientReturnsData() = runTest {
         // GIVEN
-        val response = Resource.Data(AsyncQueryIdResponse(0))
+        val response = Resource.Data(topStoryResponseOf(queryID = 0))
 
         // WHEN
         val resource = repository(
@@ -74,7 +78,12 @@ class HttpPersonalPlaylistRepositoryTest {
         // WHEN
         val resource = repository<PendingPlaylist>(
             httpClientReturns = response
-        ).getPersonalPlaylist(userOf(), personalPlaylistQueryId = PersonalPlaylistQueryId(0))
+        ).getPersonalPlaylist(
+            user = userOf(),
+            playlistQueryId = personalPlaylistQueryIdOf(),
+            playerAction = playerActionOf(),
+            playerSessionId = playerSessionIdOf(),
+        )
 
         // THEN
         require(resource is Resource.Error)
@@ -88,7 +97,12 @@ class HttpPersonalPlaylistRepositoryTest {
         // WHEN
         val resource = repository(
             httpClientReturns = response
-        ).getPersonalPlaylist(userOf(), personalPlaylistQueryId = PersonalPlaylistQueryId(0))
+        ).getPersonalPlaylist(
+            user = userOf(),
+            playlistQueryId = personalPlaylistQueryIdOf(0),
+            playerAction = playerActionOf(),
+            playerSessionId = playerSessionIdOf(),
+        )
 
         // THEN
         require(resource is Resource.Data)

@@ -4,15 +4,15 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 internal data class TopStoryResponse(
-    val type: String?,
+    val type: String? = null,
     val queryID: Long,
-    val query: String?,
-    val actualQuery: String?,
-    val bursts: List<BurstsResponse>?,
-    val message: String?,
-    val imageURL: String?,
-    val nextPage: String?,
-    val intent: String?,
+    val query: String? = null,
+    val actualQuery: String? = null,
+    val bursts: List<BurstsResponse>? = null,
+    val message: String? = null,
+    val imageURL: String? = null,
+    val nextPage: String? = null,
+    val intent: String? = null,
 )
 
 @Serializable

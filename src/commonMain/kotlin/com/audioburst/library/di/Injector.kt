@@ -82,6 +82,9 @@ internal object Injector {
             burstResponseToBurstMapper = burstResponseToBurstProvider.get(),
         )
     }
+    private val topStoryResponseToPlaylistResultProvider: Provider<TopStoryResponseToPlaylistResult> = provider {
+        TopStoryResponseToPlaylistResult(topStoryResponseToPlaylist = topStoryResponseToPlaylistProvider.get())
+    }
     private val abAiRouterApiProvider: Provider<AbAiRouterApi> = provider { AbAiRouterApi() }
     private val advertisementEventToAdvertisementEventRequestProvider: Provider<AdvertisementEventToAdvertisementEventRequestMapper> = provider { AdvertisementEventToAdvertisementEventRequestMapper() }
     private val playerEventToEventRequestProvider: Provider<PlayerEventToEventRequestMapper> = provider {
@@ -122,6 +125,8 @@ internal object Injector {
             audioburstV2Api = audioburstV2ApiProvider.get(),
             libraryConfiguration = libraryConfigurationProvider.get(),
             topStoryResponseToPlaylist = topStoryResponseToPlaylistProvider.get(),
+            playerSessionIdGetter = playerSessionIdGetterProvider.get(),
+            topStoryResponseToPlaylistResult = topStoryResponseToPlaylistResultProvider.get(),
         )
     }
     private val currentAdsProvider: Provider<CurrentAdsProvider> = provider {
@@ -219,12 +224,18 @@ internal object Injector {
             userStorage = userStorageProvider.get(),
         )
     }
-    private val searchProvider: Provider<Search> = provider {
-        Search(
-            getUser = getUserProvider.get(),
-            playlistRepository = playlistRepositoryProvider.get(),
+    private val requestPlaylistAsyncProvider: Provider<RequestPlaylistAsync> = provider {
+        RequestPlaylistAsyncInteractor(
+            personalPlaylistRepository = personalPlaylistRepositoryProvider.get(),
             postContentLoadEvent = postContentLoadEventProvider.get(),
             playlistStorage = playlistStorageProvider.get(),
+            getUser = getUserProvider.get(),
+        )
+    }
+    private val searchProvider: Provider<Search> = provider {
+        Search(
+            playlistRepository = playlistRepositoryProvider.get(),
+            requestPlaylistAsync = requestPlaylistAsyncProvider.get(),
         )
     }
     private val getAdDataProvider: Provider<GetAdUrl> = provider {
@@ -283,7 +294,8 @@ internal object Injector {
             preferenceToUserPreferenceResponseMapper = preferenceToUserPreferenceResponseMapperProvider.get(),
             topStoryResponseToPendingPlaylist = topStoryResponseToPendingPlaylistProvider.get(),
             appSettingsRepository = appSettingsRepositoryProvider.get(),
-            playlistStorage = playlistStorageProvider.get(),
+            playerSessionIdGetter = playerSessionIdGetterProvider.get(),
+            topStoryResponseToPlaylistResult = topStoryResponseToPlaylistResultProvider.get(),
         )
     }
 
@@ -317,10 +329,9 @@ internal object Injector {
 
     private val observePersonalPlaylistProvider: Provider<ObservePersonalPlaylist> = provider {
         ObservePersonalPlaylist(
-            getUser = getUserProvider.get(),
             personalPlaylistRepository = personalPlaylistRepositoryProvider.get(),
-            postContentLoadEvent = postContentLoadEventProvider.get(),
             userStorage = userStorageProvider.get(),
+            requestPlaylistAsync = requestPlaylistAsyncProvider.get(),
         )
     }
 

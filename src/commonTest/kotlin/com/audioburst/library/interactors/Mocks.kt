@@ -18,9 +18,15 @@ import com.audioburst.library.utils.LibraryConfiguration
 import com.audioburst.library.utils.TimestampProvider
 import com.audioburst.library.utils.UuidFactory
 import com.audioburst.library.utils.timestampProviderOf
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flowOf
 
 internal fun resourceErrorOf(errorType: ErrorType = ErrorType.UnexpectedException(Exception())): Resource.Error =
     Resource.Error(errorType)
+
+internal fun resultErrorOf(
+    libraryError: LibraryError = LibraryError.Server
+): Result.Error = Result.Error(libraryError)
 
 internal fun userOf(userId: String = ""): User = User(userId = userId)
 
@@ -281,9 +287,9 @@ internal class MockPlaylistRepository(private val returns: Returns) : PlaylistRe
 
     override suspend fun getPlaylist(userId: String, playlistInfo: PlaylistInfo): Resource<Playlist> = returns.getPlaylistByPlaylistInfo
 
-    override suspend fun getPlaylist(userId: String, byteArray: ByteArray): Resource<Playlist> = returns.getPlaylistByByteArray
+    override suspend fun search(userId: String, byteArray: ByteArray): Resource<PlaylistResult> = returns.searchByByteArray
 
-    override suspend fun search(userId: String, query: String): Resource<Playlist> = returns.search
+    override suspend fun search(userId: String, query: String): Resource<PlaylistResult> = returns.searchByQuery
 
     override fun url(userId: String, playerAction: PlayerAction): Url? = returns.url
 
@@ -293,8 +299,8 @@ internal class MockPlaylistRepository(private val returns: Returns) : PlaylistRe
         val source: Resource<Playlist> = Resource.Data(playlistOf()),
         val account: Resource<Playlist> = Resource.Data(playlistOf()),
         val getPlaylistByPlaylistInfo: Resource<Playlist> = Resource.Data(playlistOf()),
-        val getPlaylistByByteArray: Resource<Playlist> = Resource.Data(playlistOf()),
-        val search: Resource<Playlist> = Resource.Data(playlistOf()),
+        val searchByByteArray: Resource<PlaylistResult> = Resource.Data(playlistResultFinishedOf()),
+        val searchByQuery: Resource<PlaylistResult> = Resource.Data(playlistResultFinishedOf()),
         val url: Url? = null
     )
 }
@@ -355,7 +361,9 @@ internal class InMemoryUnsentEventStorage : UnsentEventStorage {
 internal fun uuidFactoryOf(uuid: String = ""): UuidFactory =
     UuidFactory { uuid }
 
-internal fun personalPlaylistQueryIdOf(queryId: Long = 0L) = PersonalPlaylistQueryId(queryId)
+internal fun personalPlaylistQueryIdOf(queryId: Long = 0L): PlaylistQueryId = PlaylistQueryId(queryId)
+
+internal fun playerSessionIdOf(playerSessionId: String = ""): PlayerSessionId = PlayerSessionId(playerSessionId)
 
 internal fun pendingPlaylistOf(
     isReady: Boolean = false,
@@ -365,6 +373,22 @@ internal fun pendingPlaylistOf(
         isReady = isReady,
         playlist = playlist,
     )
+
+internal fun playlistResultFinishedOf(
+    value: Playlist = playlistOf()
+): PlaylistResult.Finished = PlaylistResult.Finished(
+    value = value,
+)
+
+internal fun playlistResultAsyncOf(
+    queryId: PlaylistQueryId = personalPlaylistQueryIdOf(),
+    playerSessionId: PlayerSessionId = playerSessionIdOf(),
+    playerAction: PlayerAction = playerActionOf(),
+): PlaylistResult.Async = PlaylistResult.Async(
+    queryId = queryId,
+    playerSessionId = playerSessionId,
+    playerAction = playerAction,
+)
 
 internal fun personalPlaylistRepositoryOf(
     returns: MockPersonalPlaylistRepository.Returns = MockPersonalPlaylistRepository.Returns()
@@ -377,16 +401,16 @@ internal class MockPersonalPlaylistRepository(private val returns: Returns) : Pe
 
     override suspend fun postUserPreferences(user: User, userPreferences: UserPreferences): Resource<UserPreferences> = returns.postUserPreferences
 
-    override suspend fun getPersonalPlaylistQueryId(user: User): Resource<PersonalPlaylistQueryId> = returns.getPersonalPlaylistQueryId
+    override suspend fun getPersonalPlaylistQueryId(user: User): Resource<PlaylistResult> = returns.getPersonalPlaylistQueryId
 
     private var callNumber = 0
-    override suspend fun getPersonalPlaylist(user: User, personalPlaylistQueryId: PersonalPlaylistQueryId): Resource<PendingPlaylist> =
+    override suspend fun getPersonalPlaylist(user: User, playerAction: PlayerAction, playerSessionId: PlayerSessionId, playlistQueryId: PlaylistQueryId): Resource<PendingPlaylist> =
         returns.getPersonalPlaylist[callNumber].apply { callNumber++ }
 
     data class Returns(
         val getUserPreferences: Resource<UserPreferences> = Resource.Data(userPreferenceOf()),
         val postUserPreferences: Resource<UserPreferences> = Resource.Data(userPreferenceOf()),
-        val getPersonalPlaylistQueryId: Resource<PersonalPlaylistQueryId> = Resource.Data(personalPlaylistQueryIdOf()),
+        val getPersonalPlaylistQueryId: Resource<PlaylistResult> = Resource.Data(playlistResultFinishedOf()),
         val getPersonalPlaylist: List<Resource<PendingPlaylist>> = listOf(Resource.Data(pendingPlaylistOf()))
     )
 }
@@ -492,3 +516,7 @@ internal fun requestOptionsOf(
     )
 
 internal fun burstShareUrlOf(shortUrl: String = ""): BurstShareUrl = BurstShareUrl(shortUrl)
+
+internal fun requestPlaylistAsyncOf(
+    getPlaylistCall: Flow<Result<PendingPlaylist>> = flowOf()
+): RequestPlaylistAsync = RequestPlaylistAsync { getPlaylistCall }

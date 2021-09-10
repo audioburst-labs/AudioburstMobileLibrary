@@ -7,9 +7,11 @@ import com.audioburst.library.data.remote.AudioburstV2Api
 import com.audioburst.library.data.remote.Endpoint
 import com.audioburst.library.data.remote.buildUrl
 import com.audioburst.library.data.repository.mappers.TopStoryResponseToPlaylist
+import com.audioburst.library.data.repository.mappers.TopStoryResponseToPlaylistResult
 import com.audioburst.library.data.repository.models.TopStoryResponse
 import com.audioburst.library.models.*
 import com.audioburst.library.utils.LibraryConfiguration
+import com.audioburst.library.utils.PlayerSessionIdGetter
 import io.ktor.client.*
 
 internal interface PlaylistRepository {
@@ -24,9 +26,9 @@ internal interface PlaylistRepository {
 
     suspend fun getPlaylist(userId: String, playlistInfo: PlaylistInfo): Resource<Playlist>
 
-    suspend fun getPlaylist(userId: String, byteArray: ByteArray): Resource<Playlist>
+    suspend fun search(userId: String, byteArray: ByteArray): Resource<PlaylistResult>
 
-    suspend fun search(userId: String, query: String): Resource<Playlist>
+    suspend fun search(userId: String, query: String): Resource<PlaylistResult>
 
     fun url(userId: String, playerAction: PlayerAction): Url?
 }
@@ -36,6 +38,8 @@ internal class HttpPlaylistRepository(
     private val audioburstV2Api: AudioburstV2Api,
     private val libraryConfiguration: LibraryConfiguration,
     private val topStoryResponseToPlaylist: TopStoryResponseToPlaylist,
+    private val playerSessionIdGetter: PlayerSessionIdGetter,
+    private val topStoryResponseToPlaylistResult: TopStoryResponseToPlaylistResult,
 ) : PlaylistRepository {
 
     private suspend fun getPlaylist(
@@ -112,7 +116,7 @@ internal class HttpPlaylistRepository(
                 )
             }
 
-    override suspend fun getPlaylist(userId: String, byteArray: ByteArray): Resource<Playlist> =
+    override suspend fun search(userId: String, byteArray: ByteArray): Resource<PlaylistResult> =
         httpClient.execute<TopStoryResponse>(
             audioburstV2Api.getPlaylist(
                 byteArray = byteArray,
@@ -120,34 +124,32 @@ internal class HttpPlaylistRepository(
                 libraryKey = libraryConfiguration.libraryKey,
             )
         ).map { topStoryResponse ->
-            topStoryResponseToPlaylist.map(
+            topStoryResponseToPlaylistResult.map(
                 from = topStoryResponse,
                 userId = userId,
-                playlistId = "",
-                playlistName = "",
                 playerAction = PlayerAction(
                     type = PlayerAction.Type.Voice,
                     value = topStoryResponse.actualQuery ?: "",
-                )
+                ),
+                playerSessionId = playerSessionIdGetter.get(),
             )
         }
 
-    override suspend fun search(userId: String, query: String): Resource<Playlist> =
+    override suspend fun search(userId: String, query: String): Resource<PlaylistResult> =
         httpClient.execute<TopStoryResponse>(
             audioburstV2Api.search(
                 query = query,
                 userId = userId,
             )
         ).map { topStoryResponse ->
-            topStoryResponseToPlaylist.map(
+            topStoryResponseToPlaylistResult.map(
                 from = topStoryResponse,
                 userId = userId,
-                playlistId = "",
-                playlistName = topStoryResponse.actualQuery ?: query,
                 playerAction = PlayerAction(
                     type = PlayerAction.Type.Search,
                     value = query,
-                )
+                ),
+                playerSessionId = playerSessionIdGetter.get(),
             )
         }
 
